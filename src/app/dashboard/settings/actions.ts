@@ -1,0 +1,71 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
+
+export async function updateProfile(formData: FormData) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const fullName = formData.get('fullName') as string
+  const slug = formData.get('slug') as string
+  const brandColor = formData.get('brandColor') as string
+  const logoFile = formData.get('logo') as File | null
+
+  // Process slug to be url friendly
+  const safeSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+
+  let logoUrl: string | undefined
+
+  if (logoFile && logoFile.size > 0 && logoFile.name !== 'undefined') {
+    const ext = logoFile.name.split('.').pop()
+    const fileName = `${user.id}-${Math.random()}.${ext}`
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('logos')
+      .upload(fileName, logoFile, {
+        cacheControl: '3600',
+        upsert: true
+      })
+
+    if (!uploadError && uploadData) {
+      const { data: publicUrlData } = supabase.storage
+        .from('logos')
+        .getPublicUrl(uploadData.path)
+      logoUrl = publicUrlData.publicUrl
+    } else {
+      console.error("Upload error", uploadError)
+      return { error: 'No se pudo subir la imagen.' }
+    }
+  }
+
+  const updates: any = {
+    full_name: fullName,
+    slug: safeSlug,
+    brand_color: brandColor,
+  }
+
+  if (logoUrl) {
+    updates.logo_url = logoUrl
+  }
+
+  const { error } = await supabase
+    .from('profiles')
+    .update(updates)
+    .eq('id', user.id)
+
+  if (error) {
+    console.error(error)
+    return { error: 'Error al actualizar el perfil. Quizás este nombre de enlace ya está en uso.' }
+  }
+
+  revalidatePath('/dashboard', 'layout')
+  revalidatePath(`/${safeSlug}`)
+  
+  return { success: true }
+}
