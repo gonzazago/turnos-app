@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { format, addDays, isSameDay, addMinutes } from 'date-fns'
+import { format, addDays, isSameDay, addMinutes, getDay } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Clock, Calendar as CalendarIcon, ArrowLeft, Mail, User, CheckCircle } from 'lucide-react'
 import Link from 'next/link'

@@ -7,7 +7,7 @@
     - [x] Write unit tests for availability calculations.
 - [x] Task: Conductor - User Manual Verification 'Availability Foundation' (Protocol in workflow.md)
 
-## Phase 2: Booking Flow Implementation
+## Phase 2: Booking Flow Implementation [checkpoint: 3aa0114]
 - [x] Task: Implement the public booking page (8dd6ad5)
     - [x] Create/Update the `[slug]/[eventId]` page to show available slots.
     - [x] Implement the booking form (client-side validation).
@@ -15,7 +15,8 @@
 - [x] Task: Ensure atomicity and prevent double bookings (b130d67)
     - [x] Implement database-level checks or Supabase RPC for atomic booking.
     - [x] Write integration tests for concurrent booking attempts.
-- [ ] Task: Conductor - User Manual Verification 'Booking Flow Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Booking Flow Implementation' (Protocol in workflow.md)
+
 
 ## Phase 3: Notifications and Refinement
 - [ ] Task: Implement email notifications
