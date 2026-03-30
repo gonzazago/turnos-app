@@ -12,9 +12,9 @@
     - [x] Create/Update the `[slug]/[eventId]` page to show available slots.
     - [x] Implement the booking form (client-side validation).
     - [x] Implement Server Action for processing the booking.
-- [ ] Task: Ensure atomicity and prevent double bookings
-    - [ ] Implement database-level checks or Supabase RPC for atomic booking.
-    - [ ] Write integration tests for concurrent booking attempts.
+- [x] Task: Ensure atomicity and prevent double bookings (b130d67)
+    - [x] Implement database-level checks or Supabase RPC for atomic booking.
+    - [x] Write integration tests for concurrent booking attempts.
 - [ ] Task: Conductor - User Manual Verification 'Booking Flow Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Notifications and Refinement
