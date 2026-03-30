@@ -19,9 +19,9 @@
 
 
 ## Phase 3: Notifications and Refinement
-- [ ] Task: Implement email notifications
-    - [ ] Integrate a notification service (e.g., Resend or Supabase Edge Functions).
-    - [ ] Send confirmation email to both provider and client.
+- [x] Task: Implement email notifications (6605cae)
+    - [x] Integrate a notification service (e.g., Resend or Supabase Edge Functions).
+    - [x] Send confirmation email to both provider and client.
 - [ ] Task: Final UI/UX polish and mobile testing
     - [ ] Ensure the booking flow is seamless on mobile.
     - [ ] Add loading states and success/error feedback.
