@@ -81,6 +81,16 @@ create policy "Users can update own bookings."
   on bookings for update
   using ( auth.uid() = user_id );
 
+-- Enable btree_gist extension for exclusion constraints
+create extension if not exists btree_gist;
+
+-- Ensure no overlapping bookings for the same user
+alter table public.bookings add constraint exclude_overlapping_bookings
+exclude using gist (
+  user_id with =,
+  tstzrange(start_time, end_time) with &&
+);
+
 -- Create a table for availability
 create table public.availability (
   id uuid default uuid_generate_v4() primary key,

@@ -49,6 +49,10 @@ export async function createBooking(formData: FormData) {
 
   if (error) {
     console.error(error)
+    // Handle PostgreSQL exclusion constraint violation (23P01)
+    if (error.code === '23P01') {
+      return { error: 'Lo sentimos, este horario ya ha sido reservado. Por favor, selecciona otro.' }
+    }
     return { error: 'Ocurrió un error al procesar tu reserva. Intenta nuevamente.' }
   }
 
