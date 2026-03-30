@@ -8,10 +8,10 @@
 - [x] Task: Conductor - User Manual Verification 'Availability Foundation' (Protocol in workflow.md)
 
 ## Phase 2: Booking Flow Implementation
-- [ ] Task: Implement the public booking page
-    - [ ] Create/Update the `[slug]/[eventId]` page to show available slots.
-    - [ ] Implement the booking form (client-side validation).
-    - [ ] Implement Server Action for processing the booking.
+- [x] Task: Implement the public booking page (8dd6ad5)
+    - [x] Create/Update the `[slug]/[eventId]` page to show available slots.
+    - [x] Implement the booking form (client-side validation).
+    - [x] Implement Server Action for processing the booking.
 - [ ] Task: Ensure atomicity and prevent double bookings
     - [ ] Implement database-level checks or Supabase RPC for atomic booking.
     - [ ] Write integration tests for concurrent booking attempts.
