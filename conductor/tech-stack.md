@@ -1,0 +1,21 @@
+# Technology Stack: Turnos App
+
+## Language
+- **TypeScript:** Ensuring type safety and maintainability across the entire codebase.
+
+## Frontend
+- **Framework:** Next.js (App Router) using React 19 for modern server-side rendering and efficient client-side updates.
+- **Styling:** Tailwind CSS for rapid, utility-first styling and consistent layout management.
+- **Component Library:** Built from scratch using Tailwind and Lucide React icons for a tailored experience.
+
+## Backend & Database
+- **Supabase:** Providing a full backend-as-a-service, including:
+    - **PostgreSQL:** Reliable relational data storage.
+    - **Authentication:** Secure user sign-up and management.
+    - **Row Level Security (RLS):** For secure data access at the database level.
+    - **Storage:** For handling user-uploaded assets like logos.
+
+## Core Libraries
+- **date-fns:** For powerful and consistent date manipulation and formatting.
+- **clsx & tailwind-merge:** For managing conditional class names and preventing Tailwind class conflicts.
+- **lucide-react:** A clean and consistent set of SVG icons.
