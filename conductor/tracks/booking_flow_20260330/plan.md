@@ -1,10 +1,10 @@
 # Implementation Plan - Implement and verify the complete booking flow including availability checks
 
 ## Phase 1: Availability Foundation
-- [ ] Task: Define availability schema and logic
-    - [ ] Update `schema.sql` if necessary to include availability patterns.
-    - [ ] Implement utility functions for checking slot availability.
-    - [ ] Write unit tests for availability calculations.
+- [x] Task: Define availability schema and logic (bf3efa1)
+    - [x] Update `schema.sql` if necessary to include availability patterns.
+    - [x] Implement utility functions for checking slot availability.
+    - [x] Write unit tests for availability calculations.
 - [ ] Task: Conductor - User Manual Verification 'Availability Foundation' (Protocol in workflow.md)
 
 ## Phase 2: Booking Flow Implementation
