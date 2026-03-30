@@ -81,6 +81,29 @@ create policy "Users can update own bookings."
   on bookings for update
   using ( auth.uid() = user_id );
 
+-- Create a table for availability
+create table public.availability (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  day_of_week integer not null check (day_of_week >= 0 and day_of_week <= 6),
+  start_time time not null,
+  end_time time not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+
+  -- Ensure no overlapping availability for the same day
+  unique (user_id, day_of_week, start_time)
+);
+
+alter table public.availability enable row level security;
+
+create policy "Availability is viewable by everyone."
+  on availability for select
+  using ( true );
+
+create policy "Users can manage their own availability."
+  on availability for all
+  using ( auth.uid() = user_id )
+  with check ( auth.uid() = user_id );
 
 -- Set up Storage for Logos
 insert into storage.buckets (id, name, public) values ('logos', 'logos', true) on conflict do nothing;
