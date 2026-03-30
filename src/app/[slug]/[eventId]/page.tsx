@@ -51,6 +51,12 @@ export default async function BookingPage({ params }: { params: Promise<Params> 
     notFound()
   }
 
+  // Fetch provider's availability
+  const { data: availability } = await supabase
+    .from('availability')
+    .select('*')
+    .eq('user_id', profile.id)
+
   // Fetch upcoming booked slots for the next 14 days
   const { data: bookedData } = await supabase
     .from('bookings')
@@ -59,5 +65,10 @@ export default async function BookingPage({ params }: { params: Promise<Params> 
     .gte('end_time', startOfDay(new Date()).toISOString())
     .lt('start_time', addDays(new Date(), 15).toISOString())
 
-  return <BookingClient profile={profile} eventType={eventType} bookedSlots={bookedData || []} />
+  return <BookingClient 
+    profile={profile} 
+    eventType={eventType} 
+    bookedSlots={bookedData || []} 
+    availability={availability || []}
+  />
 }

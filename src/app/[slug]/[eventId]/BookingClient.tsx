@@ -1,13 +1,37 @@
 'use client'
 
 import { useState } from 'react'
-import { format, addDays, isSameDay, addMinutes, setHours, setMinutes, startOfDay, setSeconds, setMilliseconds } from 'date-fns'
+import { format, addDays, isSameDay, addMinutes } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Clock, Calendar as CalendarIcon, ArrowLeft, Mail, User, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { createBooking } from './actions'
+import { getAvailableSlots, Availability, Booking } from '@/utils/availability'
 
-export function BookingClient({ profile, eventType, bookedSlots = [] }: { profile: any, eventType: any, bookedSlots?: any[] }) {
+interface Profile {
+  id: string
+  full_name: string
+  slug: string
+}
+
+interface EventType {
+  id: string
+  title: string
+  duration_mins: number
+  description?: string
+}
+
+export function BookingClient({ 
+  profile, 
+  eventType, 
+  bookedSlots = [], 
+  availability = [] 
+}: { 
+  profile: Profile, 
+  eventType: EventType, 
+  bookedSlots?: Booking[],
+  availability?: Availability[]
+}) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [selectedTime, setSelectedTime] = useState<Date | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -17,36 +41,13 @@ export function BookingClient({ profile, eventType, bookedSlots = [] }: { profil
   // Generate 14 days for selection
   const days = Array.from({ length: 14 }).map((_, i) => addDays(new Date(), i))
 
-  // Generate slots for selected day (9 AM to 5 PM)
-  const generateSlots = () => {
-    const slots = []
-    const baseDate = startOfDay(selectedDate)
-    let currentSlot = setMinutes(setHours(baseDate, 9), 0)
-    const endOfDay = setMinutes(setHours(baseDate, 17), 0)
-
-    const bookedRanges = bookedSlots.map((b: any) => ({
-      start: setSeconds(setMilliseconds(new Date(b.start_time), 0), 0).getTime(),
-      end: setSeconds(setMilliseconds(new Date(b.end_time), 0), 0).getTime()
-    }))
-
-    while (currentSlot < endOfDay) {
-      const slotStart = currentSlot.getTime()
-      const slotEnd = addMinutes(currentSlot, eventType.duration_mins).getTime()
-      
-      // Overlap condition: slotStart < bookingEnd AND slotEnd > bookingStart
-      const isOverlapping = bookedRanges.some(
-        (range: any) => slotStart < range.end && slotEnd > range.start
-      )
-
-      slots.push({
-        date: new Date(currentSlot),
-        available: !isOverlapping
-      })
-      currentSlot = addMinutes(currentSlot, eventType.duration_mins)
-    }
-
-    return slots
-  }
+  // Generate slots for selected day
+  const slots = getAvailableSlots(
+    selectedDate,
+    availability,
+    bookedSlots,
+    eventType.duration_mins
+  )
 
   const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -149,20 +150,24 @@ export function BookingClient({ profile, eventType, bookedSlots = [] }: { profil
              <h4 className="font-semibold text-slate-700 mb-4">{format(selectedDate, "EEEE, d 'de' MMMM", { locale: es })}</h4>
              
              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-               {generateSlots().map(({ date, available }) => (
-                 <button
-                   key={date.toISOString()}
-                   onClick={() => available && setSelectedTime(date)}
-                   disabled={!available}
-                   className={`py-3 px-2 border font-bold rounded-xl transition-all ${
-                     available 
-                      ? 'border-blue-100 bg-blue-50/50 hover:brand-bg hover:text-white text-blue-800 brand-hover-bg' 
-                      : 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed line-through'
-                   }`}
-                 >
-                   {format(date, 'HH:mm')}
-                 </button>
-               ))}
+               {slots.length > 0 ? (
+                 slots.map((slotIso) => {
+                   const date = new Date(slotIso)
+                   return (
+                     <button
+                       key={slotIso}
+                       onClick={() => setSelectedTime(date)}
+                       className="py-3 px-2 border font-bold rounded-xl transition-all border-blue-100 bg-blue-50/50 hover:brand-bg hover:text-white text-blue-800 brand-hover-bg"
+                     >
+                       {format(date, 'HH:mm')}
+                     </button>
+                   )
+                 })
+               ) : (
+                 <p className="col-span-full text-center text-slate-400 py-8 italic">
+                   No hay horarios disponibles para este día.
+                 </p>
+               )}
              </div>
            </>
          ) : (
