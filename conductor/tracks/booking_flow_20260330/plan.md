@@ -18,11 +18,11 @@
 - [x] Task: Conductor - User Manual Verification 'Booking Flow Implementation' (Protocol in workflow.md)
 
 
-## Phase 3: Notifications and Refinement
+## Phase 3: Notifications and Refinement [checkpoint: c13ec25]
 - [x] Task: Implement email notifications (6605cae)
     - [x] Integrate a notification service (e.g., Resend or Supabase Edge Functions).
     - [x] Send confirmation email to both provider and client.
 - [x] Task: Final UI/UX polish and mobile testing (0b23c5f)
     - [x] Ensure the booking flow is seamless on mobile.
     - [x] Add loading states and success/error feedback.
-- [ ] Task: Conductor - User Manual Verification 'Notifications and Refinement' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Notifications and Refinement' (Protocol in workflow.md)
