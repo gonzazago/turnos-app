@@ -10,7 +10,7 @@
 
 ## Backend & Database
 - **Supabase:** Providing a full backend-as-a-service, including:
-    - **PostgreSQL:** Reliable relational data storage.
+    - **PostgreSQL:** Reliable relational data storage with **Exclusion Constraints** for guaranteed atomicity in bookings.
     - **Authentication:** Secure user sign-up and management.
     - **Row Level Security (RLS):** For secure data access at the database level.
     - **Storage:** For handling user-uploaded assets like logos.
@@ -19,3 +19,7 @@
 - **date-fns:** For powerful and consistent date manipulation and formatting.
 - **clsx & tailwind-merge:** For managing conditional class names and preventing Tailwind class conflicts.
 - **lucide-react:** A clean and consistent set of SVG icons.
+
+## Testing
+- **Vitest:** A fast, Next.js-compatible test runner for unit and integration tests.
+- **React Testing Library:** For testing component behavior and accessibility.
