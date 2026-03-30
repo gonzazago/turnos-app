@@ -3,6 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { areIntervalsOverlapping } from 'date-fns'
+import { sendBookingConfirmation } from '@/utils/notifications'
 
 export async function createBooking(formData: FormData) {
   const supabase = await createClient()
@@ -13,6 +14,19 @@ export async function createBooking(formData: FormData) {
   const email = formData.get('email') as string
   const startTime = formData.get('startTime') as string
   const endTime = formData.get('endTime') as string
+
+  // Fetch profile and event type info for notifications
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name, contact_email')
+    .eq('id', profileId)
+    .single()
+
+  const { data: eventType } = await supabase
+    .from('event_types')
+    .select('title')
+    .eq('id', eventId)
+    .single()
 
   // Simple availability check: verify no overlapping bookings
   const { data: existingBookings } = await supabase
@@ -54,6 +68,18 @@ export async function createBooking(formData: FormData) {
       return { error: 'Lo sentimos, este horario ya ha sido reservado. Por favor, selecciona otro.' }
     }
     return { error: 'Ocurrió un error al procesar tu reserva. Intenta nuevamente.' }
+  }
+
+  // Send confirmation emails
+  if (profile && eventType) {
+    sendBookingConfirmation({
+      booker_name: name,
+      booker_email: email,
+      provider_name: profile.full_name || 'El Proveedor',
+      provider_email: profile.contact_email || 'no-reply@ejemplo.com',
+      event_title: eventType.title,
+      start_time: startTime
+    }).catch(err => console.error('Error sending confirmation email:', err))
   }
 
   revalidatePath('/dashboard')

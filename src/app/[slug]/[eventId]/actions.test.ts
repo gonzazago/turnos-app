@@ -7,6 +7,11 @@ vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }))
 
+// Mock Notifications
+vi.mock('@/utils/notifications', () => ({
+  sendBookingConfirmation: vi.fn().mockResolvedValue({ success: true }),
+}))
+
 // Mock Supabase server client
 vi.mock('@/utils/supabase/server', () => ({
   createClient: vi.fn(),
@@ -30,6 +35,7 @@ describe('createBooking action', () => {
       from: vi.fn().mockReturnThis(),
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
+      single: vi.fn().mockReturnThis(),
       gte: vi.fn().mockReturnThis(),
       lte: vi.fn().mockReturnThis(),
       insert: vi.fn().mockResolvedValue({
@@ -41,6 +47,8 @@ describe('createBooking action', () => {
     mockSupabase.from.mockReturnThis()
     mockSupabase.select.mockReturnThis()
     mockSupabase.eq.mockReturnThis()
+    mockSupabase.single.mockResolvedValueOnce({ data: { full_name: 'Jane Smith', contact_email: 'jane@example.com' }, error: null }) // profile
+    mockSupabase.single.mockResolvedValueOnce({ data: { title: '30 Min Meeting' }, error: null }) // eventType
     mockSupabase.gte.mockReturnThis()
     mockSupabase.lte.mockResolvedValueOnce({ data: [], error: null })
     
@@ -55,12 +63,16 @@ describe('createBooking action', () => {
       from: vi.fn().mockReturnThis(),
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
+      single: vi.fn().mockReturnThis(),
       gte: vi.fn().mockReturnThis(),
       lte: vi.fn().mockResolvedValueOnce({ 
         data: [{ start_time: '2026-03-30T10:00:00Z', end_time: '2026-03-30T10:30:00Z' }], 
         error: null 
       }),
     }
+
+    mockSupabase.single.mockResolvedValueOnce({ data: { full_name: 'Jane Smith', contact_email: 'jane@example.com' }, error: null }) // profile
+    mockSupabase.single.mockResolvedValueOnce({ data: { title: '30 Min Meeting' }, error: null }) // eventType
     
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
 
@@ -73,10 +85,14 @@ describe('createBooking action', () => {
       from: vi.fn().mockReturnThis(),
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
+      single: vi.fn().mockReturnThis(),
       gte: vi.fn().mockReturnThis(),
       lte: vi.fn().mockResolvedValueOnce({ data: [], error: null }),
       insert: vi.fn().mockResolvedValue({ error: null }),
     }
+
+    mockSupabase.single.mockResolvedValueOnce({ data: { full_name: 'Jane Smith', contact_email: 'jane@example.com' }, error: null }) // profile
+    mockSupabase.single.mockResolvedValueOnce({ data: { title: '30 Min Meeting' }, error: null }) // eventType
     
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
 
@@ -89,10 +105,14 @@ describe('createBooking action', () => {
       from: vi.fn().mockReturnThis(),
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
+      single: vi.fn().mockReturnThis(),
       gte: vi.fn().mockReturnThis(),
       lte: vi.fn().mockResolvedValueOnce({ data: [], error: null }),
       insert: vi.fn().mockResolvedValue({ error: { code: '500', message: 'Internal Server Error' } }),
     }
+
+    mockSupabase.single.mockResolvedValueOnce({ data: { full_name: 'Jane Smith', contact_email: 'jane@example.com' }, error: null }) // profile
+    mockSupabase.single.mockResolvedValueOnce({ data: { title: '30 Min Meeting' }, error: null }) // eventType
     
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
 

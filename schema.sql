@@ -3,6 +3,7 @@ create table public.profiles (
   id uuid references auth.users not null,
   slug text unique,
   full_name text,
+  contact_email text,
   brand_color text default '#3b82f6',
   logo_url text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
