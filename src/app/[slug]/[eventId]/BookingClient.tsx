@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { format, addDays, isSameDay, addMinutes, getDay } from 'date-fns'
+import { format, addDays, isSameDay, addMinutes, getDay, startOfDay } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Clock, Calendar as CalendarIcon, ArrowLeft, Mail, User, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -38,8 +38,9 @@ export function BookingClient({
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Generate 14 days for selection
-  const days = Array.from({ length: 14 }).map((_, i) => addDays(new Date(), i))
+  // Generate 14 days for selection, starting from today
+  const today = startOfDay(new Date())
+  const days = Array.from({ length: 14 }).map((_, i) => addDays(today, i))
 
   // Generate slots for selected day
   const slots = getAvailableSlots(
