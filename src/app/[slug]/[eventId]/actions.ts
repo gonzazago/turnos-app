@@ -28,6 +28,23 @@ export async function createBooking(formData: FormData) {
     .eq('id', eventId)
     .single()
 
+  // NEW: Daily booking rate limit check (one booking per day per email)
+  const startTimeDate = new Date(startTime)
+  const bookingDate = new Date(startTimeDate.getFullYear(), startTimeDate.getMonth(), startTimeDate.getDate()).toISOString()
+  const nextDay = new Date(startTimeDate.getFullYear(), startTimeDate.getMonth(), startTimeDate.getDate() + 1).toISOString()
+
+  const { data: dailyBookings } = await supabase
+    .from('bookings')
+    .select('id')
+    .eq('user_id', profileId)
+    .eq('booker_email', email)
+    .gte('start_time', bookingDate)
+    .lt('start_time', nextDay)
+
+  if (dailyBookings && dailyBookings.length > 0) {
+    return { error: 'Ya tienes una reserva para este día. Solo se permite una reserva por día.' }
+  }
+
   // Simple availability check: verify no overlapping bookings
   const { data: existingBookings } = await supabase
     .from('bookings')
