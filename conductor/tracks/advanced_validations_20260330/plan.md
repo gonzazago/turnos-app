@@ -1,0 +1,29 @@
+# Implementation Plan: Advanced Validations, Config, and Payment Prep
+
+## Phase 1: Payment Preparation & Schema Updates
+- [x] Task: Update database schemas for payment prep (563dad3)
+    - [ ] Update `schema.sql` to add `requires_deposit` (boolean), `price` (numeric), and `deposit_amount` (numeric) to `event_types`.
+    - [ ] Update `schema.sql` to add a `billing_info` (JSONB) column to `bookings`.
+    - [ ] Write tests verifying the new schema structure and default values.
+- [ ] Task: Conductor - User Manual Verification 'Payment Preparation & Schema Updates' (Protocol in workflow.md)
+
+## Phase 2: Booking Rate Limiting Validation
+- [ ] Task: Implement server-side rate limiting logic
+    - [ ] Write failing tests for booking action (e.g., attempt to book twice on same day with same email).
+    - [ ] Update `src/app/[slug]/[eventId]/actions.ts` to query `bookings` and reject if the provided email address has already booked that specific day.
+    - [ ] Update UI to handle the rate-limit error gracefully.
+- [ ] Task: Conductor - User Manual Verification 'Booking Rate Limiting Validation' (Protocol in workflow.md)
+
+## Phase 3: Owner Configuration UI
+- [ ] Task: Dashboard UI for Availability Configuration
+    - [ ] Write failing tests for availability management UI components.
+    - [ ] Create/Update the dashboard settings page to allow owners to set global and per-day working hours.
+    - [ ] Implement server actions to save these settings to the `availability` table.
+- [ ] Task: Conductor - User Manual Verification 'Owner Configuration UI' (Protocol in workflow.md)
+
+## Phase 4: Booking Details Modal
+- [ ] Task: Implement Booking Details Modal
+    - [ ] Write tests for the modal component rendering correctly with booking data.
+    - [ ] Create a modal component in the dashboard calendar view.
+    - [ ] Wire the modal to open on appointment click, displaying booker details, time, and billing info (if applicable).
+- [ ] Task: Conductor - User Manual Verification 'Booking Details Modal' (Protocol in workflow.md)
