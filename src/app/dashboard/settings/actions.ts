@@ -69,3 +69,47 @@ export async function updateProfile(formData: FormData) {
   
   return { success: true }
 }
+
+export async function updateAvailability(availability: { day_of_week: number, start_time: string, end_time: string }[]) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+    return { error: 'No autorizado' }
+  }
+
+  // Delete existing availability for the user
+  const { error: deleteError } = await supabase
+    .from('availability')
+    .delete()
+    .eq('user_id', user.id)
+
+  if (deleteError) {
+    console.error(deleteError)
+    return { error: 'No se pudo actualizar la disponibilidad.' }
+  }
+
+  if (availability.length === 0) {
+    revalidatePath('/dashboard/settings')
+    return { success: true }
+  }
+
+  // Insert new availability
+  const { error: insertError } = await supabase
+    .from('availability')
+    .insert(
+      availability.map(a => ({
+        ...a,
+        user_id: user.id
+      }))
+    )
+
+  if (insertError) {
+    console.error(insertError)
+    return { error: 'No se pudo actualizar la disponibilidad.' }
+  }
+
+  revalidatePath('/dashboard/settings')
+  return { success: true }
+}
