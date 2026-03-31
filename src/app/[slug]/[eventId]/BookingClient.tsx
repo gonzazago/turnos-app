@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { format, addDays, isSameDay, addMinutes, getDay, startOfDay } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Clock, Calendar as CalendarIcon, ArrowLeft, Mail, User, CheckCircle } from 'lucide-react'
+import { Clock, Calendar as CalendarIcon, ArrowLeft, Mail, User, CheckCircle, CreditCard } from 'lucide-react'
 import Link from 'next/link'
 import { createBooking } from './actions'
 import { getAvailableSlots, Availability, Booking } from '@/utils/availability'
@@ -19,6 +19,9 @@ interface EventType {
   title: string
   duration_mins: number
   description?: string
+  requires_deposit: boolean
+  total_price: number
+  deposit_percentage: number
 }
 
 export function BookingClient({ 
@@ -37,6 +40,10 @@ export function BookingClient({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const depositAmount = eventType.requires_deposit 
+    ? ((eventType.total_price * eventType.deposit_percentage) / 100).toFixed(2)
+    : null
 
   // Generate 14 days for selection, starting from today
   const today = startOfDay(new Date())
@@ -108,6 +115,12 @@ export function BookingClient({
             <Clock className="w-5 h-5 text-slate-400" />
             <span>{eventType.duration_mins} minutos</span>
           </div>
+          {eventType.requires_deposit && (
+            <div className="flex items-center gap-3 text-blue-600">
+              <CreditCard className="w-5 h-5" />
+              <span>Requiere seña de ${depositAmount}</span>
+            </div>
+          )}
           {eventType.description && (
              <p className="text-slate-500 text-sm mt-4 leading-relaxed font-normal">{eventType.description}</p>
           )}
@@ -150,6 +163,16 @@ export function BookingClient({
 
              <h4 className="font-semibold text-slate-700 mb-4">{format(selectedDate, "EEEE, d 'de' MMMM", { locale: es })}</h4>
              
+             {eventType.requires_deposit && (
+               <div className="mb-6 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
+                 <CreditCard className="w-5 h-5 text-blue-600 mt-0.5" />
+                 <div>
+                   <p className="text-sm font-bold text-blue-900">Esta reserva requiere una seña</p>
+                   <p className="text-xs text-blue-700 mt-0.5">Deberás abonar ${depositAmount} para confirmar tu turno. El resto (${(eventType.total_price - parseFloat(depositAmount!)).toFixed(2)}) se abona al momento de la cita.</p>
+                 </div>
+               </div>
+             )}
+
              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                {slots.length > 0 ? (
                  slots.map((slotIso) => {
@@ -188,6 +211,25 @@ export function BookingClient({
                 <CalendarIcon className="w-5 h-5 brand-text" />
                 <span>{format(selectedTime, "EEEE, d 'de' MMMM, HH:mm", { locale: es })}</span>
              </div>
+
+             {eventType.requires_deposit && (
+               <div className="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+                 <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Resumen de Pago</h4>
+                 <div className="flex flex-col gap-3">
+                   <div className="flex justify-between text-slate-600">
+                     <span>Precio Total</span>
+                     <span>${Number(eventType.total_price).toFixed(2)}</span>
+                   </div>
+                   <div className="flex justify-between items-center py-3 border-t border-slate-200 text-blue-600 font-bold">
+                     <div className="flex flex-col">
+                       <span>Abonar ahora (Seña {eventType.deposit_percentage}%)</span>
+                       <span className="text-[10px] uppercase text-blue-400 font-bold tracking-tight">Vía Mercado Pago</span>
+                     </div>
+                     <span className="text-xl">${depositAmount}</span>
+                   </div>
+                 </div>
+               </div>
+             )}
 
              {error && (
                <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 mb-6 font-medium text-sm">
