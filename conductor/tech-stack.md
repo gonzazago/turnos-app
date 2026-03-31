@@ -10,7 +10,7 @@
 
 ## Backend & Database
 - **Supabase:** Providing a full backend-as-a-service, including:
-    - **PostgreSQL:** Reliable relational data storage with **Exclusion Constraints** for guaranteed atomicity in bookings.
+    - **PostgreSQL:** Reliable relational data storage with **Exclusion Constraints** for atomicity and **JSONB** for flexible billing information.
     - **Authentication:** Secure user sign-up and management.
     - **Row Level Security (RLS):** For secure data access at the database level.
     - **Storage:** For handling user-uploaded assets like logos.

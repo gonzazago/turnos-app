@@ -10,9 +10,11 @@ A scheduling application ("turnos-app") built with Next.js and Supabase, allowin
 
 ## Core Features
 - **Profile & Event Management:** Users can create public profiles and define different event types (duration, description).
-- **Advanced Scheduling:** Tools for providers to manage complex availability and multiple appointment types.
+- **Advanced Scheduling:** Tools for providers to manage complex, per-event availability schedules.
+- **Booking Controls:** Rate limiting (one booking per day per email) to prevent abuse.
 - **Booking Flow:** A streamlined, mobile-first experience for clients to find and book available slots.
 - **Calendar Sync:** Integration with external calendars (Google, Outlook) to prevent double bookings.
+
 - **Notifications:** Automated email/SMS reminders for upcoming appointments to reduce no-shows.
 - **Custom Branding:** Providers can customize their booking pages with colors and logos.
 
