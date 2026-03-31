@@ -21,9 +21,9 @@
     - [ ] Implement server actions to save these settings to the `availability` table.
 - [x] Task: Conductor - User Manual Verification 'Owner Configuration UI' (Protocol in workflow.md) (12dba73)
 
-## Phase 4: Booking Details Modal
+## Phase 4: Booking Details Modal [checkpoint: 631fbc2]
 - [x] Task: Implement Booking Details Modal (8b67208)
     - [ ] Write tests for the modal component rendering correctly with booking data.
     - [ ] Create a modal component in the dashboard calendar view.
     - [ ] Wire the modal to open on appointment click, displaying booker details, time, and billing info (if applicable).
-- [ ] Task: Conductor - User Manual Verification 'Booking Details Modal' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Booking Details Modal' (Protocol in workflow.md) (8b67208)
