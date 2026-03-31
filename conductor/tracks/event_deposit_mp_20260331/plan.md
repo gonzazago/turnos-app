@@ -14,7 +14,7 @@
 - [x] Task: Conductor - User Manual Verification 'Database & Event Configuration' (Protocol in workflow.md) (99af390)
 
 ## Phase 2: Booking Flow Updates
-- [ ] Task: Update `bookings` schema for payment tracking
+- [x] Task: Update `bookings` schema for payment tracking (5c59084)
     - [ ] Add `payment_status` (enum: pending, paid, failed) and `mercado_pago_preference_id` (text).
 - [ ] Task: Display deposit info during booking
     - [ ] Update `BookingClient.tsx` to show the "Requires Deposit" badge in slot selection.
