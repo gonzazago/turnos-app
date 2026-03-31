@@ -8,7 +8,7 @@
 - [x] Task: Conductor - User Manual Verification 'Payment Preparation & Schema Updates' (Protocol in workflow.md) (66173ef)
 
 ## Phase 2: Booking Rate Limiting Validation
-- [ ] Task: Implement server-side rate limiting logic
+- [x] Task: Implement server-side rate limiting logic (7ae3a50)
     - [ ] Write failing tests for booking action (e.g., attempt to book twice on same day with same email).
     - [ ] Update `src/app/[slug]/[eventId]/actions.ts` to query `bookings` and reject if the provided email address has already booked that specific day.
     - [ ] Update UI to handle the rate-limit error gracefully.
