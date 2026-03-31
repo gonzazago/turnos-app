@@ -19,7 +19,7 @@
 - [x] Task: Display deposit info during booking (8138298)
     - [ ] Update `BookingClient.tsx` to show the "Requires Deposit" badge in slot selection.
     - [ ] Update the confirmation form to display the payment breakdown (Total vs Deposit).
-- [ ] Task: Update `createBooking` action
+- [x] Task: Update `createBooking` action (f842707)
     - [ ] Create booking with `status: pending_payment`.
     - [ ] Return deposit requirement flag and the **owner's public key** to the client.
 - [ ] Task: Conductor - User Manual Verification 'Booking Flow Updates' (Protocol in workflow.md)
