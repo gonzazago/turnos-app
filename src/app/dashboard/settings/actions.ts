@@ -16,6 +16,8 @@ export async function updateProfile(formData: FormData) {
   const slug = formData.get('slug') as string
   const brandColor = formData.get('brandColor') as string
   const logoFile = formData.get('logo') as File | null
+  const mpAccessToken = formData.get('mpAccessToken') as string
+  const mpPublicKey = formData.get('mpPublicKey') as string
 
   // Process slug to be url friendly
   const safeSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-')
@@ -48,6 +50,8 @@ export async function updateProfile(formData: FormData) {
     full_name: fullName,
     slug: safeSlug,
     brand_color: brandColor,
+    mp_access_token: mpAccessToken,
+    mp_public_key: mpPublicKey,
   }
 
   if (logoUrl) {

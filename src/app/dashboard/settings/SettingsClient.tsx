@@ -72,7 +72,7 @@ export function SettingsForm({ profile }: { profile: any }) {
             name="fullName" 
             defaultValue={profile.full_name} 
             required 
-            className="border border-slate-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+            className="border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           />
         </div>
 
@@ -88,7 +88,7 @@ export function SettingsForm({ profile }: { profile: any }) {
               name="slug" 
               defaultValue={profile.slug} 
               required 
-              className="border border-slate-300 rounded-r-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all w-full flex-1"
+              className="border border-slate-300 rounded-r-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all w-full flex-1"
             />
           </div>
         </div>
@@ -137,6 +137,44 @@ export function SettingsForm({ profile }: { profile: any }) {
               </button>
               <p className="text-xs text-slate-500 mt-2">Formatos recomendados: JPG, PNG. Máx 2MB.</p>
             </div>
+          </div>
+        </div>
+
+        <div className="pt-6 mt-6 border-t border-slate-100">
+          <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.21.22/mercadopago/logo__large.png" alt="Mercado Pago" className="h-5" />
+            Configuración de Pagos
+          </h3>
+          <p className="text-slate-500 text-sm mb-6">Ingresa tus credenciales de Mercado Pago para poder cobrar señas por tus eventos.</p>
+          
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <label htmlFor="mpAccessToken" className="text-sm font-semibold text-slate-700">Access Token</label>
+              <input 
+                type="password" 
+                id="mpAccessToken" 
+                name="mpAccessToken" 
+                defaultValue={profile.mp_access_token} 
+                placeholder="APP_USR-..."
+                className="border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="mpPublicKey" className="text-sm font-semibold text-slate-700">Public Key</label>
+              <input 
+                type="text" 
+                id="mpPublicKey" 
+                name="mpPublicKey" 
+                defaultValue={profile.mp_public_key} 
+                placeholder="APP_USR-..."
+                className="border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              />
+            </div>
+            
+            <p className="text-xs text-slate-400">
+              Puedes encontrar tus credenciales en el <a href="https://www.mercadopago.com.ar/developers/panel/credentials" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Panel de Desarrolladores de Mercado Pago</a>.
+            </p>
           </div>
         </div>
       </div>
