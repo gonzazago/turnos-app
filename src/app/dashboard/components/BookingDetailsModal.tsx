@@ -85,9 +85,9 @@ export function BookingDetailsModal({
                 <p className="text-sm font-bold text-slate-900 uppercase tracking-wide">Información de Pago</p>
                 {booking.event_types?.requires_deposit && (
                   <p className="text-slate-600 mt-1 text-sm">
-                    Requiere depósito: <span className="font-bold text-slate-900">${booking.event_types.deposit_amount}</span> 
+                    Requiere depósito ({booking.event_types.deposit_percentage}%): <span className="font-bold text-slate-900">${((booking.event_types.total_price * booking.event_types.deposit_percentage) / 100).toFixed(2)}</span> 
                     <span className="text-slate-400 mx-2">/</span> 
-                    Total: <span className="font-bold text-slate-900">${booking.event_types.price}</span>
+                    Total: <span className="font-bold text-slate-900">${booking.event_types.total_price}</span>
                   </p>
                 )}
                 {booking.billing_info && Object.keys(booking.billing_info).length > 0 && (

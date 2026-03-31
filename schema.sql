@@ -35,8 +35,8 @@ create table public.event_types (
   duration_mins integer not null default 30,
   description text,
   requires_deposit boolean default false not null,
-  price numeric(10,2) default 0.00 not null,
-  deposit_amount numeric(10,2) default 0.00 not null,
+  total_price numeric(10,2) default 0.00 not null,
+  deposit_percentage numeric(5,2) default 0.00 not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
