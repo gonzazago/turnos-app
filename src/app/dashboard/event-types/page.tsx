@@ -16,9 +16,21 @@ export default async function EventTypesPage() {
 
   const { data: eventTypes } = await supabase
     .from('event_types')
-    .select('*')
+    .select('*, availability(*)')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
+
+  const DAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+
+  const getDaysSummary = (availability: any[]) => {
+    if (!availability || availability.length === 0) return 'Sin horario definido'
+    
+    // Sort by day_of_week
+    const sorted = [...availability].sort((a, b) => a.day_of_week - b.day_of_week)
+    
+    // Map to labels
+    return sorted.map(a => DAYS[a.day_of_week]).join(', ')
+  }
 
   const { data: profile } = await supabase
     .from('profiles')
@@ -61,9 +73,16 @@ export default async function EventTypesPage() {
                 </form>
               </div>
               
-              <div className="flex items-center gap-2 text-slate-500 mb-4 font-medium">
-                <Clock className="w-4 h-4" />
-                <span>{event.duration_mins} minutos</span>
+              <div className="flex flex-col gap-2 mb-6">
+                <div className="flex items-center gap-2 text-slate-500 font-medium">
+                  <Clock className="w-4 h-4" />
+                  <span>{event.duration_mins} minutos</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-400 text-xs font-semibold uppercase tracking-wider">
+                  <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
+                    {getDaysSummary(event.availability)}
+                  </span>
+                </div>
               </div>
               
               {event.description && (
