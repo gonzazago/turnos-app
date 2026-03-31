@@ -65,14 +65,14 @@ export function AvailabilitySettings({
                 type="time" 
                 value={day.start_time} 
                 onChange={(e) => updateTime(day.day_of_week, 'start_time', e.target.value)}
-                className="px-2 py-1 border border-slate-200 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none"
+                className="px-2 py-1 border border-slate-200 rounded text-slate-900 text-xs focus:ring-1 focus:ring-blue-500 outline-none"
               />
               <span className="text-slate-400 text-xs">—</span>
               <input 
                 type="time" 
                 value={day.end_time} 
                 onChange={(e) => updateTime(day.day_of_week, 'end_time', e.target.value)}
-                className="px-2 py-1 border border-slate-200 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none"
+                className="px-2 py-1 border border-slate-200 rounded text-slate-900 text-xs focus:ring-1 focus:ring-blue-500 outline-none"
               />
             </div>
           ) : (

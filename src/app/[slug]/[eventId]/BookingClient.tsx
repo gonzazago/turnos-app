@@ -202,7 +202,7 @@ export function BookingClient({
                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                      <User className="h-5 w-5 text-slate-400" />
                    </div>
-                   <input type="text" id="name" name="name" required className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl focus:brand-ring focus:ring-2 focus:outline-none transition-shadow" placeholder="Ej. Ana Gómez" />
+                   <input type="text" id="name" name="name" required className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 focus:brand-ring focus:ring-2 focus:outline-none transition-shadow" placeholder="Ej. Ana Gómez" />
                  </div>
                </div>
 
@@ -212,7 +212,7 @@ export function BookingClient({
                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                      <Mail className="h-5 w-5 text-slate-400" />
                    </div>
-                   <input type="email" id="email" name="email" required className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl focus:brand-ring focus:ring-2 focus:outline-none transition-shadow" placeholder="ana@ejemplo.com" />
+                   <input type="email" id="email" name="email" required className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 focus:brand-ring focus:ring-2 focus:outline-none transition-shadow" placeholder="ana@ejemplo.com" />
                  </div>
                </div>
              </div>

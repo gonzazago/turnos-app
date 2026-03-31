@@ -118,7 +118,7 @@ export function AvailabilityForm({ initialAvailability }: { initialAvailability:
                     type="time" 
                     value={day.start_time} 
                     onChange={(e) => updateTime(day.day_of_week, 'start_time', e.target.value)}
-                    className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
                 <span className="text-slate-400">—</span>
@@ -128,7 +128,7 @@ export function AvailabilityForm({ initialAvailability }: { initialAvailability:
                     type="time" 
                     value={day.end_time} 
                     onChange={(e) => updateTime(day.day_of_week, 'end_time', e.target.value)}
-                    className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
               </div>

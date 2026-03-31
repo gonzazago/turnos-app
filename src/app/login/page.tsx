@@ -28,14 +28,14 @@ export default async function LoginPage(props: { searchParams: Promise<{ error?:
            <form className="flex flex-col gap-5">
              <div className="flex flex-col gap-2">
                <label htmlFor="email" className="text-sm font-medium text-slate-300">Correo Electrónico</label>
-               <input id="email" name="email" type="email" required className="bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-slate-600" placeholder="tunombre@ejemplo.com" />
+               <input id="email" name="email" type="email" required className="bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-slate-600" placeholder="tunombre@ejemplo.com" />
              </div>
              
              <div className="flex flex-col gap-2">
                <div className="flex items-center justify-between">
                  <label htmlFor="password" className="text-sm font-medium text-slate-300">Contraseña</label>
                </div>
-               <input id="password" name="password" type="password" required className="bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-slate-600" placeholder="••••••••" />
+               <input id="password" name="password" type="password" required className="bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-slate-600" placeholder="••••••••" />
              </div>
              
              <button formAction={login} className="mt-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl px-4 py-3 transition-all hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] active:scale-[0.98]">
