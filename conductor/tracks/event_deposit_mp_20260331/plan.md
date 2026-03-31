@@ -3,7 +3,7 @@
 ## Phase 1: Database & Event Configuration
 - [x] Task: Update `profiles` schema for user credentials (423263c)
     - [ ] Update `schema.sql` to include `mp_access_token` (text) and `mp_public_key` (text) in `profiles`.
-- [ ] Task: Update `event_types` schema for deposit settings
+- [x] Task: Update `event_types` schema for deposit settings (87d1e42)
     - [ ] Update `schema.sql` to include `requires_deposit` (bool), `total_price` (numeric), and `deposit_percentage` (numeric).
 - [ ] Task: Update User Settings UI
     - [ ] Add fields for `MP_ACCESS_TOKEN` and `MP_PUBLIC_KEY` in the Settings page.
