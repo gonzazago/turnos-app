@@ -8,7 +8,7 @@
 - [x] Task: Update User Settings UI (0c8525b)
     - [ ] Add fields for `MP_ACCESS_TOKEN` and `MP_PUBLIC_KEY` in the Settings page.
     - [ ] Update `updateProfile` server action to handle these new fields.
-- [ ] Task: Update Event Creation/Edit UI
+- [x] Task: Update Event Creation/Edit UI (899cc6b)
     - [ ] Add "Require Deposit" toggle to `NewEventForm.tsx`.
     - [ ] Implement conditional fields for Price and Percentage.
 - [ ] Task: Conductor - User Manual Verification 'Database & Event Configuration' (Protocol in workflow.md)
