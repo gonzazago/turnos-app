@@ -69,6 +69,8 @@ create table public.bookings (
   start_time timestamp with time zone not null,
   end_time timestamp with time zone not null,
   status text default 'confirmed' not null,
+  payment_status text default 'pending' not null,
+  mercado_pago_preference_id text,
   billing_info jsonb default '{}'::jsonb not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
