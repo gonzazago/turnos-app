@@ -1,7 +1,15 @@
 import { format, parseISO, isSameDay } from 'date-fns'
 import { es } from 'date-fns/locale'
 
-export function DayView({ currentDate, bookings }: { currentDate: Date, bookings: any[] }) {
+export function DayView({ 
+  currentDate, 
+  bookings, 
+  onBookingClick 
+}: { 
+  currentDate: Date, 
+  bookings: any[],
+  onBookingClick: (booking: any) => void
+}) {
   const hours = Array.from({ length: 13 }).map((_, i) => i + 8)
 
   const getStyle = (startISO: string, durationMins: number) => {
@@ -53,6 +61,7 @@ export function DayView({ currentDate, bookings }: { currentDate: Date, bookings
               {dayBookings.map(b => (
                 <div 
                   key={b.id} 
+                  onClick={() => onBookingClick(b)}
                   className="absolute inset-x-0 rounded-xl bg-blue-500 text-white p-3 text-sm font-semibold overflow-hidden shadow-sm hover:shadow-md hover:scale-[1.01] transition-all cursor-pointer border-l-4 border-blue-700"
                   style={getStyle(b.start_time, b.event_types?.duration_mins || 30)}
                 >

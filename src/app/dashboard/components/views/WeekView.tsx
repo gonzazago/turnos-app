@@ -1,7 +1,15 @@
 import { startOfWeek, endOfWeek, eachDayOfInterval, format, parseISO, isSameDay } from 'date-fns'
 import { es } from 'date-fns/locale'
 
-export function WeekView({ currentDate, bookings }: { currentDate: Date, bookings: any[] }) {
+export function WeekView({ 
+  currentDate, 
+  bookings, 
+  onBookingClick 
+}: { 
+  currentDate: Date, 
+  bookings: any[],
+  onBookingClick: (booking: any) => void
+}) {
   const startDate = startOfWeek(currentDate, { weekStartsOn: 1 })
   const endDate = endOfWeek(currentDate, { weekStartsOn: 1 })
   const days = eachDayOfInterval({ start: startDate, end: endDate })
@@ -68,6 +76,7 @@ export function WeekView({ currentDate, bookings }: { currentDate: Date, booking
                     {dayBookings.map(b => (
                       <div 
                         key={b.id} 
+                        onClick={() => onBookingClick(b)}
                         className="absolute inset-x-[2px] rounded border border-blue-600 bg-blue-500 text-white px-2 py-1 text-xs overflow-hidden shadow-sm hover:z-20 hover:scale-[1.02] hover:shadow-md transition-all cursor-pointer"
                         style={getStyle(b.start_time, b.event_types?.duration_mins || 30)}
                       >

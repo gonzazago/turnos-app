@@ -1,7 +1,15 @@
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, format, isSameMonth, isSameDay, parseISO } from 'date-fns'
 import { es } from 'date-fns/locale'
 
-export function MonthView({ currentDate, bookings }: { currentDate: Date, bookings: any[] }) {
+export function MonthView({ 
+  currentDate, 
+  bookings, 
+  onBookingClick 
+}: { 
+  currentDate: Date, 
+  bookings: any[],
+  onBookingClick: (booking: any) => void
+}) {
   const monthStart = startOfMonth(currentDate)
   const monthEnd = endOfMonth(monthStart)
   const startDate = startOfWeek(monthStart, { weekStartsOn: 1 })
@@ -31,7 +39,12 @@ export function MonthView({ currentDate, bookings }: { currentDate: Date, bookin
               </div>
               <div className="mt-1 flex flex-col gap-1 overflow-y-auto max-h-[100px] no-scrollbar px-1">
                 {dayBookings.map(b => (
-                  <div key={b.id} className="text-xs truncate px-2 py-1 rounded bg-blue-100 text-blue-800 font-semibold cursor-pointer border border-blue-200/50 hover:bg-blue-200 transition-colors shadow-sm" title={`${b.event_types?.title} - ${b.booker_name}`}>
+                  <div 
+                    key={b.id} 
+                    onClick={() => onBookingClick(b)}
+                    className="text-xs truncate px-2 py-1 rounded bg-blue-100 text-blue-800 font-semibold cursor-pointer border border-blue-200/50 hover:bg-blue-200 transition-colors shadow-sm" 
+                    title={`${b.event_types?.title} - ${b.booker_name}`}
+                  >
                     {format(parseISO(b.start_time), 'HH:mm')} {b.event_types?.title}
                   </div>
                 ))}

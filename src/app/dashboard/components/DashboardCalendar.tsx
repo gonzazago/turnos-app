@@ -7,12 +7,14 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { MonthView } from './views/MonthView'
 import { WeekView } from './views/WeekView'
 import { DayView } from './views/DayView'
+import { BookingDetailsModal } from './BookingDetailsModal'
 
 export type ViewType = 'month' | 'week' | 'day'
 
 export function DashboardCalendar({ bookings }: { bookings: any[] }) {
   const [view, setView] = useState<ViewType>('month')
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
+  const [selectedBooking, setSelectedBooking] = useState<any | null>(null)
 
   const navigatePrev = () => {
     if (view === 'month') setCurrentDate(subMonths(currentDate, 1))
@@ -72,10 +74,18 @@ export function DashboardCalendar({ bookings }: { bookings: any[] }) {
 
       {/* Calendar Body */}
       <div className="flex-1 overflow-auto bg-slate-50/50 relative">
-         {view === 'month' && <MonthView currentDate={currentDate} bookings={bookings} />}
-         {view === 'week' && <WeekView currentDate={currentDate} bookings={bookings} />}
-         {view === 'day' && <DayView currentDate={currentDate} bookings={bookings} />}
+         {view === 'month' && <MonthView currentDate={currentDate} bookings={bookings} onBookingClick={setSelectedBooking} />}
+         {view === 'week' && <WeekView currentDate={currentDate} bookings={bookings} onBookingClick={setSelectedBooking} />}
+         {view === 'day' && <DayView currentDate={currentDate} bookings={bookings} onBookingClick={setSelectedBooking} />}
       </div>
+
+      {/* Modal */}
+      {selectedBooking && (
+        <BookingDetailsModal 
+          booking={selectedBooking} 
+          onClose={() => setSelectedBooking(null)} 
+        />
+      )}
     </div>
   )
 }
