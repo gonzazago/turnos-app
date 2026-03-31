@@ -1,0 +1,8 @@
+{
+  "track_id": "event_deposit_mp_20260331",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-03-31T12:00:00Z",
+  "updated_at": "2026-03-31T12:00:00Z",
+  "description": "Implementar en la creacion de evento, la configuracion si el evento requiere o no seña y configurar el monto y al momento de crear la reserva mostrar que la reserva requiere seña y al momento de confirmar dejar la integracion con Mercado pago"
+}
