@@ -1,14 +1,16 @@
 # Implementation Plan: Event Deposit and Mercado Pago Integration
 
 ## Phase 1: Database & Event Configuration
+- [ ] Task: Update `profiles` schema for user credentials
+    - [ ] Update `schema.sql` to include `mp_access_token` (text) and `mp_public_key` (text) in `profiles`.
 - [ ] Task: Update `event_types` schema for deposit settings
     - [ ] Update `schema.sql` to include `requires_deposit` (bool), `total_price` (numeric), and `deposit_percentage` (numeric).
-    - [ ] Update existing event types if necessary.
+- [ ] Task: Update User Settings UI
+    - [ ] Add fields for `MP_ACCESS_TOKEN` and `MP_PUBLIC_KEY` in the Settings page.
+    - [ ] Update `updateProfile` server action to handle these new fields.
 - [ ] Task: Update Event Creation/Edit UI
     - [ ] Add "Require Deposit" toggle to `NewEventForm.tsx`.
     - [ ] Implement conditional fields for Price and Percentage.
-    - [ ] Add real-time calculation of the deposit amount in the UI.
-- [ ] Task: Update server action `createEventType` to handle new fields.
 - [ ] Task: Conductor - User Manual Verification 'Database & Event Configuration' (Protocol in workflow.md)
 
 ## Phase 2: Booking Flow Updates
@@ -19,17 +21,16 @@
     - [ ] Update the confirmation form to display the payment breakdown (Total vs Deposit).
 - [ ] Task: Update `createBooking` action
     - [ ] Create booking with `status: pending_payment`.
-    - [ ] Return deposit requirement flag to the client.
+    - [ ] Return deposit requirement flag and the **owner's public key** to the client.
 - [ ] Task: Conductor - User Manual Verification 'Booking Flow Updates' (Protocol in workflow.md)
 
 ## Phase 3: Mercado Pago Integration
-- [ ] Task: Set up Mercado Pago SDK and Environment
-    - [ ] Create a utility for Mercado Pago configuration.
-    - [ ] Set up `.env` with `MP_ACCESS_TOKEN` and `MP_PUBLIC_KEY`.
+- [ ] Task: Set up Mercado Pago SDK Utility
+    - [ ] Create a utility that initializes Mercado Pago using a dynamic Access Token (fetched from the profile).
 - [ ] Task: Implement Preference Creation
-    - [ ] Create a server action to generate a Mercado Pago Preference for a booking.
+    - [ ] Create a server action to generate a Mercado Pago Preference for a booking, using the owner's token.
 - [ ] Task: Integrate Checkout in Frontend
-    - [ ] Use Mercado Pago Brick or Redirect to initiate payment after booking creation.
+    - [ ] Use Mercado Pago Brick or Redirect to initiate payment after booking creation, using the owner's public key.
 - [ ] Task: Conductor - User Manual Verification 'Mercado Pago Integration' (Protocol in workflow.md)
 
 ## Phase 4: Payment Confirmation & Webhooks
