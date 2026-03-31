@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createEventType } from './actions'
 import { AvailabilitySettings, AvailabilityDay } from '../components/AvailabilitySettings'
+import { CreditCard, Percent, DollarSign } from 'lucide-react'
 
 const DEFAULT_SCHEDULE: AvailabilityDay[] = [
   { day_of_week: 1, enabled: true, start_time: '09:00', end_time: '17:00' },
@@ -19,6 +20,12 @@ export function NewEventForm() {
   const [error, setError] = useState<string | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [schedule, setSchedule] = useState<AvailabilityDay[]>(DEFAULT_SCHEDULE)
+
+  const [requiresDeposit, setRequiresDeposit] = useState(false)
+  const [totalPrice, setTotalPrice] = useState('0')
+  const [depositPercentage, setDepositPercentage] = useState('20')
+
+  const depositAmount = (parseFloat(totalPrice || '0') * parseFloat(depositPercentage || '0') / 100).toFixed(2)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -41,6 +48,9 @@ export function NewEventForm() {
       } else {
         setIsOpen(false)
         setSchedule(DEFAULT_SCHEDULE)
+        setRequiresDeposit(false)
+        setTotalPrice('0')
+        setDepositPercentage('20')
       }
     } catch (err) {
       setError('Ocurrió un error.')
@@ -81,7 +91,7 @@ export function NewEventForm() {
             name="title" 
             required 
             placeholder="ej. Reunión de 30 mins"
-            className="border border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+            className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           />
         </div>
         
@@ -95,7 +105,7 @@ export function NewEventForm() {
             required 
             min="5"
             step="5"
-            className="border border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+            className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           />
         </div>
 
@@ -106,11 +116,76 @@ export function NewEventForm() {
             name="description" 
             rows={3}
             placeholder="Detalles sobre qué se hablará en esta reunión."
-            className="border border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+            className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
           ></textarea>
         </div>
 
         <AvailabilitySettings schedule={schedule} setSchedule={setSchedule} />
+
+        <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 mt-4">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-blue-600" />
+              <h4 className="font-bold text-slate-900">Configuración de Seña</h4>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                name="requiresDeposit"
+                checked={requiresDeposit}
+                onChange={(e) => setRequiresDeposit(e.target.checked)}
+                className="sr-only peer" 
+              />
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          {requiresDeposit && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="totalPrice" className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+                  <DollarSign className="w-4 h-4 text-slate-400" />
+                  Precio Total
+                </label>
+                <input 
+                  type="number" 
+                  id="totalPrice" 
+                  name="totalPrice" 
+                  value={totalPrice}
+                  onChange={(e) => setTotalPrice(e.target.value)}
+                  required={requiresDeposit}
+                  min="0"
+                  step="0.01"
+                  className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="depositPercentage" className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+                  <Percent className="w-4 h-4 text-slate-400" />
+                  Porcentaje de Seña
+                </label>
+                <input 
+                  type="number" 
+                  id="depositPercentage" 
+                  name="depositPercentage" 
+                  value={depositPercentage}
+                  onChange={(e) => setDepositPercentage(e.target.value)}
+                  required={requiresDeposit}
+                  min="1"
+                  max="100"
+                  className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                />
+              </div>
+
+              <div className="sm:col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <p className="text-sm text-blue-800 font-medium">
+                  Los clientes deberán pagar <span className="font-bold">${depositAmount}</span> para confirmar la reserva.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="flex gap-3 justify-end mt-2">
           <button 

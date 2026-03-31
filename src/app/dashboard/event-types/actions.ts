@@ -18,6 +18,9 @@ export async function createEventType(
   const title = formData.get('title') as string
   const duration_mins = parseInt(formData.get('duration_mins') as string)
   const description = formData.get('description') as string
+  const requires_deposit = formData.get('requiresDeposit') === 'on'
+  const total_price = parseFloat(formData.get('totalPrice') as string || '0')
+  const deposit_percentage = parseFloat(formData.get('depositPercentage') as string || '0')
 
   const { data: eventType, error } = await supabase
     .from('event_types')
@@ -25,7 +28,10 @@ export async function createEventType(
       user_id: user.id,
       title,
       duration_mins,
-      description
+      description,
+      requires_deposit,
+      total_price,
+      deposit_percentage
     })
     .select()
     .single()
