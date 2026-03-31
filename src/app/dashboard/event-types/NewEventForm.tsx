@@ -2,11 +2,23 @@
 
 import { useState } from 'react'
 import { createEventType } from './actions'
+import { AvailabilitySettings, AvailabilityDay } from '../components/AvailabilitySettings'
+
+const DEFAULT_SCHEDULE: AvailabilityDay[] = [
+  { day_of_week: 1, enabled: true, start_time: '09:00', end_time: '17:00' },
+  { day_of_week: 2, enabled: true, start_time: '09:00', end_time: '17:00' },
+  { day_of_week: 3, enabled: true, start_time: '09:00', end_time: '17:00' },
+  { day_of_week: 4, enabled: true, start_time: '09:00', end_time: '17:00' },
+  { day_of_week: 5, enabled: true, start_time: '09:00', end_time: '17:00' },
+  { day_of_week: 6, enabled: false, start_time: '09:00', end_time: '17:00' },
+  { day_of_week: 0, enabled: false, start_time: '09:00', end_time: '17:00' },
+]
 
 export function NewEventForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [schedule, setSchedule] = useState<AvailabilityDay[]>(DEFAULT_SCHEDULE)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -14,13 +26,21 @@ export function NewEventForm() {
     setError(null)
     
     const formData = new FormData(e.currentTarget)
+    const availability = schedule
+      .filter(d => d.enabled)
+      .map(d => ({
+        day_of_week: d.day_of_week,
+        start_time: d.start_time,
+        end_time: d.end_time
+      }))
     
     try {
-      const res = await createEventType(formData)
+      const res = await createEventType(formData, availability)
       if (res?.error) {
         setError(res.error)
       } else {
         setIsOpen(false)
+        setSchedule(DEFAULT_SCHEDULE)
       }
     } catch (err) {
       setError('Ocurrió un error.')
@@ -89,6 +109,8 @@ export function NewEventForm() {
             className="border border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
           ></textarea>
         </div>
+
+        <AvailabilitySettings schedule={schedule} setSchedule={setSchedule} />
 
         <div className="flex gap-3 justify-end mt-2">
           <button 

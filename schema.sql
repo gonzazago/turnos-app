@@ -100,13 +100,14 @@ exclude using gist (
 create table public.availability (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
+  event_type_id uuid references public.event_types(id) on delete cascade, -- Optional: if null, it's global availability
   day_of_week integer not null check (day_of_week >= 0 and day_of_week <= 6),
   start_time time not null,
   end_time time not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
 
-  -- Ensure no overlapping availability for the same day
-  unique (user_id, day_of_week, start_time)
+  -- Ensure no overlapping availability for the same day and event type
+  unique (user_id, event_type_id, day_of_week, start_time)
 );
 
 alter table public.availability enable row level security;

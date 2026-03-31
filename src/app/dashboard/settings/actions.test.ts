@@ -30,7 +30,7 @@ describe('updateAvailability action', () => {
       },
       from: vi.fn().mockReturnThis(),
       delete: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
+      match: vi.fn().mockReturnThis(),
       insert: vi.fn().mockResolvedValue({ error: null }),
     };
 
@@ -40,8 +40,9 @@ describe('updateAvailability action', () => {
       { day_of_week: 1, start_time: '09:00', end_time: '17:00' },
       { day_of_week: 2, start_time: '09:00', end_time: '17:00' },
     ];
+    const eventTypeId = 'event-456';
 
-    const result = await updateAvailability(availabilityData);
+    const result = await updateAvailability(availabilityData, eventTypeId);
     
     expect(result).toEqual({ success: true });
     expect(mockSupabase.delete).toHaveBeenCalled();
@@ -69,16 +70,16 @@ describe('updateAvailability action', () => {
       },
       from: vi.fn().mockReturnThis(),
       delete: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
+      match: vi.fn().mockReturnThis(),
       insert: vi.fn().mockResolvedValue({ error: null }),
     };
     
-    // Make delete fail
-    mockSupabase.eq.mockReturnValue({ error: { message: 'Delete failed' } });
+    // Make delete fail at the end of the chain
+    mockSupabase.match.mockReturnValue({ error: { message: 'Delete failed' } });
 
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 
-    const result = await updateAvailability([]);
+    const result = await updateAvailability([], 'some-id');
     expect(result).toEqual({ error: 'No se pudo actualizar la disponibilidad.' });
   });
 
@@ -89,7 +90,7 @@ describe('updateAvailability action', () => {
       },
       from: vi.fn().mockReturnThis(),
       delete: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
+      match: vi.fn().mockReturnThis(),
       insert: vi.fn().mockResolvedValue({ error: { message: 'Insert failed' } }),
     };
 

@@ -70,7 +70,10 @@ export async function updateProfile(formData: FormData) {
   return { success: true }
 }
 
-export async function updateAvailability(availability: { day_of_week: number, start_time: string, end_time: string }[]) {
+export async function updateAvailability(
+  availability: { day_of_week: number, start_time: string, end_time: string }[],
+  event_type_id?: string
+) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -79,11 +82,11 @@ export async function updateAvailability(availability: { day_of_week: number, st
     return { error: 'No autorizado' }
   }
 
-  // Delete existing availability for the user
+  // Delete existing availability for the user/event
   const { error: deleteError } = await supabase
     .from('availability')
     .delete()
-    .eq('user_id', user.id)
+    .match(event_type_id ? { user_id: user.id, event_type_id } : { user_id: user.id, event_type_id: null })
 
   if (deleteError) {
     console.error(deleteError)
@@ -101,7 +104,8 @@ export async function updateAvailability(availability: { day_of_week: number, st
     .insert(
       availability.map(a => ({
         ...a,
-        user_id: user.id
+        user_id: user.id,
+        event_type_id: event_type_id || null
       }))
     )
 

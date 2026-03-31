@@ -4,7 +4,10 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
-export async function createEventType(formData: FormData) {
+export async function createEventType(
+  formData: FormData, 
+  availability: { day_of_week: number, start_time: string, end_time: string }[]
+) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -16,7 +19,7 @@ export async function createEventType(formData: FormData) {
   const duration_mins = parseInt(formData.get('duration_mins') as string)
   const description = formData.get('description') as string
 
-  const { error } = await supabase
+  const { data: eventType, error } = await supabase
     .from('event_types')
     .insert({
       user_id: user.id,
@@ -24,10 +27,29 @@ export async function createEventType(formData: FormData) {
       duration_mins,
       description
     })
+    .select()
+    .single()
 
   if (error) {
     console.error(error)
     return { error: 'No se pudo crear el tipo de evento.' }
+  }
+
+  if (availability.length > 0) {
+    const { error: availabilityError } = await supabase
+      .from('availability')
+      .insert(
+        availability.map(a => ({
+          ...a,
+          user_id: user.id,
+          event_type_id: eventType.id
+        }))
+      )
+
+    if (availabilityError) {
+      console.error(availabilityError)
+      // We don't fail the whole event creation, but we should log it
+    }
   }
 
   revalidatePath('/dashboard/event-types')

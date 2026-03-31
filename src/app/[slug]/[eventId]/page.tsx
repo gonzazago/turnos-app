@@ -51,11 +51,12 @@ export default async function BookingPage({ params }: { params: Promise<Params> 
     notFound()
   }
 
-  // Fetch provider's availability
+  // Fetch provider's availability for this specific event type
   const { data: availability } = await supabase
     .from('availability')
     .select('*')
     .eq('user_id', profile.id)
+    .eq('event_type_id', eventId)
 
   // Fetch upcoming booked slots for the next 14 days
   const { data: bookedData } = await supabase
