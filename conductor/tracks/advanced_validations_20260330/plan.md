@@ -15,7 +15,7 @@
 - [x] Task: Conductor - User Manual Verification 'Booking Rate Limiting Validation' (Protocol in workflow.md) (d200533)
 
 ## Phase 3: Owner Configuration UI
-- [ ] Task: Dashboard UI for Availability Configuration
+- [x] Task: Dashboard UI for Availability Configuration (6bc6c7f)
     - [ ] Write failing tests for availability management UI components.
     - [ ] Create/Update the dashboard settings page to allow owners to set global and per-day working hours.
     - [ ] Implement server actions to save these settings to the `availability` table.
