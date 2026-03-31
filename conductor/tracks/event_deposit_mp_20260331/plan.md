@@ -16,7 +16,7 @@
 ## Phase 2: Booking Flow Updates
 - [x] Task: Update `bookings` schema for payment tracking (5c59084)
     - [ ] Add `payment_status` (enum: pending, paid, failed) and `mercado_pago_preference_id` (text).
-- [ ] Task: Display deposit info during booking
+- [x] Task: Display deposit info during booking (8138298)
     - [ ] Update `BookingClient.tsx` to show the "Requires Deposit" badge in slot selection.
     - [ ] Update the confirmation form to display the payment breakdown (Total vs Deposit).
 - [ ] Task: Update `createBooking` action
