@@ -22,7 +22,7 @@
 - [x] Task: Conductor - User Manual Verification 'Owner Configuration UI' (Protocol in workflow.md) (12dba73)
 
 ## Phase 4: Booking Details Modal
-- [ ] Task: Implement Booking Details Modal
+- [x] Task: Implement Booking Details Modal (8b67208)
     - [ ] Write tests for the modal component rendering correctly with booking data.
     - [ ] Create a modal component in the dashboard calendar view.
     - [ ] Wire the modal to open on appointment click, displaying booker details, time, and billing info (if applicable).
