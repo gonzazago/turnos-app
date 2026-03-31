@@ -1,7 +1,7 @@
 # Implementation Plan: Event Deposit and Mercado Pago Integration
 
 ## Phase 1: Database & Event Configuration
-- [ ] Task: Update `profiles` schema for user credentials
+- [x] Task: Update `profiles` schema for user credentials (423263c)
     - [ ] Update `schema.sql` to include `mp_access_token` (text) and `mp_public_key` (text) in `profiles`.
 - [ ] Task: Update `event_types` schema for deposit settings
     - [ ] Update `schema.sql` to include `requires_deposit` (bool), `total_price` (numeric), and `deposit_percentage` (numeric).
