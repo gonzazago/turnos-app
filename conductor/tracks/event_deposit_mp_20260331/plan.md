@@ -1,17 +1,17 @@
 # Implementation Plan: Event Deposit and Mercado Pago Integration
 
-## Phase 1: Database & Event Configuration
+## Phase 1: Database & Event Configuration [checkpoint: 99af390]
 - [x] Task: Update `profiles` schema for user credentials (423263c)
-    - [ ] Update `schema.sql` to include `mp_access_token` (text) and `mp_public_key` (text) in `profiles`.
+    - [x] Update `schema.sql` to include `mp_access_token` (text) and `mp_public_key` (text) in `profiles`.
 - [x] Task: Update `event_types` schema for deposit settings (87d1e42)
-    - [ ] Update `schema.sql` to include `requires_deposit` (bool), `total_price` (numeric), and `deposit_percentage` (numeric).
+    - [x] Update `schema.sql` to include `requires_deposit` (bool), `total_price` (numeric), and `deposit_percentage` (numeric).
 - [x] Task: Update User Settings UI (0c8525b)
-    - [ ] Add fields for `MP_ACCESS_TOKEN` and `MP_PUBLIC_KEY` in the Settings page.
-    - [ ] Update `updateProfile` server action to handle these new fields.
+    - [x] Add fields for `MP_ACCESS_TOKEN` and `MP_PUBLIC_KEY` in the Settings page.
+    - [x] Update `updateProfile` server action to handle these new fields.
 - [x] Task: Update Event Creation/Edit UI (899cc6b)
-    - [ ] Add "Require Deposit" toggle to `NewEventForm.tsx`.
-    - [ ] Implement conditional fields for Price and Percentage.
-- [ ] Task: Conductor - User Manual Verification 'Database & Event Configuration' (Protocol in workflow.md)
+    - [x] Add "Require Deposit" toggle to `NewEventForm.tsx`.
+    - [x] Implement conditional fields for Price and Percentage.
+- [x] Task: Conductor - User Manual Verification 'Database & Event Configuration' (Protocol in workflow.md) (99af390)
 
 ## Phase 2: Booking Flow Updates
 - [ ] Task: Update `bookings` schema for payment tracking
