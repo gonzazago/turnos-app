@@ -32,6 +32,9 @@ create table public.event_types (
   title text not null,
   duration_mins integer not null default 30,
   description text,
+  requires_deposit boolean default false not null,
+  price numeric(10,2) default 0.00 not null,
+  deposit_amount numeric(10,2) default 0.00 not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -64,6 +67,7 @@ create table public.bookings (
   start_time timestamp with time zone not null,
   end_time timestamp with time zone not null,
   status text default 'confirmed' not null,
+  billing_info jsonb default '{}'::jsonb not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
