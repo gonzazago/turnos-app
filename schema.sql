@@ -6,6 +6,8 @@ create table public.profiles (
   contact_email text,
   brand_color text default '#3b82f6',
   logo_url text,
+  mp_access_token text,
+  mp_public_key text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
 
   primary key (id)
