@@ -18,13 +18,13 @@ export async function createBooking(formData: FormData) {
   // Fetch profile and event type info for notifications
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, contact_email')
+    .select('full_name, contact_email, mp_public_key')
     .eq('id', profileId)
     .single()
 
   const { data: eventType } = await supabase
     .from('event_types')
-    .select('title')
+    .select('title, requires_deposit')
     .eq('id', eventId)
     .single()
 
@@ -66,7 +66,7 @@ export async function createBooking(formData: FormData) {
     }
   }
 
-  const { error } = await supabase
+  const { data: newBooking, error } = await supabase
     .from('bookings')
     .insert({
       user_id: profileId,
@@ -75,8 +75,11 @@ export async function createBooking(formData: FormData) {
       booker_email: email,
       start_time: startTime,
       end_time: endTime,
-      status: 'confirmed'
+      status: eventType?.requires_deposit ? 'pending_payment' : 'confirmed',
+      payment_status: eventType?.requires_deposit ? 'pending' : 'paid'
     })
+    .select()
+    .single()
 
   if (error) {
     console.error(error)
@@ -87,8 +90,8 @@ export async function createBooking(formData: FormData) {
     return { error: 'Ocurrió un error al procesar tu reserva. Intenta nuevamente.' }
   }
 
-  // Send confirmation emails
-  if (profile && eventType) {
+  // Send confirmation emails (only if not pending payment)
+  if (profile && eventType && !eventType.requires_deposit) {
     sendBookingConfirmation({
       booker_name: name,
       booker_email: email,
@@ -100,5 +103,10 @@ export async function createBooking(formData: FormData) {
   }
 
   revalidatePath('/dashboard')
-  return { success: true }
+  return { 
+    success: true, 
+    requiresDeposit: eventType?.requires_deposit || false,
+    mpPublicKey: profile?.mp_public_key,
+    bookingId: newBooking?.id
+  }
 }

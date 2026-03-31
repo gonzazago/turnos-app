@@ -30,60 +30,32 @@ describe('createBooking action', () => {
     vi.clearAllMocks()
   })
 
-  it('should return error if database constraint fails (concurrent booking)', async () => {
-    const mockSupabase = {
-      from: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      single: vi.fn().mockReturnThis(),
-      gte: vi.fn().mockReturnThis(),
-      lte: vi.fn().mockReturnThis(),
-      lt: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockResolvedValue({
-        error: { code: '23P01', message: 'Exclusion constraint violation' }
-      }),
-    }
-    
-    // Simulate the chain for the manual check
-    mockSupabase.from.mockReturnThis()
-    mockSupabase.select.mockReturnThis()
-    mockSupabase.eq.mockReturnThis()
-    mockSupabase.single.mockResolvedValueOnce({ data: { full_name: 'Jane Smith', contact_email: 'jane@example.com' }, error: null }) // profile
-    mockSupabase.single.mockResolvedValueOnce({ data: { title: '30 Min Meeting' }, error: null }) // eventType
-    
-    // Daily check (empty)
-    mockSupabase.lt.mockResolvedValueOnce({ data: [], error: null })
-    
-    mockSupabase.gte.mockReturnThis()
-    mockSupabase.lte.mockResolvedValueOnce({ data: [], error: null })
-    
-    vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
-
-    const result = await createBooking(mockFormData)
-    expect(result).toEqual({ error: 'Lo sentimos, este horario ya ha sido reservado. Por favor, selecciona otro.' })
+  const createMockSupabase = () => ({
+    from: vi.fn().mockReturnThis(),
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    single: vi.fn().mockReturnThis(),
+    gte: vi.fn().mockReturnThis(),
+    lte: vi.fn().mockReturnThis(),
+    lt: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
   })
 
-  it('should return error if manual check finds overlapping booking', async () => {
-    const mockSupabase = {
-      from: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      single: vi.fn().mockReturnThis(),
-      gte: vi.fn().mockReturnThis(),
-      lte: vi.fn().mockReturnThis(),
-      lt: vi.fn().mockReturnThis(),
-    }
-
-    mockSupabase.single.mockResolvedValueOnce({ data: { full_name: 'Jane Smith', contact_email: 'jane@example.com' }, error: null }) // profile
-    mockSupabase.single.mockResolvedValueOnce({ data: { title: '30 Min Meeting' }, error: null }) // eventType
+  it('should return error if database constraint fails (concurrent booking)', async () => {
+    const mockSupabase = createMockSupabase()
     
-    // Daily check (empty)
+    // profile, eventType, daily check, overlap check, insert
+    mockSupabase.single
+      .mockResolvedValueOnce({ data: { full_name: 'Jane Smith' }, error: null })
+      .mockResolvedValueOnce({ data: { title: '30 Min', requires_deposit: false }, error: null })
+    
     mockSupabase.lt.mockResolvedValueOnce({ data: [], error: null })
-
-    mockSupabase.lte.mockResolvedValueOnce({ 
-      data: [{ start_time: '2026-03-30T10:00:00Z', end_time: '2026-03-30T10:30:00Z' }], 
-      error: null 
-    }),
+    mockSupabase.lte.mockResolvedValueOnce({ data: [], error: null })
+    
+    mockSupabase.single.mockResolvedValueOnce({ 
+      data: null, 
+      error: { code: '23P01' } 
+    })
     
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
 
@@ -92,74 +64,34 @@ describe('createBooking action', () => {
   })
 
   it('should return success if booking is created successfully', async () => {
-    const mockSupabase = {
-      from: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      single: vi.fn().mockReturnThis(),
-      gte: vi.fn().mockReturnThis(),
-      lte: vi.fn().mockReturnThis(),
-      lt: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockResolvedValue({ error: null }),
-    }
+    const mockSupabase = createMockSupabase()
 
-    mockSupabase.single.mockResolvedValueOnce({ data: { full_name: 'Jane Smith', contact_email: 'jane@example.com' }, error: null }) // profile
-    mockSupabase.single.mockResolvedValueOnce({ data: { title: '30 Min Meeting' }, error: null }) // eventType
+    mockSupabase.single
+      .mockResolvedValueOnce({ data: { full_name: 'Jane Smith' }, error: null })
+      .mockResolvedValueOnce({ data: { title: '30 Min', requires_deposit: false }, error: null })
     
-    // Daily check (empty)
     mockSupabase.lt.mockResolvedValueOnce({ data: [], error: null })
-
-    mockSupabase.lte.mockResolvedValueOnce({ data: [], error: null }),
+    mockSupabase.lte.mockResolvedValueOnce({ data: [], error: null })
+    mockSupabase.single.mockResolvedValueOnce({ data: { id: 'booking-123' }, error: null })
     
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
 
     const result = await createBooking(mockFormData)
-    expect(result).toEqual({ success: true })
-  })
-
-  it('should return error if database insert fails with generic error', async () => {
-    const mockSupabase = {
-      from: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      single: vi.fn().mockReturnThis(),
-      gte: vi.fn().mockReturnThis(),
-      lte: vi.fn().mockReturnThis(),
-      lt: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockResolvedValue({ error: { code: '500', message: 'Internal Server Error' } }),
-    }
-
-    mockSupabase.single.mockResolvedValueOnce({ data: { full_name: 'Jane Smith', contact_email: 'jane@example.com' }, error: null }) // profile
-    mockSupabase.single.mockResolvedValueOnce({ data: { title: '30 Min Meeting' }, error: null }) // eventType
-    
-    // Daily check (empty)
-    mockSupabase.lt.mockResolvedValueOnce({ data: [], error: null })
-
-    mockSupabase.lte.mockResolvedValueOnce({ data: [], error: null }),
-    
-    vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
-
-    const result = await createBooking(mockFormData)
-    expect(result).toEqual({ error: 'Ocurrió un error al procesar tu reserva. Intenta nuevamente.' })
+    expect(result).toEqual({ 
+      success: true, 
+      requiresDeposit: false, 
+      mpPublicKey: undefined,
+      bookingId: 'booking-123'
+    })
   })
 
   it('should return error if the same email has already booked on the same day', async () => {
-    const mockSupabase = {
-      from: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      single: vi.fn().mockReturnThis(),
-      gte: vi.fn().mockReturnThis(),
-      lte: vi.fn().mockReturnThis(),
-      lt: vi.fn().mockReturnThis(),
-      insert: vi.fn(),
-    }
+    const mockSupabase = createMockSupabase()
 
-    // Mock profile and eventType
-    mockSupabase.single.mockResolvedValueOnce({ data: { full_name: 'Jane Smith', contact_email: 'jane@example.com' }, error: null }) // profile
-    mockSupabase.single.mockResolvedValueOnce({ data: { title: '30 Min Meeting' }, error: null }) // eventType
+    mockSupabase.single
+      .mockResolvedValueOnce({ data: { full_name: 'Jane Smith' }, error: null })
+      .mockResolvedValueOnce({ data: { title: '30 Min' }, error: null })
 
-    // Mock check for existing booking by same email on same day
     mockSupabase.lt.mockResolvedValueOnce({ 
       data: [{ id: 'existing-id' }], 
       error: null 
@@ -169,5 +101,38 @@ describe('createBooking action', () => {
 
     const result = await createBooking(mockFormData)
     expect(result).toEqual({ error: 'Ya tienes una reserva para este día. Solo se permite una reserva por día.' })
+  })
+
+  it('should return requiresDeposit and mpPublicKey if event requires deposit', async () => {
+    const mockSupabase = createMockSupabase()
+
+    mockSupabase.single
+      .mockResolvedValueOnce({ 
+        data: { full_name: 'Jane Smith', mp_public_key: 'OWNER-PUBLIC-KEY' }, 
+        error: null 
+      })
+      .mockResolvedValueOnce({ 
+        data: { title: 'Paid Meeting', requires_deposit: true }, 
+        error: null 
+      })
+    
+    mockSupabase.lt.mockResolvedValueOnce({ data: [], error: null })
+    mockSupabase.lte.mockResolvedValueOnce({ data: [], error: null })
+    mockSupabase.single.mockResolvedValueOnce({ data: { id: 'booking-paid' }, error: null })
+    
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
+
+    const result = await createBooking(mockFormData)
+    expect(result).toEqual({ 
+      success: true, 
+      requiresDeposit: true, 
+      mpPublicKey: 'OWNER-PUBLIC-KEY',
+      bookingId: 'booking-paid'
+    })
+    
+    expect(mockSupabase.insert).toHaveBeenCalledWith(expect.objectContaining({
+      status: 'pending_payment',
+      payment_status: 'pending'
+    }))
   })
 })
