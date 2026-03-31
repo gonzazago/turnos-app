@@ -1,11 +1,11 @@
 # Implementation Plan: Advanced Validations, Config, and Payment Prep
 
-## Phase 1: Payment Preparation & Schema Updates
+## Phase 1: Payment Preparation & Schema Updates [checkpoint: 40369f3]
 - [x] Task: Update database schemas for payment prep (563dad3)
     - [ ] Update `schema.sql` to add `requires_deposit` (boolean), `price` (numeric), and `deposit_amount` (numeric) to `event_types`.
     - [ ] Update `schema.sql` to add a `billing_info` (JSONB) column to `bookings`.
     - [ ] Write tests verifying the new schema structure and default values.
-- [ ] Task: Conductor - User Manual Verification 'Payment Preparation & Schema Updates' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Payment Preparation & Schema Updates' (Protocol in workflow.md) (66173ef)
 
 ## Phase 2: Booking Rate Limiting Validation
 - [ ] Task: Implement server-side rate limiting logic
