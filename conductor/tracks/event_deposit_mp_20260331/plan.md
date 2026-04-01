@@ -1,6 +1,6 @@
 # Implementation Plan: Payment Accounts Integration (Mercado Pago OAuth)
 
-## Phase 1: Payment Accounts Schema
+## Phase 1: Payment Accounts Schema [checkpoint: 4137927]
 - [x] Task: Create `payment_accounts` table
     - [x] Add `schema.sql` migration for `payment_accounts` with columns: `id`, `user_id`, `provider`, `provider_user_id`, `access_token`, `refresh_token`, `expires_at`, `is_active`, `created_at`, `updated_at`.
     - [x] Add indexes for `user_id`, `provider`.
@@ -10,7 +10,7 @@
 - [x] Task: Create TypeScript models and repository interface
     - [x] Define `PaymentAccount` interface.
     - [x] Implement `PaymentAccountService` with methods: `saveAccount`, `getActiveAccount`, `refreshTokenIfNeeded`.
-- [ ] Task: Conductor - User Manual Verification 'Payment Accounts Schema' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Payment Accounts Schema' (Protocol in workflow.md) (4137927)
 
 ## Phase 2: Mercado Pago OAuth Flow
 - [ ] Task: Initiate OAuth
