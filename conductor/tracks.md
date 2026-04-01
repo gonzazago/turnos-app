@@ -14,5 +14,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Event Deposit and Mercado Pago Integration**
+- [~] **Track: Event Deposit and Mercado Pago Integration**
   *Link: [./tracks/event_deposit_mp_20260331/](./tracks/event_deposit_mp_20260331/)*
