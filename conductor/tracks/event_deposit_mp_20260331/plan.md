@@ -1,15 +1,15 @@
 # Implementation Plan: Payment Accounts Integration (Mercado Pago OAuth)
 
 ## Phase 1: Payment Accounts Schema
-- [ ] Task: Create `payment_accounts` table
-    - [ ] Add `schema.sql` migration for `payment_accounts` with columns: `id`, `user_id`, `provider`, `provider_user_id`, `access_token`, `refresh_token`, `expires_at`, `is_active`, `created_at`, `updated_at`.
-    - [ ] Add indexes for `user_id`, `provider`.
-    - [ ] Add unique constraint on `(user_id, provider, provider_user_id)`.
-    - [ ] Apply RLS policies to ensure users can only access their own payment accounts.
-    - [ ] Revert previous changes to `profiles` (remove `mp_access_token`).
-- [ ] Task: Create TypeScript models and repository interface
-    - [ ] Define `PaymentAccount` interface.
-    - [ ] Implement `PaymentAccountService` with methods: `saveAccount`, `getActiveAccount`, `refreshTokenIfNeeded`.
+- [x] Task: Create `payment_accounts` table
+    - [x] Add `schema.sql` migration for `payment_accounts` with columns: `id`, `user_id`, `provider`, `provider_user_id`, `access_token`, `refresh_token`, `expires_at`, `is_active`, `created_at`, `updated_at`.
+    - [x] Add indexes for `user_id`, `provider`.
+    - [x] Add unique constraint on `(user_id, provider, provider_user_id)`.
+    - [x] Apply RLS policies to ensure users can only access their own payment accounts.
+    - [x] Revert previous changes to `profiles` (remove `mp_access_token`).
+- [x] Task: Create TypeScript models and repository interface
+    - [x] Define `PaymentAccount` interface.
+    - [x] Implement `PaymentAccountService` with methods: `saveAccount`, `getActiveAccount`, `refreshTokenIfNeeded`.
 - [ ] Task: Conductor - User Manual Verification 'Payment Accounts Schema' (Protocol in workflow.md)
 
 ## Phase 2: Mercado Pago OAuth Flow

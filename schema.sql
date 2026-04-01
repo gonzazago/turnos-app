@@ -7,7 +7,6 @@ create table public.profiles (
   brand_color text default '#3b82f6',
   logo_url text,
   mp_access_token text,
-  mp_public_key text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
 
   primary key (id)
@@ -143,3 +142,41 @@ create policy "Users can update their own logos."
 create policy "Users can delete their own logos."
   on storage.objects for delete
   using ( bucket_id = 'logos' and auth.uid() = owner );
+
+-- Create a table for payment accounts
+create table public.payment_accounts (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  provider text not null,
+  provider_user_id text not null,
+  access_token text not null,
+  refresh_token text,
+  expires_at timestamp with time zone,
+  is_active boolean default true not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  
+  -- Ensure only one active account per provider per user
+  unique (user_id, provider, provider_user_id)
+);
+
+create index payment_accounts_user_id_idx on public.payment_accounts(user_id);
+create index payment_accounts_provider_idx on public.payment_accounts(provider);
+
+alter table public.payment_accounts enable row level security;
+
+create policy "Users can view their own payment accounts"
+  on payment_accounts for select
+  using ( auth.uid() = user_id );
+
+create policy "Users can insert their own payment accounts"
+  on payment_accounts for insert
+  with check ( auth.uid() = user_id );
+
+create policy "Users can update their own payment accounts"
+  on payment_accounts for update
+  using ( auth.uid() = user_id );
+
+create policy "Users can delete their own payment accounts"
+  on payment_accounts for delete
+  using ( auth.uid() = user_id );
