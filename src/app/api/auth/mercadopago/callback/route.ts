@@ -31,7 +31,7 @@ export async function GET(request: Request) {
         
         const payload = {
             client_secret: process.env.MP_CLIENT_SECRET || '',
-            client_id: process.env.NEXT_PUBLIC_MP_CLIENT_ID || '',
+            client_id: process.env.MP_CLIENT_ID || '',
             grant_type: 'authorization_code',
             code: code,
             redirect_uri: redirectUri,
