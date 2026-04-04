@@ -7,19 +7,19 @@
     - [x] Render an off-canvas menu for mobile devices, hiding it on larger screens.
 - [x] Task: Conductor - User Manual Verification 'Mobile Dashboard Layout' (Protocol in workflow.md) (a467995)
 
-## Phase 2: Appointments Dashboard View
-- [ ] Task: Fetch and list upcoming bookings
-    - [ ] Update `src/app/dashboard/page.tsx` to query the `bookings` table for upcoming appointments (where `end_time` > now).
-    - [ ] Display a list or grid of appointment cards, showing: Booker Name, Booker Email, Event Type, Date, Time, Status.
-    - [ ] Apply styling to differentiate `confirmed` vs `pending_payment` bookings.
-- [ ] Task: Conductor - User Manual Verification 'Appointments Dashboard View' (Protocol in workflow.md)
+## Phase 2: Appointments Dashboard View [checkpoint: 83c9c2d]
+- [x] Task: Fetch and list upcoming bookings (83c9c2d)
+    - [x] Update `src/app/dashboard/page.tsx` to query the `bookings` table for upcoming appointments (where `end_time` > now).
+    - [x] Display a list or grid of appointment cards, showing: Booker Name, Booker Email, Event Type, Date, Time, Status.
+    - [x] Apply styling to differentiate `confirmed` vs `pending_payment` bookings.
+- [x] Task: Conductor - User Manual Verification 'Appointments Dashboard View' (Protocol in workflow.md) (83c9c2d)
 
-## Phase 3: Appointment Actions (Cancel/Reschedule)
-- [ ] Task: Implement `cancelBooking` server action
-    - [ ] Add an action to `src/app/dashboard/actions.ts` that deletes or marks a booking as cancelled, verifying the user owns the event type.
-- [ ] Task: Implement `rescheduleBooking` server action
-    - [ ] Add an action to update `start_time` and `end_time` of a specific booking.
-- [ ] Task: Add UI for actions
-    - [ ] Create a `BookingCard` client component with "Cancelar" and "Reprogramar" buttons.
-    - [ ] Add a modal for the reschedule action (to pick a new date/time).
-- [ ] Task: Conductor - User Manual Verification 'Appointment Actions' (Protocol in workflow.md)
+## Phase 3: Appointment Actions (Cancel/Reschedule) [checkpoint: 83c9c2d]
+- [x] Task: Implement `cancelBooking` server action (83c9c2d)
+    - [x] Add an action to `src/app/dashboard/actions.ts` that deletes or marks a booking as cancelled, verifying the user owns the event type.
+- [x] Task: Implement `rescheduleBooking` server action (83c9c2d)
+    - [x] Add an action to update `start_time` and `end_time` of a specific booking.
+- [x] Task: Add UI for actions (83c9c2d)
+    - [x] Create a `BookingCard` client component with "Cancelar" and "Reprogramar" buttons.
+    - [x] Add a modal for the reschedule action (to pick a new date/time).
+- [x] Task: Conductor - User Manual Verification 'Appointment Actions' (Protocol in workflow.md) (83c9c2d)
