@@ -1,7 +1,7 @@
 # Implementation Plan: Dashboard Management & Mobile UX
 
 ## Phase 1: Mobile Dashboard Layout
-- [ ] Task: Update `layout.tsx` for mobile responsiveness
+- [x] Task: Update `layout.tsx` for mobile responsiveness (b491542)
     - [ ] Create a client component `MobileSidebar` or `DashboardNav` to handle the state of the mobile menu (open/close).
     - [ ] Add a hamburger menu icon to the mobile header.
     - [ ] Render an off-canvas menu for mobile devices, hiding it on larger screens.
