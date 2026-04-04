@@ -16,3 +16,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: Event Deposit and Mercado Pago Integration**
   *Link: [./tracks/event_deposit_mp_20260331/](./tracks/event_deposit_mp_20260331/)*
+
+---
+
+- [ ] **Track: Dashboard Management & Mobile UX**
+  *Link: [./tracks/dashboard_management_ux_20260401/](./tracks/dashboard_management_ux_20260401/)*
