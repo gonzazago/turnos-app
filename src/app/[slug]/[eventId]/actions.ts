@@ -4,11 +4,13 @@ import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { areIntervalsOverlapping } from 'date-fns'
 import { sendBookingConfirmation } from '@/utils/notifications'
+import { PaymentAccountService } from '@/utils/payment-accounts'
 
 export async function createBooking(formData: FormData) {
   const supabase = await createClient()
 
   const profileId = formData.get('profileId') as string
+  const slug = formData.get('slug') as string
   const eventId = formData.get('eventId') as string
   const name = formData.get('name') as string
   const email = formData.get('email') as string
@@ -18,13 +20,13 @@ export async function createBooking(formData: FormData) {
   // Fetch profile and event type info for notifications
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, contact_email, mp_public_key')
+    .select('full_name, contact_email')
     .eq('id', profileId)
     .single()
 
   const { data: eventType } = await supabase
     .from('event_types')
-    .select('title, requires_deposit')
+    .select('title, requires_deposit, total_price, deposit_percentage')
     .eq('id', eventId)
     .single()
 
@@ -66,7 +68,14 @@ export async function createBooking(formData: FormData) {
     }
   }
 
-  const { data: newBooking, error } = await supabase
+  // Use Admin client to create the booking to bypass RLS and get the ID back
+  const { createClient: createSupabaseAdmin } = await import('@supabase/supabase-js')
+  const supabaseAdmin = createSupabaseAdmin(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const { data: newBooking, error } = await supabaseAdmin
     .from('bookings')
     .insert({
       user_id: profileId,
@@ -90,6 +99,88 @@ export async function createBooking(formData: FormData) {
     return { error: 'Ocurrió un error al procesar tu reserva. Intenta nuevamente.' }
   }
 
+  let checkoutUrl: string | undefined
+
+  // NEW: Mercado Pago Integration - Create Preference if deposit is required
+  if (eventType?.requires_deposit && newBooking) {
+    try {
+      // 1. Get owner's Mercado Pago account (using Admin client because of RLS)
+      const { data: mpAccount } = await PaymentAccountService.getActiveAccountAdmin(profileId, 'mercadopago');
+      
+      if (!mpAccount) {
+        throw new Error('Owner has no connected Mercado Pago account');
+      }
+
+      // 2. Refresh token if needed
+      const accessToken = await PaymentAccountService.refreshTokenIfNeeded(mpAccount.id);
+
+      // 3. Calculate deposit amount
+      const depositAmount = (Number(eventType.total_price) * Number(eventType.deposit_percentage)) / 100;
+
+      console.log('Creating MP Preference with Token:', accessToken.substring(0, 10) + '...');
+      
+      const preferencePayload = {
+        items: [
+          {
+            id: eventId,
+            title: `Seña para: ${eventType.title}`,
+            description: `Reserva con ${profile?.full_name || 'el profesional'} para el día ${startTime}`,
+            quantity: 1,
+            currency_id: 'ARS',
+            unit_price: depositAmount,
+          },
+        ],
+        payer: {
+          name: name,
+          email: email,
+        },
+        back_urls: {
+          success: `${process.env.NEXT_PUBLIC_APP_URL}/${slug}/${eventId}/status?status=success&bookingId=${newBooking.id}`,
+          failure: `${process.env.NEXT_PUBLIC_APP_URL}/${slug}/${eventId}/status?status=failure&bookingId=${newBooking.id}`,
+          pending: `${process.env.NEXT_PUBLIC_APP_URL}/${slug}/${eventId}/status?status=pending&bookingId=${newBooking.id}`,
+        },
+        auto_return: 'approved',
+        notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/mercadopago`,
+        external_reference: newBooking.id,
+        statement_descriptor: 'TURNOS APP',
+      };
+
+      console.log("Creating MP Preference with Token:", accessToken);
+
+      // 4. Create Preference in Mercado Pago
+      const prefResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(preferencePayload),
+      });
+
+      const prefData = await prefResponse.json();
+
+      console.log('Creating MP Preference with Token:', prefData);
+
+      if (!prefResponse.ok) {
+        console.error('Mercado Pago Preference Error. Status:', prefResponse.status, 'Body:', prefData);
+        throw new Error('Error creating payment link');
+      }
+
+      console.log('MP Preference created successfully:', prefData.id);
+      checkoutUrl = prefData.init_point;
+
+      // 5. Update booking with preference ID
+      await supabaseAdmin
+        .from('bookings')
+        .update({ mercado_pago_preference_id: prefData.id })
+        .eq('id', newBooking.id);
+
+    } catch (mpError) {
+      console.error('Mercado Pago integration error:', mpError);
+      return { error: 'No se pudo generar el link de pago. Intenta nuevamente.' };
+    }
+  }
+
   // Send confirmation emails (only if not pending payment)
   if (profile && eventType && !eventType.requires_deposit) {
     sendBookingConfirmation({
@@ -106,7 +197,7 @@ export async function createBooking(formData: FormData) {
   return { 
     success: true, 
     requiresDeposit: eventType?.requires_deposit || false,
-    mpPublicKey: profile?.mp_public_key,
-    bookingId: newBooking?.id
+    bookingId: newBooking?.id,
+    checkoutUrl: checkoutUrl
   }
 }

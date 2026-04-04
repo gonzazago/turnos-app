@@ -13,15 +13,15 @@
 - [x] Task: Conductor - User Manual Verification 'Payment Accounts Schema' (Protocol in workflow.md) (4137927)
 
 ## Phase 2: Mercado Pago OAuth Flow
-- [ ] Task: Initiate OAuth
-    - [ ] Update Dashboard Settings UI to include a "Connect Mercado Pago" button instead of manual token inputs.
-    - [ ] The button should redirect the user to the Mercado Pago OAuth authorization URL with the correct `client_id` and `redirect_uri`.
-- [ ] Task: Handle OAuth Callback
-    - [ ] Create an API route (e.g., `/api/auth/mercadopago/callback`) to receive the authorization `code`.
-    - [ ] Exchange the `code` for an `access_token` and `refresh_token` using the Mercado Pago API.
-    - [ ] Use `PaymentAccountService.saveAccount` to persist the credentials to the database.
-    - [ ] Redirect the user back to the dashboard settings with a success message.
-- [ ] Task: Conductor - User Manual Verification 'Mercado Pago OAuth Flow' (Protocol in workflow.md)
+- [x] Task: Initiate OAuth
+    - [x] Update Dashboard Settings UI to include a "Connect Mercado Pago" button instead of manual token inputs.
+    - [x] The button should redirect the user to the Mercado Pago OAuth authorization URL with the correct `client_id` and `redirect_uri`.
+- [x] Task: Handle OAuth Callback
+    - [x] Create an API route (e.g., `/api/auth/mercadopago/callback`) to receive the authorization `code`.
+    - [x] Exchange the `code` for an `access_token` and `refresh_token` using the Mercado Pago API.
+    - [x] Use `PaymentAccountService.saveAccount` to persist the credentials to the database.
+    - [x] Redirect the user back to the dashboard settings with a success message.
+- [~] Task: Conductor - User Manual Verification 'Mercado Pago OAuth Flow' (Protocol in workflow.md)
 
 ## Phase 3: Token Management and Refresh Logic
 - [ ] Task: Implement token refresh logic

@@ -156,12 +156,35 @@ create table public.payment_accounts (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
   
-  -- Ensure only one active account per provider per user
-  unique (user_id, provider, provider_user_id)
+  -- Evita duplicados por cuenta externa
+  constraint payment_accounts_unique_account
+    unique (provider, provider_user_id)
 );
 
-create index payment_accounts_user_id_idx on public.payment_accounts(user_id);
-create index payment_accounts_provider_idx on public.payment_accounts(provider);
+create index if not exists idx_payment_accounts_user_id
+  on public.payment_accounts(user_id);
+
+create index if not exists idx_payment_accounts_provider
+  on public.payment_accounts(provider);
+
+-- Solo una cuenta activa por usuario + provider
+create unique index if not exists idx_payment_accounts_one_active_per_provider
+  on public.payment_accounts(user_id, provider)
+  where is_active = true;
+
+-- Updated_at automático
+create or replace function public.set_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger set_payment_accounts_updated_at
+before update on public.payment_accounts
+for each row
+execute function public.set_updated_at();
 
 alter table public.payment_accounts enable row level security;
 

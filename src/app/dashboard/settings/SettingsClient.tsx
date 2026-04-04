@@ -1,16 +1,57 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { updateProfile } from './actions'
-import { UploadCloud, CheckCircle, AlertCircle } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { updateProfile, disconnectPaymentAccount } from './actions'
+import { UploadCloud, CheckCircle, AlertCircle, Link2Off } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 
 export function SettingsForm({ profile }: { profile: any }) {
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('Perfil actualizado correctamente.')
   
   const [logoPreview, setLogoPreview] = useState(profile.logo_url)
   const fileRef = useRef<HTMLInputElement>(null)
+
+  const handleDisconnect = async () => {
+    if (!confirm('¿Estás seguro de que deseas desvincular tu cuenta de Mercado Pago? No podrás cobrar señas en tus eventos hasta que la vuelvas a conectar.')) {
+      return
+    }
+
+    setLoading(true)
+    try {
+      const res = await disconnectPaymentAccount('mercadopago')
+      if (res?.error) {
+        setError(res.error)
+      } else {
+        setSuccess(true)
+        setSuccessMessage('Cuenta de Mercado Pago desvinculada.')
+        setTimeout(() => setSuccess(false), 3000)
+      }
+    } catch (err) {
+      setError('Error al desvincular la cuenta.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (searchParams.get('success') === 'mp_connected') {
+      setSuccess(true)
+      setSuccessMessage('Cuenta de Mercado Pago conectada exitosamente.')
+      setTimeout(() => setSuccess(false), 5000)
+    }
+    if (searchParams.get('error')) {
+      const errCode = searchParams.get('error')
+      let msg = 'Ocurrió un error.'
+      if (errCode === 'mp_auth_failed') msg = 'No se pudo autorizar con Mercado Pago.'
+      else if (errCode === 'mp_exchange_failed') msg = 'Error al verificar las credenciales con Mercado Pago.'
+      else if (errCode === 'mp_internal_error') msg = 'Error interno al conectar Mercado Pago.'
+      setError(msg)
+    }
+  }, [searchParams])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -59,7 +100,7 @@ export function SettingsForm({ profile }: { profile: any }) {
       {success && (
         <div className="bg-green-50 text-green-600 p-4 rounded-xl flex items-center gap-3 border border-green-100">
           <CheckCircle className="w-5 h-5 flex-shrink-0" />
-          <span className="text-sm font-medium">Perfil actualizado correctamente.</span>
+          <span className="text-sm font-medium">{successMessage}</span>
         </div>
       )}
 
@@ -141,40 +182,39 @@ export function SettingsForm({ profile }: { profile: any }) {
         </div>
 
         <div className="pt-6 mt-6 border-t border-slate-100">
-          <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.21.22/mercadopago/logo__large.png" alt="Mercado Pago" className="h-5" />
-            Configuración de Pagos
-          </h3>
-          <p className="text-slate-500 text-sm mb-6">Ingresa tus credenciales de Mercado Pago para poder cobrar señas por tus eventos.</p>
-          
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <label htmlFor="mpAccessToken" className="text-sm font-semibold text-slate-700">Access Token</label>
-              <input 
-                type="password" 
-                id="mpAccessToken" 
-                name="mpAccessToken" 
-                defaultValue={profile.mp_access_token} 
-                placeholder="APP_USR-..."
-                className="border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label htmlFor="mpPublicKey" className="text-sm font-semibold text-slate-700">Public Key</label>
-              <input 
-                type="text" 
-                id="mpPublicKey" 
-                name="mpPublicKey" 
-                defaultValue={profile.mp_public_key} 
-                placeholder="APP_USR-..."
-                className="border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-              />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.21.22/mercadopago/logo__large.png" alt="Mercado Pago" className="h-5" />
+                Configuración de Pagos
+              </h3>
+              <p className="text-slate-500 text-sm mt-1">Conecta tu cuenta de Mercado Pago para cobrar señas por tus eventos.</p>
             </div>
             
-            <p className="text-xs text-slate-400">
-              Puedes encontrar tus credenciales en el <a href="https://www.mercadopago.com.ar/developers/panel/credentials" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Panel de Desarrolladores de Mercado Pago</a>.
-            </p>
+            {profile.payment_accounts?.some((pa: any) => pa.provider === 'mercadopago' && pa.is_active) ? (
+              <div className="flex items-center gap-2">
+                <div className="bg-green-50 text-green-700 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-green-200">
+                  <CheckCircle className="w-4 h-4" />
+                  Conectado
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDisconnect}
+                  disabled={loading}
+                  className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                  title="Desvincular cuenta"
+                >
+                  <Link2Off className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <a 
+                href={`https://auth.mercadopago.com/authorization?client_id=${process.env.NEXT_PUBLIC_MP_CLIENT_ID}&response_type=code&platform_id=mp&state=${profile.id}&redirect_uri=${process.env.NEXT_PUBLIC_APP_URL}/api/auth/mercadopago/callback`}
+                className="bg-[#009EE3] hover:bg-[#008ACA] text-white font-bold px-6 py-2.5 rounded-xl transition-all shadow-sm active:scale-[0.98] text-sm whitespace-nowrap text-center"
+              >
+                Conectar Mercado Pago
+              </a>
+            )}
           </div>
         </div>
       </div>

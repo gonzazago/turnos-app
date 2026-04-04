@@ -20,6 +20,7 @@ vi.mock('@/utils/supabase/server', () => ({
 describe('createBooking action', () => {
   const mockFormData = new FormData()
   mockFormData.append('profileId', 'user-123')
+  mockFormData.append('slug', 'jane-smith')
   mockFormData.append('eventId', 'event-456')
   mockFormData.append('name', 'John Doe')
   mockFormData.append('email', 'john@example.com')
@@ -80,7 +81,6 @@ describe('createBooking action', () => {
     expect(result).toEqual({ 
       success: true, 
       requiresDeposit: false, 
-      mpPublicKey: undefined,
       bookingId: 'booking-123'
     })
   })
@@ -108,7 +108,7 @@ describe('createBooking action', () => {
 
     mockSupabase.single
       .mockResolvedValueOnce({ 
-        data: { full_name: 'Jane Smith', mp_public_key: 'OWNER-PUBLIC-KEY' }, 
+        data: { full_name: 'Jane Smith' }, 
         error: null 
       })
       .mockResolvedValueOnce({ 
@@ -126,7 +126,6 @@ describe('createBooking action', () => {
     expect(result).toEqual({ 
       success: true, 
       requiresDeposit: true, 
-      mpPublicKey: 'OWNER-PUBLIC-KEY',
       bookingId: 'booking-paid'
     })
     

@@ -40,14 +40,12 @@ describe('updateProfile action', () => {
     formData.append('slug', 'johndoe');
     formData.append('brandColor', '#000000');
     formData.append('mpAccessToken', 'TEST-ACCESS-TOKEN');
-    formData.append('mpPublicKey', 'TEST-PUBLIC-KEY');
 
     const result = await updateProfile(formData);
 
     expect(result).toEqual({ success: true });
     expect(mockSupabase.update).toHaveBeenCalledWith(expect.objectContaining({
       mp_access_token: 'TEST-ACCESS-TOKEN',
-      mp_public_key: 'TEST-PUBLIC-KEY',
     }));
   });
 });

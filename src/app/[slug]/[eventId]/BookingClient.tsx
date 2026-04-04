@@ -38,6 +38,7 @@ export function BookingClient({
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [selectedTime, setSelectedTime] = useState<Date | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isRedirecting, setIsRedirecting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -67,16 +68,25 @@ export function BookingClient({
     
     // add hidden fields
     formData.append('profileId', profile.id)
+    formData.append('slug', profile.slug)
     formData.append('eventId', eventType.id)
     formData.append('startTime', selectedTime.toISOString())
     formData.append('endTime', addMinutes(selectedTime, eventType.duration_mins).toISOString())
 
     const res = await createBooking(formData)
     
-    setIsSubmitting(false)
     if (res?.error) {
+       setIsSubmitting(false)
        setError(res.error)
+    } else if (res?.checkoutUrl) {
+       // Show redirecting modal
+       setIsRedirecting(true)
+       // Small delay so user can read the modal
+       setTimeout(() => {
+         window.location.href = res.checkoutUrl!
+       }, 2000)
     } else {
+       setIsSubmitting(false)
        setIsSuccess(true)
     }
   }
@@ -101,6 +111,26 @@ export function BookingClient({
   return (
     <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden max-w-5xl mx-auto flex flex-col md:flex-row">
       
+      {/* Redirection Modal */}
+      {isRedirecting && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl shadow-2xl p-10 max-w-sm w-full text-center animate-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6 mx-auto animate-pulse">
+              <CreditCard className="w-10 h-10" />
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">¡Casi listo!</h3>
+            <p className="text-slate-600 mb-6">
+              Serás redirigido a <strong>Mercado Pago</strong> para completar el pago de la seña y confirmar tu reserva con {profile.full_name}.
+            </p>
+            <div className="flex items-center justify-center gap-2 text-blue-600 font-bold text-sm uppercase tracking-widest">
+              <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></span>
+              <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+              <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar Info */}
       <div className="bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 p-8 w-full md:w-1/3">
         <Link href={`/${profile.slug}`} className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-white hover:shadow-sm transition-all mb-8">

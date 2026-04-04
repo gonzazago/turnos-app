@@ -17,7 +17,6 @@ export async function updateProfile(formData: FormData) {
   const brandColor = formData.get('brandColor') as string
   const logoFile = formData.get('logo') as File | null
   const mpAccessToken = formData.get('mpAccessToken') as string
-  const mpPublicKey = formData.get('mpPublicKey') as string
 
   // Process slug to be url friendly
   const safeSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-')
@@ -51,7 +50,6 @@ export async function updateProfile(formData: FormData) {
     slug: safeSlug,
     brand_color: brandColor,
     mp_access_token: mpAccessToken,
-    mp_public_key: mpPublicKey,
   }
 
   if (logoUrl) {
@@ -116,6 +114,31 @@ export async function updateAvailability(
   if (insertError) {
     console.error(insertError)
     return { error: 'No se pudo actualizar la disponibilidad.' }
+  }
+
+  revalidatePath('/dashboard/settings')
+  return { success: true }
+}
+
+export async function disconnectPaymentAccount(provider: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+    return { error: 'No autorizado' }
+  }
+
+  // Delete the payment account record for this provider
+  const { error } = await supabase
+    .from('payment_accounts')
+    .delete()
+    .eq('user_id', user.id)
+    .eq('provider', provider)
+
+  if (error) {
+    console.error('Error disconnecting account:', error)
+    return { error: 'No se pudo desvincular la cuenta.' }
   }
 
   revalidatePath('/dashboard/settings')

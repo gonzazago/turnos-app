@@ -41,7 +41,7 @@ describe('PaymentAccountService', () => {
           provider: 'mercadopago',
           access_token: 'access-123',
         }),
-        { onConflict: 'user_id, provider, provider_user_id' }
+        { onConflict: 'provider, provider_user_id' }
       );
     });
   });
