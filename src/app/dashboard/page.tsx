@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { subMonths, addMonths } from 'date-fns'
-import { DashboardCalendar } from './components/DashboardCalendar'
+import { ClientDashboard } from './components/ClientDashboard'
 
 export const metadata = { title: 'Dashboard - Turnos' }
 
@@ -27,12 +27,12 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-900">Tu Calendario</h1>
-        <p className="text-slate-500 mt-1">Gestiona y visualiza tus citas de forma interactiva.</p>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-slate-900">Tu Panel</h1>
+        <p className="text-slate-500 mt-1">Gestiona tus citas y visualiza tu disponibilidad.</p>
       </div>
 
-      <DashboardCalendar bookings={bookings || []} />
+      <ClientDashboard bookings={bookings || []} />
     </div>
   )
 }
