@@ -14,12 +14,12 @@
     - [x] Apply styling to differentiate `confirmed` vs `pending_payment` bookings.
 - [x] Task: Conductor - User Manual Verification 'Appointments Dashboard View' (Protocol in workflow.md) (83c9c2d)
 
-## Phase 3: Appointment Actions (Cancel/Reschedule) [checkpoint: 83c9c2d]
-- [x] Task: Implement `cancelBooking` server action (83c9c2d)
+## Phase 3: Appointment Actions (Cancel/Reschedule) [checkpoint: f2e3272]
+- [x] Task: Implement `cancelBooking` server action (f2e3272)
     - [x] Add an action to `src/app/dashboard/actions.ts` that deletes or marks a booking as cancelled, verifying the user owns the event type.
-- [x] Task: Implement `rescheduleBooking` server action (83c9c2d)
+- [x] Task: Implement `rescheduleBooking` server action (f2e3272)
     - [x] Add an action to update `start_time` and `end_time` of a specific booking.
-- [x] Task: Add UI for actions (83c9c2d)
+- [x] Task: Add UI for actions (f2e3272)
     - [x] Create a `BookingCard` client component with "Cancelar" and "Reprogramar" buttons.
     - [x] Add a modal for the reschedule action (to pick a new date/time).
-- [x] Task: Conductor - User Manual Verification 'Appointment Actions' (Protocol in workflow.md) (83c9c2d)
+- [x] Task: Conductor - User Manual Verification 'Appointment Actions' (Protocol in workflow.md) (f2e3272)
