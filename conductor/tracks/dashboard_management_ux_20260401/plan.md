@@ -23,3 +23,6 @@
     - [x] Create a `BookingCard` client component with "Cancelar" and "Reprogramar" buttons.
     - [x] Add a modal for the reschedule action (to pick a new date/time).
 - [x] Task: Conductor - User Manual Verification 'Appointment Actions' (Protocol in workflow.md) (f2e3272)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions (28f1b96)
