@@ -210,7 +210,7 @@ export function SettingsForm({ profile }: { profile: any }) {
               </div>
             ) : (
               <a 
-                href={`https://auth.mercadopago.com/authorization?client_id=${process.env.MP_CLIENT_ID}&response_type=code&state=${profile.id}&redirect_uri=${process.env.NEXT_PUBLIC_APP_URL}/api/auth/mercadopago/callback`}
+                href="/api/auth/mercadopago/authorize"
                 className="bg-[#009EE3] hover:bg-[#008ACA] text-white font-bold px-6 py-2.5 rounded-xl transition-all shadow-sm active:scale-[0.98] text-sm whitespace-nowrap text-center"
               >
                 Conectar Mercado Pago

@@ -116,8 +116,6 @@ export async function createBooking(formData: FormData) {
 
       // 3. Calculate deposit amount
       const depositAmount = (Number(eventType.total_price) * Number(eventType.deposit_percentage)) / 100;
-
-      console.log('Creating MP Preference with Token:', accessToken.substring(0, 10) + '...');
       
       const preferencePayload = {
         items: [
@@ -145,8 +143,6 @@ export async function createBooking(formData: FormData) {
         statement_descriptor: 'TURNOS APP',
       };
 
-      console.log("Creating MP Preference with Token:", accessToken);
-
       // 4. Create Preference in Mercado Pago
       const prefResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
         method: 'POST',
@@ -158,8 +154,6 @@ export async function createBooking(formData: FormData) {
       });
 
       const prefData = await prefResponse.json();
-
-      console.log('Creating MP Preference with Token:', prefData);
 
       if (!prefResponse.ok) {
         console.error('Mercado Pago Preference Error. Status:', prefResponse.status, 'Body:', prefData);

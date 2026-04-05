@@ -11,17 +11,13 @@ export async function cancelBooking(bookingId: string) {
     return { error: 'No autorizado' }
   }
 
-  // Use admin client to ensure delete works even if RLS is restrictive
-  const { createClient: createSupabaseAdmin } = await import('@supabase/supabase-js')
-  const supabaseAdmin = createSupabaseAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
-  const { error } = await supabaseAdmin
+  // Use the regular supabase client to enforce RLS ownership
+  const { error } = await supabase
     .from('bookings')
     .delete()
     .eq('id', bookingId)
+    // We keep eq('user_id', user.id) for extra safety, 
+    // although RLS already enforces it.
     .eq('user_id', user.id)
 
   if (error) {
@@ -41,14 +37,8 @@ export async function rescheduleBooking(bookingId: string, newStartTime: string,
     return { error: 'No autorizado' }
   }
 
-  // Use admin client to ensure update works
-  const { createClient: createSupabaseAdmin } = await import('@supabase/supabase-js')
-  const supabaseAdmin = createSupabaseAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
-  const { error } = await supabaseAdmin
+  // Use the regular supabase client to enforce RLS ownership
+  const { error } = await supabase
     .from('bookings')
     .update({
       start_time: newStartTime,
