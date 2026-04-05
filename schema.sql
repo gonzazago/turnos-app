@@ -71,7 +71,8 @@ create table public.bookings (
   payment_status text default 'pending' not null,
   mercado_pago_preference_id text,
   billing_info jsonb default '{}'::jsonb not null,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 alter table public.bookings enable row level security;
@@ -87,6 +88,10 @@ create policy "Anyone can insert a booking"
 
 create policy "Users can update own bookings."
   on bookings for update
+  using ( auth.uid() = user_id );
+
+create policy "Users can delete own bookings."
+  on bookings for delete
   using ( auth.uid() = user_id );
 
 -- Enable btree_gist extension for exclusion constraints

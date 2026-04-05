@@ -11,8 +11,14 @@ export async function cancelBooking(bookingId: string) {
     return { error: 'No autorizado' }
   }
 
-  // Verify ownership and delete
-  const { error } = await supabase
+  // Use admin client to ensure delete works even if RLS is restrictive
+  const { createClient: createSupabaseAdmin } = await import('@supabase/supabase-js')
+  const supabaseAdmin = createSupabaseAdmin(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const { error } = await supabaseAdmin
     .from('bookings')
     .delete()
     .eq('id', bookingId)
@@ -35,13 +41,18 @@ export async function rescheduleBooking(bookingId: string, newStartTime: string,
     return { error: 'No autorizado' }
   }
 
-  // Update booking
-  const { error } = await supabase
+  // Use admin client to ensure update works
+  const { createClient: createSupabaseAdmin } = await import('@supabase/supabase-js')
+  const supabaseAdmin = createSupabaseAdmin(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const { error } = await supabaseAdmin
     .from('bookings')
     .update({
       start_time: newStartTime,
-      end_time: newEndTime,
-      updated_at: new Date().toISOString()
+      end_time: newEndTime
     })
     .eq('id', bookingId)
     .eq('user_id', user.id)

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { updateProfile, disconnectPaymentAccount } from './actions'
 import { UploadCloud, CheckCircle, AlertCircle, Link2Off } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
+import { Spinner } from '@/components/ui/Spinner'
 
 export function SettingsForm({ profile }: { profile: any }) {
   const searchParams = useSearchParams()
@@ -201,10 +202,10 @@ export function SettingsForm({ profile }: { profile: any }) {
                   type="button"
                   onClick={handleDisconnect}
                   disabled={loading}
-                  className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                  className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all flex items-center justify-center min-w-[40px]"
                   title="Desvincular cuenta"
                 >
-                  <Link2Off className="w-5 h-5" />
+                  {loading ? <Spinner size="sm" /> : <Link2Off className="w-5 h-5" />}
                 </button>
               </div>
             ) : (
@@ -225,6 +226,7 @@ export function SettingsForm({ profile }: { profile: any }) {
           disabled={loading}
           className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow-sm shadow-blue-600/20 disabled:opacity-70 flex items-center gap-2"
         >
+          {loading ? <Spinner size="sm" color="white" /> : null}
           {loading ? 'Guardando...' : 'Guardar Cambios'}
         </button>
       </div>

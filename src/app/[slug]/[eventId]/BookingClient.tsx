@@ -7,6 +7,7 @@ import { Clock, Calendar as CalendarIcon, ArrowLeft, Mail, User, CheckCircle, Cr
 import Link from 'next/link'
 import { createBooking } from './actions'
 import { getAvailableSlots, Availability, Booking } from '@/utils/availability'
+import { Spinner } from '@/components/ui/Spinner'
 
 interface Profile {
   id: string
@@ -294,6 +295,7 @@ export function BookingClient({
                disabled={isSubmitting}
                className="mt-8 w-full brand-bg hover:opacity-90 text-white font-bold text-lg py-4 rounded-xl transition-all shadow-lg active:scale-[0.99] disabled:opacity-70 disabled:pointer-events-none flex items-center justify-center gap-2"
              >
+               {isSubmitting && <Spinner size="sm" color="white" />}
                {isSubmitting ? 'Confirmando...' : 'Confirmar Reserva'}
              </button>
            </form>
