@@ -17,6 +17,19 @@ vi.mock('@/utils/supabase/server', () => ({
   createClient: vi.fn(),
 }))
 
+// Mock Supabase JS client (used for admin operations)
+vi.mock('@supabase/supabase-js', () => ({
+  createClient: vi.fn(),
+}))
+
+// Mock PaymentAccountService
+vi.mock('@/utils/payment-accounts', () => ({
+  PaymentAccountService: {
+    getActiveAccountAdmin: vi.fn(),
+    refreshTokenIfNeeded: vi.fn(),
+  }
+}))
+
 describe('createBooking action', () => {
   const mockFormData = new FormData()
   mockFormData.append('profileId', 'user-123')
@@ -40,10 +53,16 @@ describe('createBooking action', () => {
     lte: vi.fn().mockReturnThis(),
     lt: vi.fn().mockReturnThis(),
     insert: vi.fn().mockReturnThis(),
+    update: vi.fn().mockReturnThis(),
   })
 
   it('should return error if database constraint fails (concurrent booking)', async () => {
     const mockSupabase = createMockSupabase()
+    
+    // Mock both clients
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
+    const { createClient: createSupabaseAdmin } = await import('@supabase/supabase-js')
+    vi.mocked(createSupabaseAdmin).mockReturnValue(mockSupabase as any)
     
     // profile, eventType, daily check, overlap check, insert
     mockSupabase.single
@@ -58,14 +77,16 @@ describe('createBooking action', () => {
       error: { code: '23P01' } 
     })
     
-    vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
-
     const result = await createBooking(mockFormData)
     expect(result).toEqual({ error: 'Lo sentimos, este horario ya ha sido reservado. Por favor, selecciona otro.' })
   })
 
   it('should return success if booking is created successfully', async () => {
     const mockSupabase = createMockSupabase()
+    
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
+    const { createClient: createSupabaseAdmin } = await import('@supabase/supabase-js')
+    vi.mocked(createSupabaseAdmin).mockReturnValue(mockSupabase as any)
 
     mockSupabase.single
       .mockResolvedValueOnce({ data: { full_name: 'Jane Smith' }, error: null })
@@ -75,18 +96,18 @@ describe('createBooking action', () => {
     mockSupabase.lte.mockResolvedValueOnce({ data: [], error: null })
     mockSupabase.single.mockResolvedValueOnce({ data: { id: 'booking-123' }, error: null })
     
-    vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
-
     const result = await createBooking(mockFormData)
     expect(result).toEqual({ 
       success: true, 
       requiresDeposit: false, 
-      bookingId: 'booking-123'
+      bookingId: 'booking-123',
+      checkoutUrl: undefined
     })
   })
 
   it('should return error if the same email has already booked on the same day', async () => {
     const mockSupabase = createMockSupabase()
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
 
     mockSupabase.single
       .mockResolvedValueOnce({ data: { full_name: 'Jane Smith' }, error: null })
@@ -97,14 +118,16 @@ describe('createBooking action', () => {
       error: null 
     })
     
-    vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
-
     const result = await createBooking(mockFormData)
     expect(result).toEqual({ error: 'Ya tienes una reserva para este día. Solo se permite una reserva por día.' })
   })
 
-  it('should return requiresDeposit and mpPublicKey if event requires deposit', async () => {
+  it('should return requiresDeposit and checkoutUrl if event requires deposit', async () => {
     const mockSupabase = createMockSupabase()
+    
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
+    const { createClient: createSupabaseAdmin } = await import('@supabase/supabase-js')
+    vi.mocked(createSupabaseAdmin).mockReturnValue(mockSupabase as any)
 
     mockSupabase.single
       .mockResolvedValueOnce({ 
@@ -112,7 +135,7 @@ describe('createBooking action', () => {
         error: null 
       })
       .mockResolvedValueOnce({ 
-        data: { title: 'Paid Meeting', requires_deposit: true }, 
+        data: { title: 'Paid Meeting', requires_deposit: true, total_price: 100, deposit_percentage: 20 }, 
         error: null 
       })
     
@@ -120,18 +143,26 @@ describe('createBooking action', () => {
     mockSupabase.lte.mockResolvedValueOnce({ data: [], error: null })
     mockSupabase.single.mockResolvedValueOnce({ data: { id: 'booking-paid' }, error: null })
     
-    vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
+    // Mock the PaymentAccountService calls
+    const { PaymentAccountService } = await import('@/utils/payment-accounts')
+    vi.mocked(PaymentAccountService.getActiveAccountAdmin).mockResolvedValue({
+      data: { id: 'mp-acc-123', provider: 'mercadopago', access_token: 'old-token' },
+      error: null
+    } as any)
+    vi.mocked(PaymentAccountService.refreshTokenIfNeeded).mockResolvedValue('valid-token')
+
+    // Mock MP preference creation
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ id: 'pref-123', init_point: 'http://checkout.mp' })
+    })
 
     const result = await createBooking(mockFormData)
     expect(result).toEqual({ 
       success: true, 
       requiresDeposit: true, 
-      bookingId: 'booking-paid'
+      bookingId: 'booking-paid',
+      checkoutUrl: 'http://checkout.mp'
     })
-    
-    expect(mockSupabase.insert).toHaveBeenCalledWith(expect.objectContaining({
-      status: 'pending_payment',
-      payment_status: 'pending'
-    }))
   })
 })

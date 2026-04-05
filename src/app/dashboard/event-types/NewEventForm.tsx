@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { createEventType } from './actions'
 import { AvailabilitySettings, AvailabilityDay } from '../components/AvailabilitySettings'
 import { CreditCard, Percent, DollarSign, Plus, X } from 'lucide-react'
-import { Spinner } from '@/components/ui/Spinner'
+import { Spinner } from '@/components/Spinner'
 import { Modal } from '@/components/Modal'
 
 const DEFAULT_SCHEDULE: AvailabilityDay[] = [

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { updateProfile, disconnectPaymentAccount } from './actions'
 import { UploadCloud, CheckCircle, AlertCircle, Link2Off } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
-import { Spinner } from '@/components/ui/Spinner'
+import { Spinner } from '@/components/Spinner'
 
 export function SettingsForm({ profile }: { profile: any }) {
   const searchParams = useSearchParams()

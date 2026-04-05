@@ -6,7 +6,7 @@ import { Mail, Calendar, Clock, CheckCircle, AlertCircle, Trash2, Edit, AlertTri
 import { useState } from 'react'
 import { cancelBooking, rescheduleBooking } from '../actions'
 import { Modal } from '@/components/Modal'
-import { Spinner } from '@/components/ui/Spinner'
+import { Spinner } from '@/components/Spinner'
 
 export function BookingList({ bookings }: { bookings: any[] }) {
   const [filter, setView] = useState<'all' | 'confirmed' | 'pending'>('all')

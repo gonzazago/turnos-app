@@ -191,6 +191,11 @@ before update on public.payment_accounts
 for each row
 execute function public.set_updated_at();
 
+create trigger set_bookings_updated_at
+before update on public.bookings
+for each row
+execute function public.set_updated_at();
+
 alter table public.payment_accounts enable row level security;
 
 create policy "Users can view their own payment accounts"

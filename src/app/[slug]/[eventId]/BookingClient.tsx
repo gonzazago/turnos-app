@@ -7,7 +7,7 @@ import { Clock, Calendar as CalendarIcon, ArrowLeft, Mail, User, CheckCircle, Cr
 import Link from 'next/link'
 import { createBooking } from './actions'
 import { getAvailableSlots, Availability, Booking } from '@/utils/availability'
-import { Spinner } from '@/components/ui/Spinner'
+import { Spinner } from '@/components/Spinner'
 
 interface Profile {
   id: string
