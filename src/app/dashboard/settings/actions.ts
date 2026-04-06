@@ -136,16 +136,40 @@ export async function disconnectPaymentAccount(provider: string) {
     return { error: 'No autorizado' }
   }
 
-  // Delete the payment account record for this provider
-  const { error } = await supabase
-    .from('payment_accounts')
-    .delete()
-    .eq('user_id', user.id)
-    .eq('provider', provider)
+  if (provider === 'google') {
+    // 1. Delete the google calendar tokens
+    const { error: tokenError } = await supabase
+      .from('google_calendar_tokens')
+      .delete()
+      .eq('user_id', user.id)
 
-  if (error) {
-    console.error('Error disconnecting account:', error)
-    return { error: 'No se pudo desvincular la cuenta.' }
+    if (tokenError) {
+      console.error('Error disconnecting Google Calendar tokens:', tokenError)
+      return { error: 'No se pudo desvincular Google Calendar.' }
+    }
+
+    // 2. Update profile flag
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({ google_calendar_connected: false })
+      .eq('id', user.id)
+
+    if (profileError) {
+      console.error('Error updating profile after Google disconnection:', profileError)
+      return { error: 'Error al actualizar el perfil.' }
+    }
+  } else {
+    // Delete the payment account record for this provider (e.g., mercadopago)
+    const { error } = await supabase
+      .from('payment_accounts')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('provider', provider)
+
+    if (error) {
+      console.error('Error disconnecting payment account:', error)
+      return { error: 'No se pudo desvincular la cuenta.' }
+    }
   }
 
   revalidatePath('/dashboard/settings')

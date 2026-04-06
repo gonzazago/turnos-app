@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { updateProfile, disconnectPaymentAccount } from './actions'
-import { UploadCloud, CheckCircle, AlertCircle, Link2Off } from 'lucide-react'
+import { UploadCloud, CheckCircle, AlertCircle, Link2Off, Calendar } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { Spinner } from '@/components/Spinner'
 
@@ -16,19 +16,24 @@ export function SettingsForm({ profile }: { profile: any }) {
   const [logoPreview, setLogoPreview] = useState(profile.logo_url)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const handleDisconnect = async () => {
-    if (!confirm('¿Estás seguro de que deseas desvincular tu cuenta de Mercado Pago? No podrás cobrar señas en tus eventos hasta que la vuelvas a conectar.')) {
+  const handleDisconnect = async (provider: string) => {
+    const providerName = provider === 'mercadopago' ? 'Mercado Pago' : 'Google Calendar'
+    const message = provider === 'mercadopago' 
+      ? '¿Estás seguro de que deseas desvincular tu cuenta de Mercado Pago? No podrás cobrar señas en tus eventos hasta que la vuelvas a conectar.'
+      : '¿Estás seguro de que deseas desvincular tu cuenta de Google Calendar? Los eventos ya no se sincronizarán y tus horarios ocupados no se bloquearán.'
+
+    if (!confirm(message)) {
       return
     }
 
     setLoading(true)
     try {
-      const res = await disconnectPaymentAccount('mercadopago')
+      const res = await disconnectPaymentAccount(provider)
       if (res?.error) {
         setError(res.error)
       } else {
         setSuccess(true)
-        setSuccessMessage('Cuenta de Mercado Pago desvinculada.')
+        setSuccessMessage(`Cuenta de ${providerName} desvinculada.`)
         setTimeout(() => setSuccess(false), 3000)
       }
     } catch (err) {
@@ -44,12 +49,20 @@ export function SettingsForm({ profile }: { profile: any }) {
       setSuccessMessage('Cuenta de Mercado Pago conectada exitosamente.')
       setTimeout(() => setSuccess(false), 5000)
     }
+    if (searchParams.get('success') === 'google_connected') {
+      setSuccess(true)
+      setSuccessMessage('Cuenta de Google Calendar conectada exitosamente.')
+      setTimeout(() => setSuccess(false), 5000)
+    }
     if (searchParams.get('error')) {
       const errCode = searchParams.get('error')
       let msg = 'Ocurrió un error.'
       if (errCode === 'mp_auth_failed') msg = 'No se pudo autorizar con Mercado Pago.'
       else if (errCode === 'mp_exchange_failed') msg = 'Error al verificar las credenciales con Mercado Pago.'
       else if (errCode === 'mp_internal_error') msg = 'Error interno al conectar Mercado Pago.'
+      else if (errCode === 'google_auth_failed') msg = 'No se pudo autorizar con Google.'
+      else if (errCode === 'google_db_save_failed') msg = 'Error al guardar las credenciales de Google.'
+      else if (errCode === 'google_internal_error') msg = 'Error interno al conectar Google Calendar.'
       setError(msg)
     }
   }, [searchParams])
@@ -200,7 +213,7 @@ export function SettingsForm({ profile }: { profile: any }) {
                 </div>
                 <button
                   type="button"
-                  onClick={handleDisconnect}
+                  onClick={() => handleDisconnect('mercadopago')}
                   disabled={loading}
                   className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all flex items-center justify-center min-w-[40px]"
                   title="Desvincular cuenta"
@@ -214,6 +227,44 @@ export function SettingsForm({ profile }: { profile: any }) {
                 className="bg-[#009EE3] hover:bg-[#008ACA] text-white font-bold px-6 py-2.5 rounded-xl transition-all shadow-sm active:scale-[0.98] text-sm whitespace-nowrap text-center"
               >
                 Conectar Mercado Pago
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div className="pt-6 mt-6 border-t border-slate-100">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-blue-600" />
+                Google Calendar
+              </h3>
+              <p className="text-slate-500 text-sm mt-1">Sincroniza tus eventos y evita que agenden en horarios ocupados de tu calendario personal.</p>
+            </div>
+            
+            {profile.google_calendar_connected ? (
+              <div className="flex items-center gap-2">
+                <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-blue-200">
+                  <CheckCircle className="w-4 h-4" />
+                  Google Calendar Conectado
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDisconnect('google')}
+                  disabled={loading}
+                  className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all flex items-center justify-center min-w-[40px]"
+                  title="Desvincular Google Calendar"
+                >
+                  {loading ? <Spinner size="sm" /> : <Link2Off className="w-5 h-5" />}
+                </button>
+              </div>
+            ) : (
+              <a 
+                href="/api/auth/google/authorize"
+                className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold px-6 py-2.5 rounded-xl transition-all shadow-sm active:scale-[0.98] text-sm whitespace-nowrap text-center flex items-center gap-2"
+              >
+                <img src="https://www.gstatic.com/images/branding/product/1x/calendar_2020q4_48dp.png" alt="Google" className="h-4" />
+                Conectar Google Calendar
               </a>
             )}
           </div>

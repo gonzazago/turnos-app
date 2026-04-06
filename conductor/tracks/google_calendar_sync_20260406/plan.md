@@ -9,10 +9,10 @@
 - [x] Task: Implement NextAuth Google Provider (a3036ef)
     - [x] Add Google provider to NextAuth configuration (Implemented as custom OAuth2).
     - [x] Implement callback to store `access_token` and `refresh_token` securely.
-- [ ] Task: Provider Settings UI
-    - [ ] Write failing UI tests for the "Connect Google Calendar" button in profile settings.
-    - [ ] Implement the "Connect/Disconnect Google Calendar" button on the Settings view.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Authentication and Data Modeling' (Protocol in workflow.md)
+- [x] Task: Provider Settings UI (a7cfa40)
+    - [x] Write failing UI tests for the "Connect Google Calendar" button in profile settings.
+    - [x] Implement the "Connect/Disconnect Google Calendar" button on the Settings view.
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Authentication and Data Modeling' (Protocol in workflow.md) (a7cfa40)
 
 ### Phase 2: Event Synchronization (Turnos to Google)
 - [ ] Task: Create Setup Tests for Google Calendar API Services
