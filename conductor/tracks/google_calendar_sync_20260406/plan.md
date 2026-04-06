@@ -19,11 +19,11 @@
     - [x] Write unit tests for Google Calendar service methods (`createEvent`, `deleteEvent`, `generateMeetLink`).
 - [x] Task: Implement Google Calendar API Client (2a50b10)
     - [x] Build the utility functions to interact with the Google Calendar API.
-- [ ] Task: Synchronize Booking Creation
-    - [ ] Write failing integration tests for booking creation that triggers Google Event creation.
-    - [ ] Update the core Booking service to push the new event to the provider's connected Google Calendar.
-    - [ ] Support generating Google Meet link if the event type is virtual.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Event Synchronization (Turnos to Google)' (Protocol in workflow.md)
+- [x] Task: Synchronize Booking Creation (622b3e8)
+    - [x] Write failing integration tests for booking creation that triggers Google Event creation.
+    - [x] Update the core Booking service to push the new event to the provider's connected Google Calendar.
+    - [x] Support generating Google Meet link if the event type is virtual.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Event Synchronization (Turnos to Google)' (Protocol in workflow.md) (622b3e8)
 
 ### Phase 3: Bidirectional Sync (Google Webhooks)
 - [x] Task: Setup Webhook Endpoint Tests (622b3e8)
@@ -34,15 +34,15 @@
 - [x] Task: Webhook Subscription Management (622b3e8)
     - [x] Implement the logic to subscribe to a user's Google Calendar upon successful OAuth connection.
     - [x] Implement the logic to unsubscribe when the user disconnects their account.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Bidirectional Sync (Google Webhooks)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Bidirectional Sync (Google Webhooks)' (Protocol in workflow.md) (622b3e8)
 
 ### Phase 4: Conflict Resolution and Deletion Handling
-- [ ] Task: Test Calendar Conflict Resolution
-    - [ ] Write tests ensuring that blocks created via the webhook prevent conflicting Turnos App bookings.
-- [ ] Task: Implement Conflict Block
-    - [ ] Update the `availability` logic: if a busy block exists from Google Calendar, mark the time slots as unavailable.
-- [ ] Task: Test Remote Event Deletion
-    - [ ] Write tests verifying that a deleted Google Calendar event correctly cancels the Turnos booking.
-- [ ] Task: Implement Event Deletion Logic
-    - [ ] Update the webhook processor: if an event `status` is `cancelled` in Google Calendar, cancel the booking and notify the client.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Conflict Resolution and Deletion Handling' (Protocol in workflow.md)
+- [x] Task: Test Calendar Conflict Resolution (c0ff661)
+    - [x] Write tests ensuring that blocks created via the webhook prevent conflicting Turnos App bookings.
+- [x] Task: Implement Conflict Block (c0ff661)
+    - [x] Update the `availability` logic: if a busy block exists from Google Calendar, mark the time slots as unavailable.
+- [x] Task: Test Remote Event Deletion (c0ff661)
+    - [x] Write tests verifying that a deleted Google Calendar event correctly cancels the Turnos booking.
+- [x] Task: Implement Event Deletion Logic (c0ff661)
+    - [x] Update the webhook processor: if an event `status` is `cancelled` in Google Calendar, cancel the booking and notify the client.
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Conflict Resolution and Deletion Handling' (Protocol in workflow.md) (c0ff661)

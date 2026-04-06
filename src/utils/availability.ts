@@ -30,7 +30,8 @@ export function getAvailableSlots(
   date: Date,
   availability: Availability[],
   bookings: Booking[],
-  duration: number
+  duration: number,
+  googleBusySlots: Booking[] = []
 ): string[] {
   // Use local day to match user's perspective and format() output
   const dayOfWeek = getDay(date)
@@ -79,7 +80,17 @@ export function getAvailableSlots(
         )
       })
 
-      if (!isBooked) {
+      const isExternalBusy = googleBusySlots.some((slot) => {
+        const busyStart = new Date(slot.start_time)
+        const busyEnd = new Date(slot.end_time)
+        
+        return areIntervalsOverlapping(
+          { start: currentSlot, end: slotEnd },
+          { start: busyStart, end: busyEnd }
+        )
+      })
+
+      if (!isBooked && !isExternalBusy) {
         // Only add slot if it's in the future
         if (currentSlot.getTime() > new Date().getTime()) {
           slots.push(currentSlot.toISOString())

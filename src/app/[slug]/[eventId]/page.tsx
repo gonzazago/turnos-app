@@ -66,10 +66,19 @@ export default async function BookingPage({ params }: { params: Promise<Params> 
     .gte('end_time', startOfDay(new Date()).toISOString())
     .lt('start_time', addDays(new Date(), 15).toISOString())
 
+  // Fetch Google busy slots
+  const { data: googleBusyData } = await supabase
+    .from('google_busy_slots')
+    .select('start_time, end_time')
+    .eq('user_id', profile.id)
+    .gte('end_time', startOfDay(new Date()).toISOString())
+    .lt('start_time', addDays(new Date(), 15).toISOString())
+
   return <BookingClient 
     profile={profile} 
     eventType={eventType} 
     bookedSlots={bookedData || []} 
     availability={availability || []}
+    googleBusySlots={googleBusyData || []}
   />
 }

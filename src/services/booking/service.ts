@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from '@/utils/supabase/admin';
 import { areIntervalsOverlapping, startOfDay, addDays } from 'date-fns';
+import { CalendarService } from '../calendar/service';
 
 export interface CreateBookingParams {
   profileId: string;
@@ -76,6 +77,37 @@ export class BookingService {
       throw new Error('Ocurrió un error al procesar tu reserva.');
     }
 
+    // 4. Google Calendar Sync
+    try {
+      // Get event type details to check if it's virtual
+      const { data: eventType } = await supabaseAdmin
+        .from('event_types')
+        .select('title, description, duration_mins')
+        .eq('id', params.eventTypeId)
+        .single();
+
+      const googleEvent = await CalendarService.createBookingEvent(params.profileId, {
+        summary: `${eventType?.title || 'Reserva'} - ${params.bookerName}`,
+        description: `Reserva realizada a través de Turnos App.\n\nCliente: ${params.bookerName}\nEmail: ${params.bookerEmail}`,
+        start_time: params.startTime,
+        end_time: params.endTime,
+        booker_email: params.bookerEmail,
+        is_virtual: true, // We could make this dynamic based on event type if we had the field
+      });
+
+      if (googleEvent) {
+        await supabaseAdmin
+          .from('bookings')
+          .update({
+            google_event_id: googleEvent.id,
+            google_meet_link: googleEvent.hangoutLink
+          })
+          .eq('id', newBooking.id);
+      }
+    } catch (err) {
+      console.error('Error in Google Calendar sync during booking creation:', err);
+    }
+
     return newBooking;
   }
 
@@ -109,6 +141,19 @@ export class BookingService {
 
   static async cancel(bookingId: string, userId: string) {
     const supabaseAdmin = getSupabaseAdmin();
+
+    // 1. Get booking to check for google_event_id
+    const { data: booking } = await supabaseAdmin
+      .from('bookings')
+      .select('google_event_id')
+      .eq('id', bookingId)
+      .eq('user_id', userId)
+      .single();
+
+    if (booking?.google_event_id) {
+      await CalendarService.deleteBookingEvent(userId, booking.google_event_id);
+    }
+
     return supabaseAdmin
       .from('bookings')
       .delete()

@@ -29,12 +29,14 @@ export function BookingClient({
   profile, 
   eventType, 
   bookedSlots = [], 
-  availability = [] 
+  availability = [],
+  googleBusySlots = []
 }: { 
   profile: Profile, 
   eventType: EventType, 
   bookedSlots?: Booking[],
-  availability?: Availability[]
+  availability?: Availability[],
+  googleBusySlots?: Booking[]
 }) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [selectedTime, setSelectedTime] = useState<Date | null>(null)
@@ -56,7 +58,8 @@ export function BookingClient({
     selectedDate,
     availability,
     bookedSlots,
-    eventType.duration_mins
+    eventType.duration_mins,
+    googleBusySlots
   )
 
   const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {

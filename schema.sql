@@ -70,6 +70,8 @@ create table public.bookings (
   status text default 'confirmed' not null,
   payment_status text default 'pending' not null,
   mercado_pago_preference_id text,
+  google_event_id text,
+  google_meet_link text,
   billing_info jsonb default '{}'::jsonb not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
@@ -252,3 +254,26 @@ create trigger set_google_calendar_tokens_updated_at
 before update on public.google_calendar_tokens
 for each row
 execute function public.set_updated_at();
+
+-- Create a table for Google Calendar busy slots
+create table public.google_busy_slots (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  google_event_id text not null,
+  start_time timestamp with time zone not null,
+  end_time timestamp with time zone not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  
+  constraint google_busy_slots_unique_event unique (user_id, google_event_id)
+);
+
+alter table public.google_busy_slots enable row level security;
+
+create policy "Users can view their own busy slots"
+  on google_busy_slots for select
+  using ( auth.uid() = user_id );
+
+create policy "Service can manage busy slots"
+  on google_busy_slots for all
+  using ( auth.uid() = user_id )
+  with check ( auth.uid() = user_id );
