@@ -70,4 +70,56 @@ export class GoogleCalendarService {
       expires_in: data.expires_in,
     };
   }
+
+  async createEvent(accessToken: string, event: {
+    summary: string;
+    description?: string;
+    start: { dateTime: string; timeZone: string };
+    end: { dateTime: string; timeZone: string };
+    attendees: { email: string }[];
+    conferenceData?: any;
+  }) {
+    const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...event,
+        conferenceData: event.conferenceData ? {
+          createRequest: {
+            requestId: crypto.randomUUID(),
+            conferenceSolutionKey: { type: 'hangoutsMeet' },
+          },
+        } : undefined,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Failed to create Google event:', data);
+      throw new Error('Failed to create Google Calendar event');
+    }
+
+    return data;
+  }
+
+  async deleteEvent(accessToken: string, eventId: string) {
+    const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      console.error('Failed to delete Google event:', data);
+      throw new Error('Failed to delete Google Calendar event');
+    }
+
+    return true;
+  }
 }

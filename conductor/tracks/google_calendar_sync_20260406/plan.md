@@ -15,10 +15,10 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Authentication and Data Modeling' (Protocol in workflow.md) (a7cfa40)
 
 ### Phase 2: Event Synchronization (Turnos to Google)
-- [ ] Task: Create Setup Tests for Google Calendar API Services
-    - [ ] Write unit tests for Google Calendar service methods (`createEvent`, `deleteEvent`, `generateMeetLink`).
-- [ ] Task: Implement Google Calendar API Client
-    - [ ] Build the utility functions to interact with the Google Calendar API.
+- [x] Task: Create Setup Tests for Google Calendar API Services (2a50b10)
+    - [x] Write unit tests for Google Calendar service methods (`createEvent`, `deleteEvent`, `generateMeetLink`).
+- [x] Task: Implement Google Calendar API Client (2a50b10)
+    - [x] Build the utility functions to interact with the Google Calendar API.
 - [ ] Task: Synchronize Booking Creation
     - [ ] Write failing integration tests for booking creation that triggers Google Event creation.
     - [ ] Update the core Booking service to push the new event to the provider's connected Google Calendar.
