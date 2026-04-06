@@ -89,5 +89,53 @@ export const CalendarService = {
       console.error('Error deleting Google Calendar event:', error);
       return false;
     }
+  },
+
+  async setupWebhook(userId: string) {
+    try {
+      const accessToken = await this.getAccessToken(userId);
+      const googleService = new GoogleCalendarService();
+      
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '');
+      const callbackUrl = `${baseUrl}/api/webhooks/google-calendar`;
+
+      const subscription = await googleService.subscribeToCalendar(accessToken, callbackUrl);
+
+      const supabaseAdmin = getSupabaseAdmin();
+      await supabaseAdmin
+        .from('google_calendar_tokens')
+        .update({
+          webhook_id: subscription.webhook_id,
+          webhook_resource_id: subscription.webhook_resource_id,
+          webhook_expiration: subscription.webhook_expiration,
+        })
+        .eq('user_id', userId);
+
+      return true;
+    } catch (error) {
+      console.error('Error setting up Google Calendar webhook:', error);
+      return false;
+    }
+  },
+
+  async stopWebhook(userId: string) {
+    try {
+      const tokens = await this.getGoogleTokens(userId);
+      if (!tokens || !tokens.webhook_id || !tokens.webhook_resource_id) return true;
+
+      const accessToken = await this.getAccessToken(userId);
+      const googleService = new GoogleCalendarService();
+
+      await googleService.unsubscribeFromCalendar(
+        accessToken, 
+        tokens.webhook_id, 
+        tokens.webhook_resource_id
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Error stopping Google Calendar webhook:', error);
+      return false;
+    }
   }
 };

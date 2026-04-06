@@ -122,4 +122,55 @@ export class GoogleCalendarService {
 
     return true;
   }
+
+  async subscribeToCalendar(accessToken: string, callbackUrl: string) {
+    const channelId = crypto.randomUUID();
+    const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events/watch', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: channelId,
+        type: 'web_hook',
+        address: callbackUrl,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Failed to subscribe to Google Calendar:', data);
+      throw new Error('Failed to subscribe to Google Calendar webhooks');
+    }
+
+    return {
+      webhook_id: data.id,
+      webhook_resource_id: data.resourceId,
+      webhook_expiration: new Date(parseInt(data.expiration)).toISOString(),
+    };
+  }
+
+  async unsubscribeFromCalendar(accessToken: string, webhookId: string, resourceId: string) {
+    const response = await fetch('https://www.googleapis.com/calendar/v3/channels/stop', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: webhookId,
+        resourceId: resourceId,
+      }),
+    });
+
+    if (!response.ok && response.status !== 404) {
+      const data = await response.json();
+      console.error('Failed to unsubscribe from Google Calendar:', data);
+      throw new Error('Failed to unsubscribe from Google Calendar webhooks');
+    }
+
+    return true;
+  }
 }

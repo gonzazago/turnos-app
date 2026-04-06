@@ -26,14 +26,14 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Event Synchronization (Turnos to Google)' (Protocol in workflow.md)
 
 ### Phase 3: Bidirectional Sync (Google Webhooks)
-- [ ] Task: Setup Webhook Endpoint Tests
-    - [ ] Write failing tests for the new Google Webhook API endpoint (`/api/webhooks/google-calendar`).
-- [ ] Task: Implement Webhook Endpoint
-    - [ ] Create the API route `/api/webhooks/google-calendar` to receive push notifications.
-    - [ ] Implement signature validation and event parsing.
-- [ ] Task: Webhook Subscription Management
-    - [ ] Implement the logic to subscribe to a user's Google Calendar upon successful OAuth connection.
-    - [ ] Implement the logic to unsubscribe when the user disconnects their account.
+- [x] Task: Setup Webhook Endpoint Tests (622b3e8)
+    - [x] Write failing tests for the new Google Webhook API endpoint (`/api/webhooks/google-calendar`).
+- [x] Task: Implement Webhook Endpoint (622b3e8)
+    - [x] Create the API route `/api/webhooks/google-calendar` to receive push notifications.
+    - [x] Implement signature validation and event parsing (Acknowledge sync, log others).
+- [x] Task: Webhook Subscription Management (622b3e8)
+    - [x] Implement the logic to subscribe to a user's Google Calendar upon successful OAuth connection.
+    - [x] Implement the logic to unsubscribe when the user disconnects their account.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Bidirectional Sync (Google Webhooks)' (Protocol in workflow.md)
 
 ### Phase 4: Conflict Resolution and Deletion Handling

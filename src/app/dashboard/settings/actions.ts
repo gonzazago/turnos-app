@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import { CalendarService } from '@/services/calendar/service'
 
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
@@ -137,6 +138,9 @@ export async function disconnectPaymentAccount(provider: string) {
   }
 
   if (provider === 'google') {
+    // 0. Stop the webhook
+    await CalendarService.stopWebhook(user.id);
+
     // 1. Delete the google calendar tokens
     const { error: tokenError } = await supabase
       .from('google_calendar_tokens')

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
 import { GoogleCalendarService } from '@/services/calendar/google';
+import { CalendarService } from '@/services/calendar/service';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -61,6 +62,9 @@ export async function GET(request: Request) {
       .from('profiles')
       .update({ google_calendar_connected: true })
       .eq('id', user.id);
+
+    // 5. Setup Webhook
+    await CalendarService.setupWebhook(user.id);
 
     return NextResponse.redirect(new URL('/dashboard/settings?success=google_connected', request.url));
 
