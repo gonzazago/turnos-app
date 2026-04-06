@@ -79,6 +79,56 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* How It Works Section */}
+        <div className="bg-slate-900 py-24 sm:py-32 relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none"></div>
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-base font-semibold leading-7 text-blue-400">Puesta en marcha rápida</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Tu agenda lista en 3 simples pasos
+              </p>
+            </div>
+            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+                <div className="flex flex-col items-center text-center">
+                  <dt className="flex flex-col items-center gap-y-4 text-base font-semibold leading-7 text-white">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-blue-600/40 ring-1 ring-white/10">
+                      <User className="h-8 w-8 text-white" aria-hidden="true" />
+                    </div>
+                    1. Crea tu página
+                  </dt>
+                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-400">
+                    <p className="flex-auto">Personaliza tu perfil con tu nombre, logo y colores. Define tus servicios y horarios de atención.</p>
+                  </dd>
+                </div>
+                <div className="flex flex-col items-center text-center">
+                  <dt className="flex flex-col items-center gap-y-4 text-base font-semibold leading-7 text-white">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-600 shadow-lg shadow-indigo-600/40 ring-1 ring-white/10">
+                      <ArrowRight className="h-8 w-8 text-white" aria-hidden="true" />
+                    </div>
+                    2. Comparte tu enlace
+                  </dt>
+                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-400">
+                    <p className="flex-auto">Envía tu URL personalizada por WhatsApp, Instagram o ponla en tu web. Tus clientes lo amarán.</p>
+                  </dd>
+                </div>
+                <div className="flex flex-col items-center text-center">
+                  <dt className="flex flex-col items-center gap-y-4 text-base font-semibold leading-7 text-white">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-600 shadow-lg shadow-violet-600/40 ring-1 ring-white/10">
+                      <Calendar className="h-8 w-8 text-white" aria-hidden="true" />
+                    </div>
+                    3. Recibe reservas
+                  </dt>
+                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-400">
+                    <p className="flex-auto">Tus clientes eligen el horario y agendan. Tú recibes una notificación y el evento se sincroniza solo.</p>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
         
         <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
           <div className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#80b5ff] to-[#4f46e5] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style={{clipPath: "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"}}></div>
