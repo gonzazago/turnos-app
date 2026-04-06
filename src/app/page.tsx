@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Calendar, ArrowRight } from "lucide-react";
+import { Calendar, ArrowRight, CheckCircle2, Globe, Clock, ShieldCheck, Zap } from "lucide-react";
+import { HeroFunnel } from "./components/HeroFunnel";
 
 export default function Home() {
   return (
@@ -30,19 +31,24 @@ export default function Home() {
         
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-              Agenda automática para profesionales
+            <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-7xl">
+              Tu agenda, <span className="text-blue-600 font-extrabold tracking-tighter">en piloto automático.</span>
             </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              Simplifica cómo tus clientes agendan reuniones contigo. Comparte tu enlace de Turnos personalizado y deja que reserven en tus horarios disponibles al instante.
+            <p className="mt-6 text-lg leading-8 text-slate-600 max-w-xl mx-auto">
+              La forma más simple de recibir reservas. Crea tu página en segundos, comparte tu enlace y deja que tus clientes agendan sin idas y vueltas.
             </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Link href="/register" className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all flex items-center gap-2">
-                Crear cuenta gratis <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link href="/login" className="text-sm font-semibold leading-6 text-slate-900">
-                Ver mi dashboard <span aria-hidden="true">→</span>
-              </Link>
+            
+            <HeroFunnel />
+
+            <div className="mt-10 flex items-center justify-center gap-x-8 text-slate-400">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Gratis para siempre</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Sin tarjeta de crédito</span>
+              </div>
             </div>
           </div>
         </div>
