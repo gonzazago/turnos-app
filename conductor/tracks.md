@@ -24,5 +24,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Mejoras en el funnel de la Landing Page**
+- [~] **Track: Mejoras en el funnel de la Landing Page**
 *Link: [./tracks/landing_page_funnel_20260406/](./tracks/landing_page_funnel_20260406/)*

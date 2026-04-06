@@ -1,13 +1,13 @@
 # Implementation Plan: Landing Page Funnel Improvement
 
 ### Phase 1: Header and Hero Funnel (UI)
-- [ ] Task: Make Header Sticky
-    - [ ] Update `src/app/page.tsx` to ensure the `<header>` element is `fixed` or `sticky`, with a background and shadow on scroll, maintaining the "Crear cuenta" / "Iniciar sesión" CTA.
-- [ ] Task: Implement Hero Slug Input
-    - [ ] Add an interactive client component (or form) in `src/app/page.tsx` that captures a `slug` string (e.g., `turnos.app/[input]`).
-    - [ ] Redirect the user to `/register?slug=[input]` upon submission.
-- [ ] Task: Update Register Action to consume Slug
-    - [ ] Update `src/app/register/page.tsx` and `src/app/login/actions.ts` to parse the `slug` form field/parameter and use it when creating the profile instead of auto-generating one (checking for uniqueness).
+- [x] Task: Make Header Sticky (aa09c9c)
+    - [x] Update `src/app/page.tsx` to ensure the `<header>` element is `fixed` or `sticky`, with a background and shadow on scroll, maintaining the "Crear cuenta" / "Iniciar sesión" CTA.
+- [x] Task: Implement Hero Slug Input (54e7fa5)
+    - [x] Add an interactive client component (or form) in `src/app/page.tsx` that captures a `slug` string (e.g., `turnos.app/[input]`).
+    - [x] Redirect the user to `/register?slug=[input]` upon submission.
+- [x] Task: Update Register Action to consume Slug (7a63252)
+    - [x] Update `src/app/register/page.tsx` and `src/app/login/actions.ts` to parse the `slug` form field/parameter and use it when creating the profile instead of auto-generating one (checking for uniqueness).
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Header and Hero Funnel (UI)' (Protocol in workflow.md)
 
 ### Phase 2: Landing Page Sections
