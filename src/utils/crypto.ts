@@ -4,25 +4,20 @@ import crypto from 'crypto';
 // We expect it to be a hex string in the environment variable.
 const ALGORITHM = 'aes-256-gcm';
 
+// We use scrypt to safely derive a 32-byte key from ANY string the user puts in their .env
+// This prevents errors with invalid hex lengths or incorrect byte sizes.
 function getEncryptionKey(): Buffer {
-  const keyHex = process.env.PAYMENT_ENCRYPTION_KEY;
-  if (!keyHex) {
-    // Para entornos de desarrollo sin la variable configurada, podríamos hacer fallback a un default,
-    // pero es mejor obligar a tener la llave para evitar falsos positivos de seguridad.
-    // Usaremos un string hardcodeado SOLO si no hay llave para no romper desarrollo si se olvidan,
-    // pero lanzaremos un warning para avisar. En producción debe estar configurada.
+  const secret = process.env.PAYMENT_ENCRYPTION_KEY;
+  if (!secret) {
     if (process.env.NODE_ENV === 'production') {
       throw new Error('PAYMENT_ENCRYPTION_KEY environment variable is not defined.');
     }
     console.warn('⚠️ WARNING: PAYMENT_ENCRYPTION_KEY is missing. Using a fallback key for development only.');
-    return crypto.createHash('sha256').update('fallback-dev-key').digest();
+    return crypto.scryptSync('fallback-dev-key', 'turnos-app-static-salt', 32);
   }
   
-  const key = Buffer.from(keyHex, 'hex');
-  if (key.length !== 32) {
-    throw new Error('PAYMENT_ENCRYPTION_KEY must be exactly 32 bytes (64 hex characters) for aes-256-gcm.');
-  }
-  return key;
+  // Derive exactly 32 bytes (256 bits) from the user's secret
+  return crypto.scryptSync(secret, 'turnos-app-static-salt', 32);
 }
 
 /**
