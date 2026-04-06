@@ -212,7 +212,7 @@ export function BookingClient({
                      <button
                        key={slotIso}
                        onClick={() => setSelectedTime(date)}
-                       className="py-3 px-2 border font-bold rounded-xl transition-all border-blue-100 bg-blue-50/50 hover:brand-bg hover:text-white text-blue-800 brand-hover-bg"
+                       className="py-3 px-2 border font-bold rounded-xl transition-all border-blue-100 bg-blue-50/50 hover:bg-blue-600 hover:text-white text-blue-800"
                      >
                        {format(date, 'HH:mm')}
                      </button>

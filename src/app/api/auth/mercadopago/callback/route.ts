@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
-import { PaymentAccountService } from '@/utils/payment-accounts';
+import { PaymentService } from '@/services/payment/service';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   const state = searchParams.get('state');
 
   const cookieStore = await cookies();
-  const storedState = (await cookieStore).get('mp_oauth_state')?.value;
+  const storedState = cookieStore.get('mp_oauth_state')?.value;
 
   // 1. Validate CSRF state
   if (!state || !storedState || state !== storedState) {
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   }
 
   // Clear the state cookie after use
-  (await cookieStore).delete('mp_oauth_state');
+  cookieStore.delete('mp_oauth_state');
 
   if (error || !code) {
     console.error('OAuth error or missing code:', error);
@@ -39,42 +39,21 @@ export async function GET(request: Request) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '');
     const redirectUri = `${baseUrl}/api/auth/mercadopago/callback`;
     
-    const payload = {
-      client_secret: process.env.MP_CLIENT_SECRET || '',
-      client_id: process.env.MP_CLIENT_ID || '',
-      grant_type: 'authorization_code',
-      code: code,
-      redirect_uri: redirectUri,
-    };
+    const mpProvider = PaymentService.getProvider('mercadopago');
 
-    // Exchange code for token
-    const tokenResponse = await fetch('https://api.mercadopago.com/oauth/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
-      },
-      body: new URLSearchParams(payload),
-    });
+    // 3. Exchange code for token
+    const result = await mpProvider.exchangeAuthorizationCode(code, redirectUri);
 
-    const tokenData = await tokenResponse.json();
-
-    if (!tokenResponse.ok) {
-      console.error('Mercado Pago token exchange failed:', tokenData);
-      return NextResponse.redirect(new URL('/dashboard/settings?error=mp_exchange_failed', request.url));
-    }
-
-    const { access_token, refresh_token, expires_in, user_id: mp_user_id } = tokenData;
     const expiresAt = new Date();
-    expiresAt.setSeconds(expiresAt.getSeconds() + expires_in);
+    expiresAt.setSeconds(expiresAt.getSeconds() + result.expires_in);
 
-    // Save account using admin client to ensure persistence
-    const { error: dbError } = await PaymentAccountService.saveAccountAdmin({
+    // 4. Save account using service
+    const { error: dbError } = await PaymentService.saveAccount({
       user_id: user.id,
       provider: 'mercadopago',
-      provider_user_id: String(mp_user_id),
-      access_token: access_token,
-      refresh_token: refresh_token,
+      provider_user_id: result.provider_user_id,
+      access_token: result.access_token,
+      refresh_token: result.refresh_token,
       expires_at: expiresAt.toISOString(),
       is_active: true,
     });

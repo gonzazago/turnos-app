@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { getSupabaseAdmin } from '@/utils/supabase/admin';
 
 export interface PaymentAccount {
   id?: string;
@@ -33,10 +33,7 @@ export const PaymentAccountService = {
   },
 
   async saveAccountAdmin(account: PaymentAccount) {
-    const supabaseAdmin = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabaseAdmin = getSupabaseAdmin();
 
     return supabaseAdmin
       .from('payment_accounts')
@@ -64,10 +61,7 @@ export const PaymentAccountService = {
   },
 
   async getActiveAccountAdmin(userId: string, provider: string) {
-    const supabaseAdmin = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabaseAdmin = getSupabaseAdmin();
     
     return supabaseAdmin
       .from('payment_accounts')
@@ -79,10 +73,7 @@ export const PaymentAccountService = {
   },
 
   async refreshTokenIfNeeded(accountId: string) {
-    const supabaseAdmin = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabaseAdmin = getSupabaseAdmin();
 
     // 1. Fetch the account
     const { data: account, error: fetchError } = await supabaseAdmin

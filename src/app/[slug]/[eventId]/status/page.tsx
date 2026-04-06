@@ -5,6 +5,8 @@ import { es } from 'date-fns/locale'
 import { CheckCircle, XCircle, Calendar, Clock, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
+import { getSupabaseAdmin } from '@/utils/supabase/admin'
+
 export default async function BookingStatusPage({
   params,
   searchParams,
@@ -18,11 +20,7 @@ export default async function BookingStatusPage({
   if (!bookingId) notFound()
 
   // Use Admin client to fetch booking details because public RLS might block SELECT
-  const { createClient: createSupabaseAdmin } = await import('@supabase/supabase-js')
-  const supabaseAdmin = createSupabaseAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const supabaseAdmin = getSupabaseAdmin()
 
   // Fetch booking details
   const { data: booking, error } = await supabaseAdmin

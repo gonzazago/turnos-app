@@ -186,7 +186,7 @@ export function SettingsForm({ profile }: { profile: any }) {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div>
               <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.21.22/mercadopago/logo__large.png" alt="Mercado Pago" className="h-5" />
+                <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.19.1/mercadopago/logo__large.png" alt="Mercado Pago" className="h-5" />
                 Configuración de Pagos
               </h3>
               <p className="text-slate-500 text-sm mt-1">Conecta tu cuenta de Mercado Pago para cobrar señas por tus eventos.</p>

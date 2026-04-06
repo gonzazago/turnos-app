@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import { updateAvailability } from './actions'
-import { CheckCircle, AlertCircle, Clock } from 'lucide-react'
+import { Clock } from 'lucide-react'
+import { Alert } from '@/components/ui/Alert'
+import { Button } from '@/components/ui/Button'
 
 const DAYS = [
   { id: 0, label: 'Domingo' },
@@ -82,17 +84,11 @@ export function AvailabilityForm({ initialAvailability }: { initialAvailability:
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-center gap-3 border border-red-100">
-          <AlertCircle className="w-5 h-5 flex-shrink-0" />
-          <span className="text-sm font-medium">{error}</span>
-        </div>
+        <Alert variant="error">{error}</Alert>
       )}
 
       {success && (
-        <div className="bg-green-50 text-green-600 p-4 rounded-xl flex items-center gap-3 border border-green-100">
-          <CheckCircle className="w-5 h-5 flex-shrink-0" />
-          <span className="text-sm font-medium">Horario actualizado correctamente.</span>
-        </div>
+        <Alert variant="success">Horario actualizado correctamente.</Alert>
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -112,25 +108,15 @@ export function AvailabilityForm({ initialAvailability }: { initialAvailability:
 
             {day.enabled ? (
               <div className="flex items-center gap-2">
-                <div className="relative">
-                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input 
-                    type="time" 
-                    value={day.start_time} 
-                    onChange={(e) => updateTime(day.day_of_week, 'start_time', e.target.value)}
-                    className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  />
-                </div>
+                <TimeInput 
+                  value={day.start_time} 
+                  onChange={(val) => updateTime(day.day_of_week, 'start_time', val)}
+                />
                 <span className="text-slate-400">—</span>
-                <div className="relative">
-                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input 
-                    type="time" 
-                    value={day.end_time} 
-                    onChange={(e) => updateTime(day.day_of_week, 'end_time', e.target.value)}
-                    className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  />
-                </div>
+                <TimeInput 
+                  value={day.end_time} 
+                  onChange={(val) => updateTime(day.day_of_week, 'end_time', val)}
+                />
               </div>
             ) : (
               <span className="text-slate-400 text-sm italic py-2">No disponible</span>
@@ -139,15 +125,25 @@ export function AvailabilityForm({ initialAvailability }: { initialAvailability:
         ))}
 
         <div className="pt-4 flex justify-end">
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow-sm shadow-blue-600/20 disabled:opacity-70"
-          >
+          <Button type="submit" isLoading={loading}>
             {loading ? 'Guardando...' : 'Guardar Horario'}
-          </button>
+          </Button>
         </div>
       </form>
+    </div>
+  )
+}
+
+function TimeInput({ value, onChange }: { value: string, onChange: (val: string) => void }) {
+  return (
+    <div className="relative">
+      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+      <input 
+        type="time" 
+        value={value} 
+        onChange={(e) => onChange(e.target.value)}
+        className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+      />
     </div>
   )
 }

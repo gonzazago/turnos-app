@@ -16,7 +16,6 @@ export async function updateProfile(formData: FormData) {
   const slug = formData.get('slug') as string
   const brandColor = formData.get('brandColor') as string
   const logoFile = formData.get('logo') as File | null
-  const mpAccessToken = formData.get('mpAccessToken') as string
 
   // Process slug to be url friendly
   const safeSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-')
@@ -49,21 +48,29 @@ export async function updateProfile(formData: FormData) {
     full_name: fullName,
     slug: safeSlug,
     brand_color: brandColor,
-    mp_access_token: mpAccessToken,
+    // Note: mp_access_token is now handled by PaymentService and stored in payment_accounts
   }
 
   if (logoUrl) {
     updates.logo_url = logoUrl
   }
 
+  // Use update instead of upsert since the user ID already exists in auth.users
+  // and RLS policies are set for update on profiles.
   const { error } = await supabase
     .from('profiles')
     .update(updates)
     .eq('id', user.id)
 
   if (error) {
-    console.error(error)
-    return { error: 'Error al actualizar el perfil. Quizás este nombre de enlace ya está en uso.' }
+    console.error('Profile update error:', error)
+    
+    // Check for unique constraint violation on slug
+    if (error.code === '23505') {
+      return { error: 'Este nombre de enlace (slug) ya está en uso por otro usuario. Por favor elige uno diferente.' }
+    }
+    
+    return { error: `Error al actualizar el perfil: ${error.message}` }
   }
 
   revalidatePath('/dashboard', 'layout')
