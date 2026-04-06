@@ -213,3 +213,42 @@ create policy "Users can update their own payment accounts"
 create policy "Users can delete their own payment accounts"
   on payment_accounts for delete
   using ( auth.uid() = user_id );
+
+-- Create a table for Google Calendar tokens
+create table public.google_calendar_tokens (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  access_token text not null,
+  refresh_token text not null,
+  expires_at timestamp with time zone not null,
+  webhook_id text,
+  webhook_resource_id text,
+  webhook_expiration timestamp with time zone,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  
+  constraint google_calendar_tokens_user_id_key unique (user_id)
+);
+
+alter table public.google_calendar_tokens enable row level security;
+
+create policy "Users can view their own google tokens"
+  on google_calendar_tokens for select
+  using ( auth.uid() = user_id );
+
+create policy "Users can insert their own google tokens"
+  on google_calendar_tokens for insert
+  with check ( auth.uid() = user_id );
+
+create policy "Users can update their own google tokens"
+  on google_calendar_tokens for update
+  using ( auth.uid() = user_id );
+
+create policy "Users can delete their own google tokens"
+  on google_calendar_tokens for delete
+  using ( auth.uid() = user_id );
+
+create trigger set_google_calendar_tokens_updated_at
+before update on public.google_calendar_tokens
+for each row
+execute function public.set_updated_at();

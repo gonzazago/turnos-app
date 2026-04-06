@@ -1,9 +1,9 @@
 # Implementation Plan: Google Calendar Integration
 
 ### Phase 1: Authentication and Data Modeling
-- [ ] Task: Update Database Schema
-    - [ ] Add `google_calendar_tokens` table to Supabase to securely store OAuth tokens.
-    - [ ] Update `providers` table to include a flag `google_calendar_connected`.
+- [x] Task: Update Database Schema (2290d57)
+    - [x] Add `google_calendar_tokens` table to Supabase to securely store OAuth tokens.
+    - [x] Update `providers` table to include a flag `google_calendar_connected`.
 - [ ] Task: Create Setup Tests for OAuth2
     - [ ] Write failing test for NextAuth/OAuth2 flow integration with Google.
 - [ ] Task: Implement NextAuth Google Provider
