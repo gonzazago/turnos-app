@@ -4,11 +4,11 @@
 - [x] Task: Update Database Schema (2290d57)
     - [x] Add `google_calendar_tokens` table to Supabase to securely store OAuth tokens.
     - [x] Update `providers` table to include a flag `google_calendar_connected`.
-- [ ] Task: Create Setup Tests for OAuth2
-    - [ ] Write failing test for NextAuth/OAuth2 flow integration with Google.
-- [ ] Task: Implement NextAuth Google Provider
-    - [ ] Add Google provider to NextAuth configuration.
-    - [ ] Implement callback to store `access_token` and `refresh_token` securely.
+- [x] Task: Create Setup Tests for OAuth2 (a3036ef)
+    - [x] Write failing test for NextAuth/OAuth2 flow integration with Google.
+- [x] Task: Implement NextAuth Google Provider (a3036ef)
+    - [x] Add Google provider to NextAuth configuration (Implemented as custom OAuth2).
+    - [x] Implement callback to store `access_token` and `refresh_token` securely.
 - [ ] Task: Provider Settings UI
     - [ ] Write failing UI tests for the "Connect Google Calendar" button in profile settings.
     - [ ] Implement the "Connect/Disconnect Google Calendar" button on the Settings view.
