@@ -4,8 +4,8 @@ import { Calendar, ArrowRight } from "lucide-react";
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
-      <header className="absolute inset-x-0 top-0 z-50">
-        <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+        <nav className="flex items-center justify-between p-4 lg:px-8 max-w-7xl mx-auto" aria-label="Global">
           <div className="flex lg:flex-1">
             <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2 text-blue-600 font-bold text-xl">
               <Calendar className="h-8 w-8" />
