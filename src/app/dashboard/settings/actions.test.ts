@@ -23,7 +23,7 @@ describe('updateProfile action', () => {
     vi.clearAllMocks();
   });
 
-  it('should successfully update profile with Mercado Pago credentials', async () => {
+  it('should successfully update profile details', async () => {
     const mockSupabase = {
       auth: {
         getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null }),
@@ -39,13 +39,14 @@ describe('updateProfile action', () => {
     formData.append('fullName', 'John Doe');
     formData.append('slug', 'johndoe');
     formData.append('brandColor', '#000000');
-    formData.append('mpAccessToken', 'TEST-ACCESS-TOKEN');
 
     const result = await updateProfile(formData);
 
     expect(result).toEqual({ success: true });
     expect(mockSupabase.update).toHaveBeenCalledWith(expect.objectContaining({
-      mp_access_token: 'TEST-ACCESS-TOKEN',
+      full_name: 'John Doe',
+      slug: 'johndoe',
+      brand_color: '#000000'
     }));
   });
 });

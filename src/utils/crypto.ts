@@ -30,7 +30,7 @@ export function encryptToken(text: string): string {
   try {
     const key = getEncryptionKey();
     const iv = crypto.randomBytes(12); // 96 bits is recommended for GCM
-    const cipher = crypto.createCipheriv(ALGORITHM, iv, key);
+    const cipher = crypto.createCipheriv(ALGORITHM,key,iv);
     
     let encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
@@ -65,7 +65,7 @@ export function decryptToken(encryptedText: string): string {
     const iv = Buffer.from(ivHex, 'hex');
     const authTag = Buffer.from(authTagHex, 'hex');
     
-    const decipher = crypto.createDecipheriv(ALGORITHM, iv, key);
+    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
     decipher.setAuthTag(authTag);
     
     let decrypted = decipher.update(encryptedDataHex, 'hex', 'utf8');
