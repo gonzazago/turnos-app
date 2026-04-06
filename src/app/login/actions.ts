@@ -27,6 +27,7 @@ export async function signup(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const fullName = formData.get('fullName') as string
+  const requestedSlug = formData.get('requestedSlug') as string | null
 
   const { error, data } = await supabase.auth.signUp({
     email,
@@ -38,14 +39,22 @@ export async function signup(formData: FormData) {
     redirect(`/register?error=${encodeURIComponent(error.message)}`)
   }
 
-  // Create public profile, we use email prefix as a default slug
+  // Create public profile
   if (data.user) {
-    const defaultSlug = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '') + '-' + Math.floor(Math.random() * 1000)
+    let slug = requestedSlug?.trim() || email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
+    
+    // Check if slug is taken
+    const { data: existing } = await supabase.from('profiles').select('slug').eq('slug', slug).single()
+    
+    if (existing) {
+      // If taken, append random number
+      slug = `${slug}-${Math.floor(Math.random() * 1000)}`
+    }
     
     await supabase.from('profiles').insert({
       id: data.user.id,
       full_name: fullName,
-      slug: defaultSlug,
+      slug: slug,
       brand_color: '#3b82f6'
     })
   }

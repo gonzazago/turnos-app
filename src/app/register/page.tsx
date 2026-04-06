@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { signup } from '@/app/login/actions'
 
-export default async function RegisterPage(props: { searchParams: Promise<{ error?: string }> }) {
+export default async function RegisterPage(props: { searchParams: Promise<{ error?: string, slug?: string }> }) {
   const searchParams = await props.searchParams;
+  const initialSlug = searchParams?.slug || '';
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col font-sans">
        <div className="flex-1 flex flex-col items-center justify-center p-4 relative overflow-hidden">
@@ -22,6 +23,7 @@ export default async function RegisterPage(props: { searchParams: Promise<{ erro
            )}
 
            <form className="flex flex-col gap-5">
+             <input type="hidden" name="requestedSlug" defaultValue={initialSlug} />
              <div className="flex flex-col gap-2">
                <label htmlFor="fullName" className="text-sm font-medium text-slate-300">Nombre Completo</label>
                <input id="fullName" name="fullName" type="text" required className="bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-slate-600" placeholder="Juan Pérez" />
