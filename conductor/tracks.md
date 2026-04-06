@@ -19,5 +19,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Google Calendar Integration (Bidirectional Sync, Google Meet)**
+- [x] **Track: Google Calendar Integration (Bidirectional Sync, Google Meet)**
 *Link: [./tracks/google_calendar_sync_20260406/](./tracks/google_calendar_sync_20260406/)*
