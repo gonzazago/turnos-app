@@ -16,6 +16,12 @@ describe('HeroFunnel', () => {
     expect(screen.getByText(/Reclamar mi enlace/i)).toBeDefined()
   })
 
+  it('should render the dark variant', () => {
+    render(<HeroFunnel variant="dark" />)
+    // Just verify it renders without error
+    expect(screen.getByText(/turnos.app\//i)).toBeDefined()
+  })
+
   it('should redirect to register with slug on submit', () => {
     const mockPush = vi.fn()
     vi.mocked(useRouter).mockReturnValue({ push: mockPush } as any)

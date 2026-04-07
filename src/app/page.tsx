@@ -273,7 +273,7 @@ export default function Home() {
                   <span className="text-sm font-semibold leading-6 text-slate-600">/mes</span>
                 </p>
                 <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-600">
-                  {['1 Tipo de Evento', 'Reservas Ilimitadas'].map((f) => (
+                  {['1 Tipo de Evento', 'Reservas Ilimitadas', 'Reuniones ilimitadas', 'Control de disponibilidad', 'Personalizacion de logo'].map((f) => (
                     <li key={f} className="flex gap-x-3">
                       <Check className="h-6 w-5 flex-none text-blue-600" aria-hidden="true" />
                       {f}
@@ -291,11 +291,11 @@ export default function Home() {
                 <h3 className="text-lg font-bold leading-8 text-white">Plan Pro</h3>
                 <p className="mt-4 text-sm leading-6 text-slate-400">Para quienes buscan automatización total.</p>
                 <p className="mt-6 flex items-baseline gap-x-1">
-                  <span className="text-4xl font-bold tracking-tight text-white">$10</span>
+                  <span className="text-4xl font-bold tracking-tight text-white">$25</span>
                   <span className="text-sm font-semibold leading-6 text-slate-400">/mes</span>
                 </p>
                 <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-300">
-                  {['Eventos Ilimitados', 'Google Calendar Sync', 'Mercado Pago Automático', 'Pagina personalizada', 'Recordatorios automaticos', 'Soporte Prioritario', 'Remoción de Marca'].map((f) => (
+                  {['Eventos Ilimitados', 'Google Calendar Sync', 'Mercado Pago Automático', 'Pagina personalizada', 'Recordatorios automaticos', 'Soporte Prioritario', 'Remoción de Marca', 'Personaliza tu pagina de confirmacion'].map((f) => (
                     <li key={f} className="flex gap-x-3">
                       <Check className="h-6 w-5 flex-none text-blue-400" aria-hidden="true" />
                       {f}
@@ -306,8 +306,30 @@ export default function Home() {
                   Prueba 14 días gratis
                 </Link>
               </div>
+              <div className="rounded-3xl bg-white p-8 ring-1 ring-slate-200 xl:p-10 shadow-sm hover:shadow-md transition-all">
+                <h3 className="text-lg font-bold leading-8 text-slate-900">Plan Ultra</h3>
+                <p className="mt-4 text-sm leading-6 text-slate-600">Ideales para pequeños equipos.</p>
+                <p className="mt-6 flex items-baseline gap-x-1">
+                  <span className="text-4xl font-bold tracking-tight text-slate-900">$45</span>
+                  <span className="text-sm font-semibold leading-6 text-slate-600">/mes</span>
+                </p>
+                <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-600">
+                  {['Eventos Ilimitados', 'Google Calendar Sync', 'Mercado Pago Automático', 'Pagina personalizada', 'Recordatorios automaticos', 'Soporte Prioritario', 'Remoción de Marca', 'Personaliza tu pagina de confirmacion', 'Hsta 5 usuarios diferentes'].map((f) => (
+                    <li key={f} className="flex gap-x-3">
+                      <Check className="h-6 w-5 flex-none text-blue-600" aria-hidden="true" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/register" className="mt-8 block rounded-xl bg-blue-50 px-3 py-3 text-center text-sm font-bold leading-6 text-blue-600 hover:bg-blue-100 transition-all">
+                  Empezar gratis
+                </Link>
+              </div>
             </div>
           </div>
+
+
+
         </section>
 
         <section className="py-24 bg-blue-600 relative overflow-hidden text-center text-white">
