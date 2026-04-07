@@ -18,6 +18,7 @@ create table public.profiles (
   custom_success_msg text,
   custom_email_body text,
   mp_access_token text,
+  refund_rules jsonb default '[]'::jsonb not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
 
   primary key (id)
@@ -83,6 +84,8 @@ create table public.bookings (
   mercado_pago_preference_id text,
   google_event_id text,
   google_meet_link text,
+  cancel_token text,
+  refund_data jsonb,
   billing_info jsonb default '{}'::jsonb not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
