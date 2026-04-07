@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 
 export function BookingList({ bookings }: { bookings: any[] }) {
-  const [filter, setFilter] = useState<'all' | 'confirmed' | 'pending'>('all')
+  const [filter, setFilter] = useState<'all' | 'confirmed' | 'pending' | 'completed'>('all')
   const [loadingId, setLoadingId] = useState<string | null>(null)
   
   // Modal states
@@ -65,48 +65,54 @@ export function BookingList({ bookings }: { bookings: any[] }) {
   }
 
   const filteredBookings = bookings.filter(b => {
-    if (filter === 'confirmed') return b.status === 'confirmed'
-    if (filter === 'pending') return b.status === 'pending_payment'
-    return true
+    const isPast = !isAfter(parseISO(b.end_time), new Date())
+    
+    if (filter === 'confirmed') return !isPast && b.status === 'confirmed'
+    if (filter === 'pending') return !isPast && b.status === 'pending_payment'
+    if (filter === 'completed') return isPast // Muestra las que ya pasaron
+    
+    // Si es "all", que muestre todo lo que no pasó (como default anterior) o todo
+    return !isPast 
   })
 
-  // Sort: upcoming first
-  const sorted = [...filteredBookings].sort((a, b) => 
-    parseISO(a.start_time).getTime() - parseISO(b.start_time).getTime()
-  )
-
-  const upcoming = sorted.filter(b => isAfter(parseISO(b.end_time), new Date()))
+  // Sort: upcoming first if not completed, past first if completed? Usually recent past first
+  const sorted = [...filteredBookings].sort((a, b) => {
+    if (filter === 'completed') {
+       return parseISO(b.start_time).getTime() - parseISO(a.start_time).getTime() // Recientes arriba
+    }
+    return parseISO(a.start_time).getTime() - parseISO(b.start_time).getTime()
+  })
 
   return (
     <div className="flex flex-col gap-6">
       {/* Tabs / Filters */}
       <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-fit">
-        {(['all', 'confirmed', 'pending'] as const).map((tab) => (
+        {(['all', 'confirmed', 'pending', 'completed'] as const).map((tab) => (
           <button 
             key={tab}
-            onClick={() => setFilter(tab)}
+            onClick={() => setFilter(tab as any)}
             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
               filter === tab 
                 ? 'bg-white text-slate-900 shadow-sm' 
                 : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            {tab === 'all' ? 'Todos' : tab === 'confirmed' ? 'Confirmados' : 'Pendientes'}
+            {tab === 'all' ? 'Todos' : tab === 'confirmed' ? 'Confirmados' : tab === 'pending' ? 'Pendientes' : 'Completados'}
           </button>
         ))}
       </div>
 
-      {upcoming.length === 0 ? (
+      {sorted.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-3xl p-12 text-center">
           <div className="w-16 h-16 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-4">
             <Calendar className="w-8 h-8" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900">No hay citas próximas</h3>
-          <p className="text-slate-500 mt-1">Cuando los clientes reserven turnos, aparecerán aquí.</p>
+          <h3 className="text-lg font-bold text-slate-900">No hay citas en esta categoría</h3>
+          <p className="text-slate-500 mt-1">Actualmente no tienes turnos para mostrar aquí.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {upcoming.map((booking) => (
+          {sorted.map((booking) => (
             <BookingCard 
               key={booking.id} 
               booking={booking} 

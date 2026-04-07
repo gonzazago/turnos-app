@@ -1,11 +1,22 @@
+-- Create enum for plans
+create type public.plan_type_enum as enum ('free', 'pro', 'ultra');
+
 -- Create a table for public profiles
 create table public.profiles (
   id uuid references auth.users not null,
   slug text unique,
   full_name text,
   contact_email text,
+  phone text,
+  plan_type public.plan_type_enum default 'free' not null,
   brand_color text default '#3b82f6',
+  brand_palette jsonb default '{"primary": "#3b82f6", "secondary": "#1e40af", "background": "#ffffff", "text": "#111827"}'::jsonb,
+  font_family text default 'Inter',
   logo_url text,
+  banner_url text,
+  favicon_url text,
+  custom_success_msg text,
+  custom_email_body text,
   mp_access_token text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
 
@@ -150,6 +161,44 @@ create policy "Users can delete their own logos."
   on storage.objects for delete
   using ( bucket_id = 'logos' and auth.uid() = owner );
 
+-- Set up Storage for Banners
+insert into storage.buckets (id, name, public) values ('banners', 'banners', true) on conflict do nothing;
+
+create policy "Banners are publicly accessible."
+  on storage.objects for select
+  using ( bucket_id = 'banners' );
+
+create policy "Users can upload their own banners."
+  on storage.objects for insert
+  with check ( bucket_id = 'banners' and auth.uid() = owner );
+
+create policy "Users can update their own banners."
+  on storage.objects for update
+  using ( bucket_id = 'banners' and auth.uid() = owner );
+
+create policy "Users can delete their own banners."
+  on storage.objects for delete
+  using ( bucket_id = 'banners' and auth.uid() = owner );
+
+-- Set up Storage for Favicons
+insert into storage.buckets (id, name, public) values ('favicons', 'favicons', true) on conflict do nothing;
+
+create policy "Favicons are publicly accessible."
+  on storage.objects for select
+  using ( bucket_id = 'favicons' );
+
+create policy "Users can upload their own favicons."
+  on storage.objects for insert
+  with check ( bucket_id = 'favicons' and auth.uid() = owner );
+
+create policy "Users can update their own favicons."
+  on storage.objects for update
+  using ( bucket_id = 'favicons' and auth.uid() = owner );
+
+create policy "Users can delete their own favicons."
+  on storage.objects for delete
+  using ( bucket_id = 'favicons' and auth.uid() = owner );
+
 -- Create a table for payment accounts
 create table public.payment_accounts (
   id uuid default uuid_generate_v4() primary key,
@@ -277,3 +326,67 @@ create policy "Service can manage busy slots"
   on google_busy_slots for all
   using ( auth.uid() = user_id )
   with check ( auth.uid() = user_id );
+
+-- Create a table for Teams
+create table public.teams (
+  id uuid default uuid_generate_v4() primary key,
+  owner_id uuid references public.profiles(id) on delete cascade not null,
+  name text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.teams enable row level security;
+create policy "Teams are viewable by members" on teams for select using ( true ); 
+create policy "Teams managed by owner" on teams for all using ( auth.uid() = owner_id );
+
+-- Create a table for Team Members
+create table public.team_members (
+  id uuid default uuid_generate_v4() primary key,
+  team_id uuid references public.teams(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  role text default 'member' not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  constraint team_members_unique unique(team_id, user_id)
+);
+
+alter table public.team_members enable row level security;
+create policy "Team members viewable by members" on team_members for select using ( true );
+create policy "Team members managed by owner" on team_members for all using (
+  exists (select 1 from public.teams t where t.id = team_members.team_id and t.owner_id = auth.uid())
+);
+
+-- Create a table for Session Packages
+create table public.session_packages (
+  id uuid default uuid_generate_v4() primary key,
+  provider_id uuid references public.profiles(id) on delete cascade not null,
+  event_type_id uuid references public.event_types(id) on delete set null,
+  name text not null,
+  scheduling_type text not null default 'libre' check (scheduling_type in ('libre', 'fijo')),
+  session_count integer not null check (session_count > 0),
+  total_price numeric(10,2) not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.session_packages enable row level security;
+create policy "Packages viewable by everyone" on session_packages for select using ( true );
+create policy "Packages managed by provider" on session_packages for all using ( auth.uid() = provider_id );
+
+-- Create a table for User Credits (purchased packages)
+create table public.user_credits (
+  id uuid default uuid_generate_v4() primary key,
+  client_email text not null,
+  provider_id uuid references public.profiles(id) on delete cascade not null,
+  package_id uuid references public.session_packages(id) on delete set null,
+  remaining_credits integer not null check (remaining_credits >= 0),
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+create trigger set_user_credits_updated_at
+before update on public.user_credits
+for each row
+execute function public.set_updated_at();
+
+alter table public.user_credits enable row level security;
+create policy "Credits viewable by provider" on user_credits for select using ( auth.uid() = provider_id );
+create policy "Credits managed by provider" on user_credits for all using ( auth.uid() = provider_id );

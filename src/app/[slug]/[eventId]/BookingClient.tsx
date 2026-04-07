@@ -119,17 +119,17 @@ export function BookingClient({
       {isRedirecting && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-white rounded-3xl shadow-2xl p-10 max-w-sm w-full text-center animate-in zoom-in-95 duration-300">
-            <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6 mx-auto animate-pulse">
+            <div className="w-20 h-20 bg-slate-50 brand-text rounded-full flex items-center justify-center mb-6 mx-auto animate-pulse">
               <CreditCard className="w-10 h-10" />
             </div>
             <h3 className="text-2xl font-bold text-slate-900 mb-2">¡Casi listo!</h3>
             <p className="text-slate-600 mb-6">
               Serás redirigido a <strong>Mercado Pago</strong> para completar el pago de la seña y confirmar tu reserva con {profile.full_name}.
             </p>
-            <div className="flex items-center justify-center gap-2 text-blue-600 font-bold text-sm uppercase tracking-widest">
-              <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></span>
-              <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-              <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+            <div className="flex items-center justify-center gap-2 brand-text font-bold text-sm uppercase tracking-widest">
+              <span className="w-2 h-2 brand-bg rounded-full animate-bounce"></span>
+              <span className="w-2 h-2 brand-bg rounded-full animate-bounce [animation-delay:0.2s]"></span>
+              <span className="w-2 h-2 brand-bg rounded-full animate-bounce [animation-delay:0.4s]"></span>
             </div>
           </div>
         </div>
@@ -150,7 +150,7 @@ export function BookingClient({
             <span>{eventType.duration_mins} minutos</span>
           </div>
           {eventType.requires_deposit && (
-            <div className="flex items-center gap-3 text-blue-600">
+            <div className="flex items-center gap-3 brand-text">
               <CreditCard className="w-5 h-5" />
               <span>Requiere seña de ${depositAmount}</span>
             </div>
@@ -177,17 +177,17 @@ export function BookingClient({
                      onClick={() => setSelectedDate(day)}
                      className={`flex flex-col items-center min-w-[80px] p-4 rounded-2xl border transition-all ${
                        isSelected 
-                         ? 'brand-border brand-bg text-white shadow-md transform scale-105' 
-                         : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700'
+                         ? 'brand-bg-contrast shadow-md transform scale-105' 
+                         : 'border-slate-200 text-slate-700 hover-brand-action'
                      }`}
                    >
-                     <span className={`text-xs font-bold uppercase ${isSelected ? 'opacity-80' : 'text-slate-500'}`}>
+                     <span className={`text-xs font-bold uppercase ${isSelected ? 'opacity-90' : 'text-slate-500'}`}>
                        {format(day, 'MMM', { locale: es })}
                      </span>
                      <span className="text-2xl font-bold my-1">
                        {format(day, 'd')}
                      </span>
-                     <span className={`text-xs font-medium ${isSelected ? 'opacity-80' : 'text-slate-400'}`}>
+                     <span className={`text-xs font-medium ${isSelected ? 'opacity-90' : 'text-slate-400'}`}>
                        {format(day, 'EEE', { locale: es })}
                      </span>
                    </button>
@@ -198,11 +198,11 @@ export function BookingClient({
              <h4 className="font-semibold text-slate-700 mb-4">{format(selectedDate, "EEEE, d 'de' MMMM", { locale: es })}</h4>
              
              {eventType.requires_deposit && (
-               <div className="mb-6 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
-                 <CreditCard className="w-5 h-5 text-blue-600 mt-0.5" />
+               <div className="mb-6 bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3">
+                 <CreditCard className="w-5 h-5 brand-text mt-0.5" />
                  <div>
-                   <p className="text-sm font-bold text-blue-900">Esta reserva requiere una seña</p>
-                   <p className="text-xs text-blue-700 mt-0.5">Deberás abonar ${depositAmount} para confirmar tu turno. El resto (${(eventType.total_price - parseFloat(depositAmount!)).toFixed(2)}) se abona al momento de la cita.</p>
+                   <p className="text-sm font-bold text-slate-900">Esta reserva requiere una seña</p>
+                   <p className="text-xs text-slate-600 mt-0.5">Deberás abonar ${depositAmount} para confirmar tu turno. El resto (${(eventType.total_price - parseFloat(depositAmount!)).toFixed(2)}) se abona al momento de la cita.</p>
                  </div>
                </div>
              )}
@@ -215,7 +215,7 @@ export function BookingClient({
                      <button
                        key={slotIso}
                        onClick={() => setSelectedTime(date)}
-                       className="py-3 px-2 border font-bold rounded-xl transition-all border-blue-100 bg-blue-50/50 hover:bg-blue-600 hover:text-white text-blue-800"
+                       className="py-3 px-2 border font-bold rounded-xl transition-all border-slate-200 bg-slate-50 brand-text hover-brand-action"
                      >
                        {format(date, 'HH:mm')}
                      </button>
@@ -254,10 +254,10 @@ export function BookingClient({
                      <span>Precio Total</span>
                      <span>${Number(eventType.total_price).toFixed(2)}</span>
                    </div>
-                   <div className="flex justify-between items-center py-3 border-t border-slate-200 text-blue-600 font-bold">
+                   <div className="flex justify-between items-center py-3 border-t border-slate-200 brand-text font-bold">
                      <div className="flex flex-col">
                        <span>Abonar ahora (Seña {eventType.deposit_percentage}%)</span>
-                       <span className="text-[10px] uppercase text-blue-400 font-bold tracking-tight">Vía Mercado Pago</span>
+                       <span className="text-[10px] uppercase text-slate-400 font-bold tracking-tight">Vía Mercado Pago</span>
                      </div>
                      <span className="text-xl">${depositAmount}</span>
                    </div>
@@ -296,7 +296,7 @@ export function BookingClient({
              <button 
                type="submit" 
                disabled={isSubmitting}
-               className="mt-8 w-full brand-bg hover:opacity-90 text-white font-bold text-lg py-4 rounded-xl transition-all shadow-lg active:scale-[0.99] disabled:opacity-70 disabled:pointer-events-none flex items-center justify-center gap-2"
+               className="mt-8 w-full brand-bg-contrast hover:opacity-90 font-bold text-lg py-4 rounded-xl transition-all shadow-lg active:scale-[0.99] disabled:opacity-70 disabled:pointer-events-none flex items-center justify-center gap-2"
              >
                {isSubmitting && <Spinner size="sm" color="white" />}
                {isSubmitting ? 'Confirmando...' : 'Confirmar Reserva'}

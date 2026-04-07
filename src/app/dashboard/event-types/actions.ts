@@ -15,6 +15,25 @@ export async function createEventType(
     redirect('/login')
   }
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('plan_type')
+    .eq('id', user.id)
+    .single()
+
+  const planType = profile?.plan_type || 'free'
+
+  if (planType === 'free') {
+    const { count } = await supabase
+      .from('event_types')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+    
+    if (count !== null && count >= 1) {
+      return { error: 'Los usuarios Free solo pueden tener 1 tipo de evento. Por favor, actualiza tu plan.' }
+    }
+  }
+
   const title = formData.get('title') as string
   const duration_mins = parseInt(formData.get('duration_mins') as string)
   const description = formData.get('description') as string

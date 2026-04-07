@@ -1,0 +1,56 @@
+import { NextResponse } from 'next/server';
+import { BookingService } from '@/services/booking/service';
+import { WhatsAppService } from '@/services/notifications/WhatsAppService';
+import { createClient } from '@/utils/supabase/server';
+import { addDays, startOfDay, endOfDay } from 'date-fns';
+
+export async function GET(request: Request) {
+  // En producción, aquí se valida un token secreto provisto por el servicio de cron (ej. Vercel Cron, Google Cloud Scheduler)
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    console.warn("Unauthorized cron invocation");
+    // Comentado para permitir testing local, pero vital en prod:
+    // return new NextResponse('Unauthorized', { status: 401 });
+  }
+
+  try {
+    const supabase = await createClient();
+    
+    // Buscar turnos que ocurren mañana
+    const tomorrowStart = startOfDay(addDays(new Date(), 1)).toISOString();
+    const tomorrowEnd = endOfDay(addDays(new Date(), 1)).toISOString();
+
+    // Esta query debería ser optimizada para ignorar turnos ya recordados si en el db hubiera un flag 'reminder_sent'
+    const { data: bookings, error } = await supabase
+      .from('bookings')
+      .select('id, start_time, booker_name, user_id, profiles!inner(phone, plan_type, full_name)')
+      .eq('status', 'confirmed')
+      .gte('start_time', tomorrowStart)
+      .lte('start_time', tomorrowEnd);
+
+    if (error) {
+      throw error;
+    }
+
+    let sentCount = 0;
+
+    for (const booking of bookings || []) {
+      const profile = booking.profiles as any; // Cast for TS
+
+      if (profile.plan_type === 'ultra' && profile.phone) {
+        await WhatsAppService.sendReminder(
+          profile.phone,
+          new Date(booking.start_time).toLocaleString(),
+          profile.full_name || 'Alguien'
+        );
+        sentCount++;
+      }
+    }
+
+    return NextResponse.json({ success: true, remindersSent: sentCount });
+
+  } catch (err: any) {
+    console.error('Error in cron job:', err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}

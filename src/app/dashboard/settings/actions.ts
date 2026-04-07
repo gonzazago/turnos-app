@@ -16,45 +16,56 @@ export async function updateProfile(formData: FormData) {
   const fullName = formData.get('fullName') as string
   const slug = formData.get('slug') as string
   const brandColor = formData.get('brandColor') as string
+  const brandPalette = formData.get('brandPalette') as string
+  const fontFamily = formData.get('fontFamily') as string
+  const customSuccessMsg = formData.get('customSuccessMsg') as string
+  const customEmailBody = formData.get('customEmailBody') as string
+
   const logoFile = formData.get('logo') as File | null
+  const bannerFile = formData.get('banner') as File | null
+  const faviconFile = formData.get('favicon') as File | null
 
   // Process slug to be url friendly
   const safeSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-')
 
-  let logoUrl: string | undefined
+  const uploadFile = async (file: File | null, bucket: string) => {
+    if (file && file.size > 0 && file.name !== 'undefined') {
+      const ext = file.name.split('.').pop()
+      const fileName = `${user.id}-${Math.random()}.${ext}`
 
-  if (logoFile && logoFile.size > 0 && logoFile.name !== 'undefined') {
-    const ext = logoFile.name.split('.').pop()
-    const fileName = `${user.id}-${Math.random()}.${ext}`
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, file, { cacheControl: '3600', upsert: true })
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('logos')
-      .upload(fileName, logoFile, {
-        cacheControl: '3600',
-        upsert: true
-      })
-
-    if (!uploadError && uploadData) {
-      const { data: publicUrlData } = supabase.storage
-        .from('logos')
-        .getPublicUrl(uploadData.path)
-      logoUrl = publicUrlData.publicUrl
-    } else {
-      console.error("Upload error", uploadError)
-      return { error: 'No se pudo subir la imagen.' }
+      if (!uploadError && uploadData) {
+        return supabase.storage.from(bucket).getPublicUrl(uploadData.path).data.publicUrl
+      }
     }
+    return undefined;
   }
+
+  const logoUrl = await uploadFile(logoFile, 'logos')
+  const bannerUrl = await uploadFile(bannerFile, 'banners')
+  const faviconUrl = await uploadFile(faviconFile, 'favicons')
 
   const updates: any = {
     full_name: fullName,
     slug: safeSlug,
     brand_color: brandColor,
-    // Note: mp_access_token is now handled by PaymentService and stored in payment_accounts
+    font_family: fontFamily || 'Inter',
+    custom_success_msg: customSuccessMsg || null,
+    custom_email_body: customEmailBody || null,
   }
 
-  if (logoUrl) {
-    updates.logo_url = logoUrl
+  if (brandPalette) {
+    try {
+      updates.brand_palette = JSON.parse(brandPalette)
+    } catch (e) {}
   }
+
+  if (logoUrl) updates.logo_url = logoUrl
+  if (bannerUrl) updates.banner_url = bannerUrl
+  if (faviconUrl) updates.favicon_url = faviconUrl
 
   // Use update instead of upsert since the user ID already exists in auth.users
   // and RLS policies are set for update on profiles.

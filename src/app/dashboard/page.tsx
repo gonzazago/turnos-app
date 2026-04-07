@@ -17,8 +17,8 @@ export default async function DashboardPage() {
   const { data: bookings } = await supabase
     .from('bookings')
     .select(`
-      id, start_time, end_time, booker_name, booker_email, status,
-      event_types (title, duration_mins)
+      id, start_time, end_time, booker_name, booker_email, status, payment_status,
+      event_types (title, duration_mins, requires_deposit, total_price, deposit_percentage)
     `)
     .eq('user_id', user.id)
     .gte('start_time', subMonths(new Date(), 3).toISOString())

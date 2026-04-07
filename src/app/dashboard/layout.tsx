@@ -14,13 +14,30 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   // Fetch user profile
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, slug, logo_url')
+    .select('full_name, slug, logo_url, plan_type')
     .eq('id', user.id)
     .single()
 
+  const navLinks = [
+    { href: '/dashboard', label: 'Próximas Citas', iconName: 'Calendar' },
+    { href: '/dashboard/event-types', label: 'Tipos de Eventos', iconName: 'Clock' }
+  ]
+
+  // Upselling o Condicional BDD
+  if (profile?.plan_type === 'pro' || profile?.plan_type === 'ultra') {
+    navLinks.push({ href: '/dashboard/packages', label: 'Paquetes Especiales', iconName: 'Package' })
+  }
+  
+  if (profile?.plan_type === 'ultra') {
+    navLinks.push({ href: '/dashboard/team', label: 'Equipos', iconName: 'Users' })
+  }
+
+  // Settings available for all
+  navLinks.push({ href: '/dashboard/settings', label: 'Configuración', iconName: 'Settings' })
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
-      <DashboardNav profile={profile} userEmail={user.email} />
+      <DashboardNav profile={profile} userEmail={user.email} navLinks={navLinks} />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-h-screen">

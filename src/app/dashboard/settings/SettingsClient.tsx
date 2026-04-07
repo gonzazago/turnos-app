@@ -2,9 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { updateProfile, disconnectPaymentAccount } from './actions'
-import { UploadCloud, CheckCircle, AlertCircle, Link2Off, Calendar } from 'lucide-react'
+import { UploadCloud, CheckCircle, AlertCircle, Link2Off, Calendar, Lock } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { Spinner } from '@/components/Spinner'
+import { resizeImageFile } from '@/utils/imageResize'
+import { hasProAccess, hasUltraAccess, PlanType } from '@/utils/planGuard'
 
 export function SettingsForm({ profile }: { profile: any }) {
   const searchParams = useSearchParams()
@@ -12,6 +14,10 @@ export function SettingsForm({ profile }: { profile: any }) {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [successMessage, setSuccessMessage] = useState('Perfil actualizado correctamente.')
+  
+  const plan: PlanType = profile.plan_type || 'free';
+  const canPro = hasProAccess(plan);
+  const canUltra = hasUltraAccess(plan);
   
   const [logoPreview, setLogoPreview] = useState(profile.logo_url)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -80,9 +86,33 @@ export function SettingsForm({ profile }: { profile: any }) {
     setError(null)
     setSuccess(false)
     
-    const formData = new FormData(e.currentTarget)
-    
     try {
+      const formEl = e.currentTarget
+      const formData = new FormData(formEl)
+      
+      const logoFile = formData.get('logo') as File | null
+      const bannerFile = formData.get('banner') as File | null
+      const faviconFile = formData.get('favicon') as File | null
+
+      if (logoFile && logoFile.size > 0 && logoFile.name) {
+        const resized = await resizeImageFile(logoFile, 500, 500)
+        formData.set('logo', resized, resized.name)
+      }
+      if (bannerFile && bannerFile.size > 0 && bannerFile.name) {
+        const resized = await resizeImageFile(bannerFile, 1200, 600)
+        formData.set('banner', resized, resized.name)
+      }
+      if (faviconFile && faviconFile.size > 0 && faviconFile.name) {
+        const resized = await resizeImageFile(faviconFile, 128, 128, 'image/png')
+        formData.set('favicon', resized, resized.name)
+      }
+
+      const palette = {
+        primary: formData.get('brandColor'),
+        secondary: formData.get('brandSecondaryColor') || '#1e40af'
+      }
+      formData.set('brandPalette', JSON.stringify(palette))
+
       const res = await updateProfile(formData)
       if (res?.error) {
         setError(res.error)
@@ -148,51 +178,114 @@ export function SettingsForm({ profile }: { profile: any }) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label htmlFor="brandColor" className="text-sm font-semibold text-slate-700">Color de Marca</label>
-          <div className="flex items-center gap-4">
-            <input 
-              type="color" 
-              id="brandColor" 
-              name="brandColor" 
-              defaultValue={profile.brand_color || '#3b82f6'} 
-              className="w-12 h-12 rounded cursor-pointer border-none p-0"
-            />
-            <span className="text-sm text-slate-500">El color principal de tu página pública (botones, acentos).</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="brandColor" className="text-sm font-semibold text-slate-700">Color Primario</label>
+            <div className="flex items-center gap-4">
+              <input 
+                type="color" 
+                id="brandColor" 
+                name="brandColor" 
+                defaultValue={profile.brand_color || profile.brand_palette?.primary || '#3b82f6'} 
+                className="w-12 h-12 rounded cursor-pointer border-none p-0"
+              />
+              <span className="text-sm text-slate-500">Color principal.</span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+               <label htmlFor="brandSecondaryColor" className="text-sm font-semibold text-slate-700">Color Secundario</label>
+               {!canPro && <span className="bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Pro</span>}
+            </div>
+            <div className="flex items-center gap-4">
+              <input 
+                type="color" 
+                id="brandSecondaryColor" 
+                name="brandSecondaryColor" 
+                disabled={!canPro}
+                defaultValue={profile.brand_palette?.secondary || '#1e40af'} 
+                className="w-12 h-12 rounded cursor-pointer border-none p-0 disabled:opacity-50"
+              />
+              <span className="text-sm text-slate-500">Acentos y hover.</span>
+            </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-slate-700">Logo o Avatar</label>
-          <div className="flex items-center gap-6">
-            <div className="w-24 h-24 rounded-2xl bg-slate-100 overflow-hidden border border-slate-200 flex-shrink-0">
-               {logoPreview ? (
-                 <img src={logoPreview} alt="Preview" className="w-full h-full object-cover" />
-               ) : (
-                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
-                   <UploadCloud className="w-8 h-8 mb-1" />
-                 </div>
-               )}
-            </div>
-            <div>
-              <input 
-                ref={fileRef}
-                type="file" 
-                name="logo" 
-                accept="image/*" 
-                className="hidden" 
-                onChange={handleImageChange} 
-              />
-              <button 
-                type="button" 
-                onClick={() => fileRef.current?.click()}
-                className="bg-white border text-sm font-medium border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg transition-colors"
-              >
-                Subir nueva imagen
-              </button>
-              <p className="text-xs text-slate-500 mt-2">Formatos recomendados: JPG, PNG. Máx 2MB.</p>
-            </div>
+          <div className="flex items-center gap-2">
+             <label htmlFor="fontFamily" className="text-sm font-semibold text-slate-700">Tipografía de la Página</label>
+             {!canPro && <span className="bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Pro</span>}
           </div>
+          <select 
+            id="fontFamily" 
+            name="fontFamily" 
+            disabled={!canPro}
+            defaultValue={profile.font_family || 'Inter'}
+            className="border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-slate-50 disabled:text-slate-400"
+          >
+            <option value="Inter">Inter (Elegante y moderna)</option>
+            <option value="Roboto">Roboto (Clásica y legible)</option>
+            <option value="Outfit">Outfit (Geométrica y llamativa)</option>
+            <option value="Playfair Display">Playfair Display (Sobria y editorial)</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-2 pt-4 border-t border-slate-100">
+          <h3 className="text-sm font-bold text-slate-900">Imágenes y Branding</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700">Logo o Avatar</label>
+            <input type="file" name="logo" accept="image/*" className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 text-slate-900" />
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+               <label className="text-sm font-semibold text-slate-700">Favicon</label>
+               {!canUltra && <span className="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Ultra White-Label</span>}
+            </div>
+            <input disabled={!canUltra} type="file" name="favicon" accept="image/*" className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900" />
+            <p className="text-xs text-slate-500">Icono de la pestaña del navegador.</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-semibold text-slate-700">Banner Superior (Hero)</label>
+            {!canPro && <span className="bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Pro</span>}
+          </div>
+          <input disabled={!canPro} type="file" name="banner" accept="image/*" className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900" />
+          <p className="text-xs text-slate-500">Imagen de portada que se mostrará arriba del perfil. Formato horizontal.</p>
+        </div>
+
+        <div className="flex flex-col gap-2 pt-4 border-t border-slate-100">
+          <div className="flex items-center gap-2">
+            <label htmlFor="customSuccessMsg" className="text-sm font-semibold text-slate-700">Mensaje de Éxito Post-Pago</label>
+            {!canUltra && <span className="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Ultra White-Label</span>}
+          </div>
+          <textarea 
+            id="customSuccessMsg" 
+            name="customSuccessMsg" 
+            disabled={!canUltra}
+            placeholder={canUltra ? "¡Gracias por tu reserva! Nos vemos pronto." : "Disponible en plan Ultra"}
+            defaultValue={profile.custom_success_msg || ''} 
+            className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none h-20 disabled:bg-slate-50 disabled:text-slate-400"
+          ></textarea>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <label htmlFor="customEmailBody" className="text-sm font-semibold text-slate-700">Mensaje Adicional para el Email</label>
+            {!canUltra && <span className="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Ultra White-Label</span>}
+          </div>
+          <textarea 
+            id="customEmailBody" 
+            name="customEmailBody" 
+            disabled={!canUltra}
+            placeholder={canUltra ? "Recuerda traer a la sesión los siguientes documentos..." : "Disponible en plan Ultra"}
+            defaultValue={profile.custom_email_body || ''} 
+            className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none h-20 disabled:bg-slate-50 disabled:text-slate-400"
+          ></textarea>
         </div>
 
         <div className="pt-6 mt-6 border-t border-slate-100">

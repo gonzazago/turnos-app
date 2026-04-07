@@ -21,7 +21,7 @@ export async function createBooking(formData: FormData) {
     // 1. Fetch profile and event type info
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, contact_email')
+      .select('full_name, contact_email, plan_type')
       .eq('id', profileId)
       .single()
 
@@ -48,8 +48,23 @@ export async function createBooking(formData: FormData) {
 
     let checkoutUrl: string | undefined
 
+    // 2.5: Check for User Package Credits
+    const { data: userCredit } = await supabase
+      .from('user_credits')
+      .select('id, remaining_credits')
+      .eq('client_email', email)
+      .eq('provider_id', profileId)
+      .gt('remaining_credits', 0)
+      .limit(1)
+      .maybeSingle();
+
+    const hasCredit = !!userCredit;
+
     // 3. Handle Payment if required
-    if (eventType.requires_deposit && newBooking) {
+    if (eventType.requires_deposit && newBooking && !hasCredit) {
+      if (profile.plan_type === 'free') {
+        return { error: 'El profesional de este evento no tiene habilitado el cobro de señas por estar en el plan gratuito.' }
+      }
       try {
         const accessToken = await PaymentService.getValidAccessToken(profileId, 'mercadopago');
         const depositAmount = (Number(eventType.total_price) * Number(eventType.deposit_percentage)) / 100;
@@ -85,8 +100,19 @@ export async function createBooking(formData: FormData) {
       }
     }
 
-    // 4. Send confirmation emails (only if not pending payment)
-    if (!eventType.requires_deposit) {
+    if (hasCredit && newBooking) {
+      // Consumir 1 crédito
+      await supabase
+        .from('user_credits')
+        .update({ remaining_credits: userCredit.remaining_credits - 1 })
+        .eq('id', userCredit.id);
+        
+      // Autofinalizar pago como pagado/aprobado ya que usó crédito
+      await BookingService.updateStatus(newBooking.id, 'confirmed', 'paid');
+    }
+
+    // 4. Send confirmation emails (only if not pending payment - which includes used credit)
+    if (!eventType.requires_deposit || hasCredit) {
       sendBookingConfirmation({
         booker_name: name,
         booker_email: email,

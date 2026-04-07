@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Calendar, Settings, Clock, LogOut, Menu, X } from 'lucide-react'
+import { LogOut, Menu, X } from 'lucide-react'
 import { logout } from '@/app/login/actions'
 
 interface Profile {
@@ -12,26 +12,38 @@ interface Profile {
   logo_url: string | null
 }
 
+export interface NavLinkDef {
+  href: string
+  label: string
+  iconName: string // pasamos un string para el lucide icon
+}
+
 interface DashboardNavProps {
   profile: Profile | null
   userEmail: string | undefined
+  navLinks: NavLinkDef[]
 }
 
-export function DashboardNav({ profile, userEmail }: DashboardNavProps) {
+// Map strings a iconos para evitar pasar componentes por props en Server-Client boundary
+import { Calendar, Settings, Clock, Users, Package } from 'lucide-react'
+
+const ICON_MAP: Record<string, any> = {
+  Calendar,
+  Clock,
+  Package,
+  Users,
+  Settings
+}
+
+export function DashboardNav({ profile, userEmail, navLinks }: DashboardNavProps) {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
-
-  const navLinks = [
-    { href: '/dashboard', label: 'Próximas Citas', icon: Calendar },
-    { href: '/dashboard/event-types', label: 'Tipos de Eventos', icon: Clock },
-    { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
-  ]
 
   const NavContent = () => (
     <>
       <nav className="flex-1 p-4 flex flex-col gap-1">
         {navLinks.map((link) => {
-          const Icon = link.icon
+          const Icon = ICON_MAP[link.iconName] || Calendar
           const isActive = pathname === link.href
           return (
             <Link
