@@ -11,12 +11,12 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Header and Hero Funnel (UI)' (Protocol in workflow.md) (c38b120)
 
 ### Phase 2: Landing Page Sections
-- [ ] Task: Add "Prueba Social" Section
-    - [ ] Include a simple banner/row with dummy company logos or text emphasizing trust (e.g., "Usado por cientos de profesionales").
-- [ ] Task: Add "Cómo Funciona" Section
-    - [ ] Implement a 3-step grid (Crea tu perfil, Comparte tu enlace, Recibe reservas) usando iconos de `lucide-react`.
-- [ ] Task: Add "Beneficios Clave" Section
-    - [ ] Destacar Sincronización con Google Calendar, Cobros con Mercado Pago y recordatorios (usando un diseño limpio a dos columnas o en grilla).
+- [x] Task: Add "Prueba Social" Section (95b7704)
+    - [x] Include a simple banner/row with dummy company logos or text emphasizing trust (e.g., "Usado por cientos de profesionales").
+- [x] Task: Add "Cómo Funciona" Section (34cbdf9)
+    - [x] Implement a 3-step grid (Crea tu perfil, Comparte tu enlace, Recibe reservas) usando iconos de `lucide-react`.
+- [x] Task: Add "Beneficios Clave" Section (5873c05)
+    - [x] Destacar Sincronización con Google Calendar, Cobros con Mercado Pago y recordatorios (usando un diseño limpio a dos columnas o en grilla).
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Landing Page Sections' (Protocol in workflow.md)
 
 ### Phase 3: Final Touches
