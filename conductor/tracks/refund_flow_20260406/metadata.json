@@ -1,0 +1,8 @@
+{
+  "track_id": "refund_flow_20260406",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-04-06T22:30:00Z",
+  "updated_at": "2026-04-06T22:30:00Z",
+  "description": "implemenatar el flujo de refunds, primero agregar el link de cancelar cita evento en la confirmacion del mismo, es decir tanto en el mail, como en el invite que genera si el usuario tiene configurado el calendar adjuntar el link de cancelacion,a nivel cancelacion, siempre que el owner cancele la cita sea desde el dashboard de la app o cancelando desde el calendar el refund debe ser total, si es por parte del cliente, el usuario debera poder setear las rules, ej mismo dia % de refund, mas de X hs antes del turno % , es decir pondra cantidad de hs y % de refund, en todos los casos se debera enviar un mail de cancelacion al cliente y si es parte del plan con integracion por wsp enviar el aviso al usuario"
+}
