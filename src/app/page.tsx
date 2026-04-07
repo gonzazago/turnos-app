@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { 
-  Calendar, 
-  ArrowRight, 
-  CheckCircle2, 
-  Globe, 
-  Clock, 
-  ShieldCheck, 
-  Zap, 
-  Sparkles, 
+import {
+  Calendar,
+  ArrowRight,
+  CheckCircle2,
+  Globe,
+  Clock,
+  ShieldCheck,
+  Zap,
+  Sparkles,
   User,
   Star,
   Check
@@ -41,9 +41,9 @@ export default function Home() {
         {/* 1. Hero Section */}
         <section className="relative isolate pt-24 pb-32 sm:pt-32 sm:pb-48 bg-slate-50 overflow-hidden">
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
-            <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style={{clipPath: "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"}}></div>
+            <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style={{ clipPath: "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" }}></div>
           </div>
-          
+
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-3xl text-center">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold mb-8 ring-1 ring-blue-700/10">
@@ -56,7 +56,7 @@ export default function Home() {
               <p className="mt-8 text-xl leading-relaxed text-slate-600 max-w-2xl mx-auto">
                 La forma más simple de recibir reservas. Crea tu página en segundos, comparte tu enlace y deja que tus clientes agenden sin idas y vueltas.
               </p>
-              
+
               <HeroFunnel />
 
               <div className="mt-12 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-slate-400">
@@ -262,7 +262,7 @@ export default function Home() {
               <h2 className="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4">Precios</h2>
               <p className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Elige el plan para tu éxito</p>
             </div>
-            
+
             <div className="mx-auto grid max-w-lg grid-cols-1 items-center gap-y-6 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-2 gap-8">
               {/* Free Plan */}
               <div className="rounded-3xl bg-white p-8 ring-1 ring-slate-200 xl:p-10 shadow-sm hover:shadow-md transition-all">
@@ -273,7 +273,7 @@ export default function Home() {
                   <span className="text-sm font-semibold leading-6 text-slate-600">/mes</span>
                 </p>
                 <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-600">
-                  {['1 Tipo de Evento', 'Reservas Ilimitadas', 'Página Personalizada', 'Link de Pago Manual'].map((f) => (
+                  {['1 Tipo de Evento', 'Reservas Ilimitadas'].map((f) => (
                     <li key={f} className="flex gap-x-3">
                       <Check className="h-6 w-5 flex-none text-blue-600" aria-hidden="true" />
                       {f}
@@ -295,7 +295,7 @@ export default function Home() {
                   <span className="text-sm font-semibold leading-6 text-slate-400">/mes</span>
                 </p>
                 <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-300">
-                  {['Eventos Ilimitados', 'Google Calendar Sync', 'Mercado Pago Automático', 'Soporte Prioritario', 'Remoción de Marca'].map((f) => (
+                  {['Eventos Ilimitados', 'Google Calendar Sync', 'Mercado Pago Automático', 'Pagina personalizada', 'Recordatorios automaticos', 'Soporte Prioritario', 'Remoción de Marca'].map((f) => (
                     <li key={f} className="flex gap-x-3">
                       <Check className="h-6 w-5 flex-none text-blue-400" aria-hidden="true" />
                       {f}
@@ -310,17 +310,16 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Final CTA */}
         <section className="py-24 bg-blue-600 relative overflow-hidden text-center text-white">
           <div className="absolute inset-0 bg-gradient-to-tr from-blue-700 to-indigo-700"></div>
-          <div className="relative z-10 max-w-4xl mx-auto px-6">
+          <div className="relative z-10 max-w-4xl mx-auto px-6 flex flex-col items-center">
             <h2 className="text-4xl font-black mb-8 leading-tight">¿Listo para retomar el control de tu tiempo?</h2>
-            <p className="text-xl text-blue-100 mb-12 max-w-2xl mx-auto">Únete a los profesionales que ya automatizaron su agenda con Turnos App.</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/register" className="bg-white text-blue-600 font-black px-10 py-4 rounded-2xl hover:bg-slate-100 transition-all text-lg shadow-xl active:scale-[0.98]">
-                Crear mi cuenta gratis
-              </Link>
-              <Link href="/login" className="text-white font-bold px-10 py-4 hover:text-blue-100 transition-all underline underline-offset-4">
+            <p className="text-xl text-blue-100 mb-4 max-w-2xl mx-auto text-center">Únete a los profesionales que ya automatizaron su agenda con Turnos App.</p>
+
+            <HeroFunnel variant="dark" />
+
+            <div className="mt-12">
+              <Link href="/login" className="text-white font-bold px-10 py-4 hover:text-blue-100 transition-all underline underline-offset-4 text-sm">
                 Ya tengo cuenta, iniciar sesión
               </Link>
             </div>
