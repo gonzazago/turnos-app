@@ -21,8 +21,3 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: Google Calendar Integration (Bidirectional Sync, Google Meet)**
 *Link: [./tracks/google_calendar_sync_20260406/](./tracks/google_calendar_sync_20260406/)*
-
----
-
-- [x] **Track: Mejoras en el funnel de la Landing Page**
-*Link: [./tracks/landing_page_funnel_20260406/](./tracks/landing_page_funnel_20260406/)*
