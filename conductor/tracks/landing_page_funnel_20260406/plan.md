@@ -19,8 +19,8 @@
     - [x] Destacar Sincronización con Google Calendar, Cobros con Mercado Pago y recordatorios (usando un diseño limpio a dos columnas o en grilla).
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Landing Page Sections' (Protocol in workflow.md) (36fd09b)
 
-### Phase 3: Final Touches
+### Phase 3: Final Touches [checkpoint: 48706f6]
 - [x] Task: Bottom CTA and Cleanup (d7b9be2)
     - [x] Add a strong, visible "Bottom CTA" section inviting the user to claim their link one last time.
     - [x] Validate mobile responsiveness and touch target sizes across the entire home page.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Touches' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Touches' (Protocol in workflow.md) (48706f6)

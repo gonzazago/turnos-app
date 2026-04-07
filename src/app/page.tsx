@@ -10,7 +10,8 @@ import {
   Sparkles,
   User,
   Star,
-  Check
+  Check,
+  X
 } from "lucide-react";
 import { HeroFunnel } from "./components/HeroFunnel";
 
@@ -59,16 +60,16 @@ export default function Home() {
 
               <HeroFunnel />
 
-              <div className="mt-12 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-slate-400">
-                <div className="flex items-center gap-2 text-sm font-medium">
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-slate-400 font-medium">
+                <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   <span>Gratis para siempre</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm font-medium">
+                <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   <span>Sin tarjeta de crédito</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm font-medium">
+                <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   <span>Configuración en 2 min</span>
                 </div>
@@ -79,11 +80,11 @@ export default function Home() {
 
         {/* 2. Social Proof Section */}
         <section className="py-20 bg-white border-y border-slate-100">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <p className="text-center text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mb-12">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+            <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mb-12">
               Con la confianza de +2,000 profesionales
             </p>
-            <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-10 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+            <div className="flex flex-wrap justify-center items-center gap-x-16 gap-y-10 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
               <div className="flex items-center gap-2 font-black text-2xl italic tracking-tighter">
                 <Globe className="w-8 h-8 text-blue-600" /> TECHCORP
               </div>
@@ -140,7 +141,7 @@ export default function Home() {
                   <div className={`w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
                     <item.icon className="w-7 h-7" />
                   </div>
-                  <div className="absolute top-8 right-8 text-5xl font-black text-slate-50">0{item.step}</div>
+                  <div className="absolute top-8 right-8 text-5xl font-black text-slate-50 opacity-50">0{item.step}</div>
                   <h3 className="text-xl font-bold text-slate-900 mb-4">{item.title}</h3>
                   <p className="text-slate-600 leading-relaxed">{item.desc}</p>
                 </div>
@@ -158,7 +159,7 @@ export default function Home() {
                 <p className="mt-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-8">
                   Diseñado para tu comodidad
                 </p>
-                <div className="space-y-8">
+                <div className="space-y-6">
                   {[
                     {
                       title: "Sincronización Bidireccional",
@@ -176,13 +177,13 @@ export default function Home() {
                       icon: ShieldCheck
                     }
                   ].map((feat, i) => (
-                    <div key={i} className="flex gap-4">
+                    <div key={i} className="flex gap-4 p-4 rounded-2xl border border-transparent hover:border-slate-100 hover:bg-slate-50/50 transition-all">
                       <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
                         <feat.icon className="w-6 h-6" />
                       </div>
                       <div>
                         <h4 className="text-lg font-bold text-slate-900 mb-1">{feat.title}</h4>
-                        <p className="text-slate-600">{feat.desc}</p>
+                        <p className="text-slate-600 leading-relaxed">{feat.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -190,7 +191,19 @@ export default function Home() {
               </div>
               <div className="flex-1 relative">
                 <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-2xl bg-slate-900 aspect-video flex items-center justify-center text-white font-bold text-2xl">
-                  [Dashboard Preview Mockup]
+                  <div className="p-8 w-full max-w-sm">
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="h-4 w-24 bg-white/20 rounded-full"></div>
+                        <div className="h-8 w-8 bg-blue-500 rounded-lg"></div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="h-10 w-full bg-white/5 rounded-xl border border-white/10"></div>
+                        <div className="h-10 w-full bg-white/5 rounded-xl border border-white/10"></div>
+                        <div className="h-10 w-full bg-blue-600 rounded-xl"></div>
+                      </div>
+                    </div>
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-transparent"></div>
                 </div>
                 <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 hidden sm:block">
@@ -199,8 +212,8 @@ export default function Home() {
                       <Check className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500 font-bold uppercase">Nueva Reserva</p>
-                      <p className="text-sm font-bold text-slate-900">Dr. House - 10:30 AM</p>
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-tight">Nueva Reserva</p>
+                      <p className="text-sm font-bold text-slate-900">10:30 AM - Confirmada</p>
                     </div>
                   </div>
                 </div>
@@ -212,12 +225,12 @@ export default function Home() {
         {/* 5. Testimonios Section */}
         <section className="py-24 bg-slate-900 text-white overflow-hidden relative">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-          <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-16">
-              <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm mb-4 text-center mx-auto">Testimonios</h2>
+          <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10 text-center">
+            <div className="mb-16">
+              <h2 className="text-blue-400 font-bold uppercase tracking-widest text-sm mb-4">Testimonios</h2>
               <p className="text-4xl font-extrabold tracking-tight sm:text-5xl">Lo que dicen de nosotros</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
               {[
                 {
                   name: "Dra. Martina G.",
@@ -263,75 +276,84 @@ export default function Home() {
               <p className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Elige el plan para tu éxito</p>
             </div>
 
-            <div className="mx-auto grid max-w-lg grid-cols-1 items-center gap-y-6 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-2 gap-8">
+            <div className="mx-auto grid max-w-lg grid-cols-1 items-stretch gap-y-8 lg:max-w-none lg:grid-cols-3 gap-8">
               {/* Free Plan */}
-              <div className="rounded-3xl bg-white p-8 ring-1 ring-slate-200 xl:p-10 shadow-sm hover:shadow-md transition-all">
-                <h3 className="text-lg font-bold leading-8 text-slate-900">Plan Free</h3>
-                <p className="mt-4 text-sm leading-6 text-slate-600">Ideal para profesionales que recién comienzan.</p>
-                <p className="mt-6 flex items-baseline gap-x-1">
-                  <span className="text-4xl font-bold tracking-tight text-slate-900">$0</span>
-                  <span className="text-sm font-semibold leading-6 text-slate-600">/mes</span>
-                </p>
-                <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-600">
-                  {['1 Tipo de Evento', 'Reservas Ilimitadas', 'Reuniones ilimitadas', 'Control de disponibilidad', 'Personalizacion de logo'].map((f) => (
-                    <li key={f} className="flex gap-x-3">
-                      <Check className="h-6 w-5 flex-none text-blue-600" aria-hidden="true" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+              <div className="flex flex-col rounded-3xl bg-white p-8 ring-1 ring-slate-200 xl:p-10 shadow-sm hover:shadow-md transition-all">
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold leading-8 text-slate-900">Free</h3>
+                  <p className="mt-4 text-sm leading-6 text-slate-600">Ideal para arrancar.</p>
+                  <p className="mt-6 flex items-baseline gap-x-1">
+                    <span className="text-4xl font-bold tracking-tight text-slate-900">$0</span>
+                    <span className="text-sm font-semibold leading-6 text-slate-600">/mes</span>
+                  </p>
+                  <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-600 border-t border-slate-100 pt-8">
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-600" /> Eventos: 1</li>
+                    <li className="flex gap-x-3 text-slate-400"><X className="h-6 w-5" /> Sync Calendar: No</li>
+                    <li className="flex gap-x-3 text-slate-400"><X className="h-6 w-5" /> Pagos (MP): No</li>
+                    <li className="flex gap-x-3 text-slate-400"><X className="h-6 w-5" /> Feriados: No</li>
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-600" /> Personalización Básica</li>
+                    <li className="flex gap-x-3 text-slate-400"><X className="h-6 w-5" /> WhatsApp: No</li>
+                    <li className="flex gap-x-3 text-slate-400"><X className="h-6 w-5" /> Equipos: No</li>
+                  </ul>
+                </div>
                 <Link href="/register" className="mt-8 block rounded-xl bg-blue-50 px-3 py-3 text-center text-sm font-bold leading-6 text-blue-600 hover:bg-blue-100 transition-all">
                   Empezar gratis
                 </Link>
               </div>
 
               {/* Pro Plan */}
-              <div className="relative rounded-3xl bg-slate-900 p-8 ring-1 ring-slate-900 xl:p-10 shadow-2xl scale-105">
+              <div className="relative flex flex-col rounded-3xl bg-slate-900 p-8 ring-1 ring-slate-900 xl:p-10 shadow-2xl scale-105 z-10">
                 <div className="absolute top-0 right-8 -translate-y-1/2 bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Recomendado</div>
-                <h3 className="text-lg font-bold leading-8 text-white">Plan Pro</h3>
-                <p className="mt-4 text-sm leading-6 text-slate-400">Para quienes buscan automatización total.</p>
-                <p className="mt-6 flex items-baseline gap-x-1">
-                  <span className="text-4xl font-bold tracking-tight text-white">$25</span>
-                  <span className="text-sm font-semibold leading-6 text-slate-400">/mes</span>
-                </p>
-                <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-300">
-                  {['Eventos Ilimitados', 'Google Calendar Sync', 'Mercado Pago Automático', 'Pagina personalizada', 'Recordatorios automaticos', 'Soporte Prioritario', 'Remoción de Marca', 'Personaliza tu pagina de confirmacion'].map((f) => (
-                    <li key={f} className="flex gap-x-3">
-                      <Check className="h-6 w-5 flex-none text-blue-400" aria-hidden="true" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold leading-8 text-white">Pro</h3>
+                  <p className="mt-4 text-sm leading-6 text-slate-400">Automatización completa.</p>
+                  <p className="mt-6 flex items-baseline gap-x-1">
+                    <span className="text-4xl font-bold tracking-tight text-white">$25</span>
+                    <span className="text-sm font-semibold leading-6 text-slate-400">/mes</span>
+                  </p>
+                  <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-300 border-t border-white/10 pt-8">
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-400" /> Eventos: Ilimitados</li>
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-400" /> Sync Calendar: 1 Cuenta</li>
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-400" /> Pagos (MP): Sí</li>
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-400" /> Feriados: Sí</li>
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-400" /> Personalización Full + Banner</li>
+                    <li className="flex gap-x-3 text-slate-500"><X className="h-6 w-5" /> WhatsApp: No</li>
+                    <li className="flex gap-x-3 text-slate-500"><X className="h-6 w-5" /> Equipos: No</li>
+                  </ul>
+                </div>
                 <Link href="/register" className="mt-8 block rounded-xl bg-blue-600 px-3 py-3 text-center text-sm font-bold leading-6 text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/40">
                   Prueba 14 días gratis
                 </Link>
               </div>
-              <div className="rounded-3xl bg-white p-8 ring-1 ring-slate-200 xl:p-10 shadow-sm hover:shadow-md transition-all">
-                <h3 className="text-lg font-bold leading-8 text-slate-900">Plan Ultra</h3>
-                <p className="mt-4 text-sm leading-6 text-slate-600">Ideales para pequeños equipos.</p>
-                <p className="mt-6 flex items-baseline gap-x-1">
-                  <span className="text-4xl font-bold tracking-tight text-slate-900">$45</span>
-                  <span className="text-sm font-semibold leading-6 text-slate-600">/mes</span>
-                </p>
-                <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-600">
-                  {['Eventos Ilimitados', 'Google Calendar Sync', 'Mercado Pago Automático', 'Pagina personalizada', 'Recordatorios automaticos', 'Soporte Prioritario', 'Remoción de Marca', 'Personaliza tu pagina de confirmacion', 'Hsta 5 usuarios diferentes'].map((f) => (
-                    <li key={f} className="flex gap-x-3">
-                      <Check className="h-6 w-5 flex-none text-blue-600" aria-hidden="true" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link href="/register" className="mt-8 block rounded-xl bg-blue-50 px-3 py-3 text-center text-sm font-bold leading-6 text-blue-600 hover:bg-blue-100 transition-all">
-                  Empezar gratis
+
+              {/* Business Plan */}
+              <div className="flex flex-col rounded-3xl bg-white p-8 ring-1 ring-slate-200 xl:p-10 shadow-sm hover:shadow-md transition-all">
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold leading-8 text-slate-900">Business</h3>
+                  <p className="mt-4 text-sm leading-6 text-slate-600">Para equipos y escala.</p>
+                  <p className="mt-6 flex items-baseline gap-x-1">
+                    <span className="text-4xl font-bold tracking-tight text-slate-900">$40</span>
+                    <span className="text-sm font-semibold leading-6 text-slate-600">/mes</span>
+                  </p>
+                  <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-600 border-t border-slate-100 pt-8">
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-600" /> Eventos: Ilimitados</li>
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-600" /> Sync Calendar: 2 Cuentas</li>
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-600" /> Pagos (MP): Sí</li>
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-600" /> Feriados: Sí</li>
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-600" /> Personalización Full + White Label</li>
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-600" /> WhatsApp: Sí (Ilimitados)</li>
+                    <li className="flex gap-x-3"><Check className="h-6 w-5 text-blue-600" /> Equipos: Sí (hasta 5)</li>
+                  </ul>
+                </div>
+                <Link href="/register" className="mt-8 block rounded-xl bg-blue-600 px-3 py-3 text-center text-sm font-bold leading-6 text-white hover:bg-blue-700 transition-all shadow-lg">
+                  Contactar Ventas
                 </Link>
               </div>
             </div>
           </div>
-
-
-
         </section>
 
+        {/* Final CTA */}
         <section className="py-24 bg-blue-600 relative overflow-hidden text-center text-white">
           <div className="absolute inset-0 bg-gradient-to-tr from-blue-700 to-indigo-700"></div>
           <div className="relative z-10 max-w-4xl mx-auto px-6 flex flex-col items-center">
@@ -341,7 +363,7 @@ export default function Home() {
             <HeroFunnel variant="dark" />
 
             <div className="mt-12">
-              <Link href="/login" className="text-white font-bold px-10 py-4 hover:text-blue-100 transition-all underline underline-offset-4 text-sm">
+              <Link href="/login" className="text-white font-bold px-10 py-4 hover:text-blue-100 transition-all underline underline-offset-4 text-sm opacity-80">
                 Ya tengo cuenta, iniciar sesión
               </Link>
             </div>

@@ -11,14 +11,14 @@ export function HeroFunnel({ variant = 'light' }: { variant?: 'light' | 'dark' }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!slug.trim()) return
-
+    
     // Process slug: lowercase and hyphenate
     const safeSlug = slug.toLowerCase().trim().replace(/[^a-z0-9]/g, '-')
     router.push(`/register?slug=${safeSlug}`)
   }
 
   return (
-    <div className="mt-10 flex flex-col items-center gap-6 w-full max-w-lg mx-auto">
+    <div className="mt-10 flex flex-col items-center gap-6 w-full max-w-lg mx-auto text-left">
       <form 
         onSubmit={handleSubmit}
         className="relative group w-full"
@@ -45,15 +45,14 @@ export function HeroFunnel({ variant = 'light' }: { variant?: 'light' | 'dark' }
           </button>
         </div>
       </form>
-
+      
       <div className={`flex items-center gap-2 text-sm ${variant === 'light' ? 'text-slate-500' : 'text-blue-100'} font-medium`}>
-
         <div className="flex -space-x-2">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
-              <img
-                src={`https://i.pravatar.cc/100?img=${i + 10}`}
-                alt="User"
+              <img 
+                src={`https://i.pravatar.cc/100?img=${i + 10}`} 
+                alt="User" 
                 className="w-full h-full object-cover"
               />
             </div>
