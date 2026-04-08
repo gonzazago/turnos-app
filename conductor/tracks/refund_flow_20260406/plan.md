@@ -9,7 +9,7 @@
     - [x] Implement logic to return percentage and amount based on dynamic rules.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Data Modeling and Calculation Logic' (Protocol in workflow.md) (710410b)
 
-### Phase 2: Cancellation Infrastructure
+### Phase 2: Cancellation Infrastructure [checkpoint: 82a446c]
 - [x] Task: Secure Cancellation Tokens (a215a6c)
     - [x] Implement utility to generate and verify secure, time-limited cancellation tokens.
 - [x] Task: Update Booking Flow (b33c34e)
@@ -17,7 +17,7 @@
     - [x] Update confirmation email template to include the `/cancel/[id]?t=[token]` link.
 - [x] Task: Google Calendar Invite Enrichment (b33c34e)
     - [x] Update `CalendarService` to append the cancellation link to the event description.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Cancellation Infrastructure' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Cancellation Infrastructure' (Protocol in workflow.md) (82a446c)
 
 ### Phase 3: Public Cancellation Experience
 - [ ] Task: Create Public Cancellation Page
