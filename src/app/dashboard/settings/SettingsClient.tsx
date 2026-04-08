@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { updateProfile, disconnectPaymentAccount } from './actions'
-import { UploadCloud, CheckCircle, AlertCircle, Link2Off, Calendar, Lock } from 'lucide-react'
+import { UploadCloud, CheckCircle, AlertCircle, Link2Off, Calendar, Lock, Trash2, Plus } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { Spinner } from '@/components/Spinner'
 import { resizeImageFile } from '@/utils/imageResize'
@@ -21,6 +21,22 @@ export function SettingsForm({ profile }: { profile: any }) {
   
   const [logoPreview, setLogoPreview] = useState(profile.logo_url)
   const fileRef = useRef<HTMLInputElement>(null)
+
+  const [refundRules, setRefundRules] = useState<any[]>(profile.refund_rules || [])
+
+  const addRefundRule = () => {
+    setRefundRules([...refundRules, { hoursBefore: 24, percentage: 50 }])
+  }
+
+  const removeRefundRule = (index: number) => {
+    setRefundRules(refundRules.filter((_, i) => i !== index))
+  }
+
+  const updateRefundRule = (index: number, field: string, value: number) => {
+    const newRules = [...refundRules]
+    newRules[index] = { ...newRules[index], [field]: value }
+    setRefundRules(newRules)
+  }
 
   const handleDisconnect = async (provider: string) => {
     const providerName = provider === 'mercadopago' ? 'Mercado Pago' : 'Google Calendar'
@@ -112,6 +128,7 @@ export function SettingsForm({ profile }: { profile: any }) {
         secondary: formData.get('brandSecondaryColor') || '#1e40af'
       }
       formData.set('brandPalette', JSON.stringify(palette))
+      formData.set('refundRules', JSON.stringify(refundRules))
 
       const res = await updateProfile(formData)
       if (res?.error) {
@@ -286,6 +303,59 @@ export function SettingsForm({ profile }: { profile: any }) {
             defaultValue={profile.custom_email_body || ''} 
             className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none h-20 disabled:bg-slate-50 disabled:text-slate-400"
           ></textarea>
+        </div>
+
+        <div className="pt-6 mt-6 border-t border-slate-100">
+          <div className="flex flex-col gap-4">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                Políticas de Reembolso
+              </h3>
+              <p className="text-slate-500 text-sm mt-1">Define cuánto se le devuelve al cliente según el tiempo de cancelación.</p>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              {refundRules.map((rule, index) => (
+                <div key={index} className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200 animate-in fade-in slide-in-from-left-2">
+                  <div className="flex-1 flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-500 whitespace-nowrap">Más de</span>
+                    <input 
+                      type="number" 
+                      value={rule.hoursBefore} 
+                      onChange={(e) => updateRefundRule(index, 'hoursBefore', parseInt(e.target.value) || 0)}
+                      className="w-16 border border-slate-300 rounded-lg px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span className="text-xs font-bold text-slate-500">hs antes:</span>
+                  </div>
+                  <div className="flex-1 flex items-center gap-2">
+                    <input 
+                      type="number" 
+                      value={rule.percentage} 
+                      onChange={(e) => updateRefundRule(index, 'percentage', parseInt(e.target.value) || 0)}
+                      className="w-16 border border-slate-300 rounded-lg px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span className="text-xs font-bold text-slate-500">% reembolso</span>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => removeRefundRule(index)}
+                    className="p-2 text-slate-400 hover:text-red-600 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={addRefundRule}
+                className="flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-500 hover:border-blue-300 hover:text-blue-600 transition-all group"
+              >
+                <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-bold">Agregar regla de reembolso</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="pt-6 mt-6 border-t border-slate-100">

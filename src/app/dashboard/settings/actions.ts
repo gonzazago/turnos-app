@@ -20,6 +20,7 @@ export async function updateProfile(formData: FormData) {
   const fontFamily = formData.get('fontFamily') as string
   const customSuccessMsg = formData.get('customSuccessMsg') as string
   const customEmailBody = formData.get('customEmailBody') as string
+  const refundRules = formData.get('refundRules') as string
 
   const logoFile = formData.get('logo') as File | null
   const bannerFile = formData.get('banner') as File | null
@@ -60,6 +61,12 @@ export async function updateProfile(formData: FormData) {
   if (brandPalette) {
     try {
       updates.brand_palette = JSON.parse(brandPalette)
+    } catch (e) {}
+  }
+
+  if (refundRules) {
+    try {
+      updates.refund_rules = JSON.parse(refundRules)
     } catch (e) {}
   }
 

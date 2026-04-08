@@ -33,15 +33,15 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Public Cancellation Experience' (Protocol in workflow.md) (214ae56)
 
 ### Phase 4: Provider Tools and Sync
-- [~] Task: Dashboard Cancellation
-    - [ ] Add "Cancel & Refund 100%" button to the Provider Booking details modal.
-- [ ] Task: Google Calendar Deletion Sync
-    - [ ] Update Google Webhook handler to detect `cancelled` event status.
-    - [ ] Trigger the Turnos App cancellation flow with automatic 100% refund.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Provider Tools and Sync' (Protocol in workflow.md)
+- [x] Task: Dashboard Cancellation (85df9e6)
+    - [x] Add "Cancel & Refund 100%" button to the Provider Booking details modal.
+- [x] Task: Google Calendar Deletion Sync (85df9e6)
+    - [x] Update Google Webhook handler to detect `cancelled` event status.
+    - [x] Trigger the Turnos App cancellation flow with automatic 100% refund.
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Provider Tools and Sync' (Protocol in workflow.md) (85df9e6)
 
 ### Phase 5: Settings and Notifications
-- [ ] Task: Refund Rules UI
+- [~] Task: Refund Rules UI
     - [ ] Implement the "Refund Rules" section in Dashboard Settings (Dynamic input pairs).
 - [ ] Task: WhatsApp and Email Notifications
     - [ ] Implement `TwilioService` for WhatsApp messaging.
