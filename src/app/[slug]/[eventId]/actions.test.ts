@@ -56,6 +56,9 @@ describe('createBooking action', () => {
     select: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
     single: vi.fn().mockReturnThis(),
+    maybeSingle: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockReturnThis(),
+    gt: vi.fn().mockReturnThis(),
     gte: vi.fn().mockReturnThis(),
     lte: vi.fn().mockReturnThis(),
     lt: vi.fn().mockReturnThis(),
@@ -81,8 +84,11 @@ describe('createBooking action', () => {
       .mockResolvedValueOnce({ data: { full_name: 'Jane Smith', contact_email: 'jane@example.com' }, error: null })
       .mockResolvedValueOnce({ data: { title: '30 Min', requires_deposit: false }, error: null })
     
+    // Mock user_credits check
+    mockSupabase.maybeSingle.mockResolvedValueOnce({ data: null, error: null })
+
     const { BookingService } = await import('@/services/booking/service')
-    vi.mocked(BookingService.create).mockResolvedValue({ id: 'booking-123' } as any)
+    vi.mocked(BookingService.create).mockResolvedValue({ id: 'booking-123', cancel_token: 'token-123' } as any)
     
     const result = await createBooking(mockFormData)
     expect(result).toEqual({ 
@@ -101,6 +107,9 @@ describe('createBooking action', () => {
       .mockResolvedValueOnce({ data: { full_name: 'Jane Smith' }, error: null })
       .mockResolvedValueOnce({ data: { title: '30 Min' }, error: null })
 
+    // Mock user_credits check
+    mockSupabase.maybeSingle.mockResolvedValueOnce({ data: null, error: null })
+
     const { BookingService } = await import('@/services/booking/service')
     vi.mocked(BookingService.create).mockRejectedValue(new Error('Rate limit exceeded'))
     
@@ -113,14 +122,17 @@ describe('createBooking action', () => {
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
 
     mockSupabase.single
-      .mockResolvedValueOnce({ data: { full_name: 'Jane Smith' }, error: null })
+      .mockResolvedValueOnce({ data: { full_name: 'Jane Smith', plan_type: 'pro' }, error: null })
       .mockResolvedValueOnce({ 
         data: { title: 'Paid Meeting', requires_deposit: true, total_price: 100, deposit_percentage: 20 }, 
         error: null 
       })
     
+    // Mock user_credits check
+    mockSupabase.maybeSingle.mockResolvedValueOnce({ data: null, error: null })
+
     const { BookingService } = await import('@/services/booking/service')
-    vi.mocked(BookingService.create).mockResolvedValue({ id: 'booking-paid' } as any)
+    vi.mocked(BookingService.create).mockResolvedValue({ id: 'booking-paid', cancel_token: 'token-paid' } as any)
     
     const { PaymentService } = await import('@/services/payment/service')
     vi.mocked(PaymentService.getValidAccessToken).mockResolvedValue('valid-token')

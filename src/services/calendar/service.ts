@@ -58,14 +58,19 @@ export const CalendarService = {
     end_time: string;
     booker_email: string;
     is_virtual?: boolean;
+    booking_id: string;
+    cancel_token: string;
   }) {
     try {
       const accessToken = await this.getAccessToken(userId);
       const googleService = new GoogleCalendarService();
 
+      const cancelLink = `${process.env.NEXT_PUBLIC_APP_URL}/cancel/${booking.booking_id}?t=${booking.cancel_token}`;
+      const fullDescription = `${booking.description || ''}\n\nPara cancelar esta cita, haz clic aquí: ${cancelLink}`;
+
       const event = await googleService.createEvent(accessToken, {
         summary: booking.summary,
-        description: booking.description,
+        description: fullDescription,
         start: { dateTime: booking.start_time, timeZone: 'UTC' },
         end: { dateTime: booking.end_time, timeZone: 'UTC' },
         attendees: [{ email: booking.booker_email }],

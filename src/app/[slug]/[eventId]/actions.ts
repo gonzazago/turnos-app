@@ -119,7 +119,9 @@ export async function createBooking(formData: FormData) {
         provider_name: profile.full_name || 'El Proveedor',
         provider_email: profile.contact_email || 'no-reply@ejemplo.com',
         event_title: eventType.title,
-        start_time: startTime
+        start_time: startTime,
+        booking_id: newBooking.id,
+        cancel_token: newBooking.cancel_token
       }).catch(err => console.error('Error sending confirmation email:', err))
     }
 

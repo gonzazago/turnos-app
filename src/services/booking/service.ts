@@ -1,6 +1,7 @@
 import { getSupabaseAdmin } from '@/utils/supabase/admin';
 import { areIntervalsOverlapping, startOfDay, addDays } from 'date-fns';
 import { CalendarService } from '../calendar/service';
+import { generateCancelToken } from '@/utils/tokens';
 
 export interface CreateBookingParams {
   profileId: string;
@@ -77,6 +78,17 @@ export class BookingService {
       throw new Error('Ocurrió un error al procesar tu reserva.');
     }
 
+    // 3.5 Generate and store cancellation token
+    const cancelToken = generateCancelToken(newBooking.id);
+    const { data: updatedBooking } = await supabaseAdmin
+      .from('bookings')
+      .update({ cancel_token: cancelToken })
+      .eq('id', newBooking.id)
+      .select()
+      .single();
+
+    const finalBooking = updatedBooking || newBooking;
+
     // 4. Google Calendar Sync
     try {
       // Get event type details to check if it's virtual
@@ -93,6 +105,8 @@ export class BookingService {
         end_time: params.endTime,
         booker_email: params.bookerEmail,
         is_virtual: true, // We could make this dynamic based on event type if we had the field
+        booking_id: finalBooking.id,
+        cancel_token: cancelToken
       });
 
       if (googleEvent) {
@@ -102,13 +116,13 @@ export class BookingService {
             google_event_id: googleEvent.id,
             google_meet_link: googleEvent.hangoutLink
           })
-          .eq('id', newBooking.id);
+          .eq('id', finalBooking.id);
       }
     } catch (err) {
       console.error('Error in Google Calendar sync during booking creation:', err);
     }
 
-    return newBooking;
+    return finalBooking;
   }
 
   static async getById(bookingId: string) {
