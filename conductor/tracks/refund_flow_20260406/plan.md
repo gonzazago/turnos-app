@@ -10,13 +10,13 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Data Modeling and Calculation Logic' (Protocol in workflow.md) (710410b)
 
 ### Phase 2: Cancellation Infrastructure
-- [ ] Task: Secure Cancellation Tokens
-    - [ ] Implement utility to generate and verify secure, time-limited cancellation tokens.
-- [ ] Task: Update Booking Flow
-    - [ ] Modify booking creation action to generate a token and store it.
-    - [ ] Update confirmation email template to include the `/cancel/[id]?t=[token]` link.
-- [ ] Task: Google Calendar Invite Enrichment
-    - [ ] Update `CalendarService` to append the cancellation link to the event description.
+- [x] Task: Secure Cancellation Tokens (a215a6c)
+    - [x] Implement utility to generate and verify secure, time-limited cancellation tokens.
+- [x] Task: Update Booking Flow (b33c34e)
+    - [x] Modify booking creation action to generate a token and store it.
+    - [x] Update confirmation email template to include the `/cancel/[id]?t=[token]` link.
+- [x] Task: Google Calendar Invite Enrichment (b33c34e)
+    - [x] Update `CalendarService` to append the cancellation link to the event description.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Cancellation Infrastructure' (Protocol in workflow.md)
 
 ### Phase 3: Public Cancellation Experience
