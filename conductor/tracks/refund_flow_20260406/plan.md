@@ -20,20 +20,20 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Cancellation Infrastructure' (Protocol in workflow.md) (82a446c)
 
 ### Phase 3: Public Cancellation Experience
-- [~] Task: Create Public Cancellation Page
-    - [ ] Build the `/cancel/[bookingId]` page (Client Component).
-    - [ ] Implement data fetching to show booking summary and calculated refund.
-- [ ] Task: Implement Cancellation Server Action
-    - [ ] Write integration tests for the cancellation action (Token validation, MP API mock, DB update).
-    - [ ] Implement logic to:
+- [x] Task: Create Public Cancellation Page (214ae56)
+    - [x] Build the `/cancel/[bookingId]` page (Client Component).
+    - [x] Implement data fetching to show booking summary and calculated refund.
+- [x] Task: Implement Cancellation Server Action (214ae56)
+    - [x] Write integration tests for the cancellation action (Token validation, MP API mock, DB update).
+    - [x] Implement logic to:
         - Validate token.
         - Calculate final refund percentage.
         - Call Mercado Pago Refund API (`POST /v1/payments/:id/refunds`).
         - Update booking status to `cancelled`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Public Cancellation Experience' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Public Cancellation Experience' (Protocol in workflow.md) (214ae56)
 
 ### Phase 4: Provider Tools and Sync
-- [ ] Task: Dashboard Cancellation
+- [~] Task: Dashboard Cancellation
     - [ ] Add "Cancel & Refund 100%" button to the Provider Booking details modal.
 - [ ] Task: Google Calendar Deletion Sync
     - [ ] Update Google Webhook handler to detect `cancelled` event status.

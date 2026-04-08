@@ -3,6 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { BookingService } from '@/services/booking/service'
+import { CancellationService } from '@/services/booking/cancellation'
 
 export async function cancelBooking(bookingId: string) {
   const supabase = await createClient()
@@ -13,11 +14,10 @@ export async function cancelBooking(bookingId: string) {
   }
 
   try {
-    const { error } = await BookingService.cancel(bookingId, user.id);
-    if (error) throw error;
-
+    const result = await CancellationService.processCancellation(bookingId, 'provider');
+    
     revalidatePath('/dashboard')
-    return { success: true }
+    return { success: true, ...result }
   } catch (error) {
     console.error('Error canceling booking:', error)
     return { error: 'No se pudo cancelar la cita.' }

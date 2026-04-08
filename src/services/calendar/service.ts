@@ -1,6 +1,7 @@
 import { getSupabaseAdmin } from '@/utils/supabase/admin';
 import { GoogleCalendarService } from './google';
 import { BookingService } from '../booking/service';
+import { CancellationService } from '../booking/cancellation';
 
 export const CalendarService = {
   async getGoogleTokens(userId: string) {
@@ -211,8 +212,8 @@ export const CalendarService = {
             
             if (cancelledEvent) {
               console.log('Synchronized event cancelled in Google, cancelling Turnos booking:', booking.id);
-              // Use BookingService to update status (this might trigger other notifications)
-              await BookingService.updateStatus(booking.id, 'cancelled', 'refunded');
+              // Use CancellationService to handle refund and notifications
+              await CancellationService.processCancellation(booking.id, 'provider');
             }
           }
         }

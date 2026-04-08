@@ -1,8 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import { format, parseISO } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { X, User, Mail, Calendar, Clock, CreditCard, Info } from 'lucide-react'
+import { X, User, Mail, Calendar, Clock, CreditCard, Info, AlertCircle } from 'lucide-react'
+import { cancelBooking } from '../actions'
+import { Spinner } from '@/components/Spinner'
 
 export function BookingDetailsModal({ 
   booking, 
@@ -11,10 +14,35 @@ export function BookingDetailsModal({
   booking: any, 
   onClose: () => void 
 }) {
+  const [isCancelling, setIsCancelling] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
   if (!booking) return null
 
   const startTime = parseISO(booking.start_time)
   const endTime = parseISO(booking.end_time)
+
+  const handleCancel = async () => {
+    if (!confirm('¿Estás seguro de que deseas cancelar esta cita? Se procesará un reembolso total si corresponde.')) {
+      return
+    }
+
+    setIsCancelling(true)
+    setError(null)
+
+    try {
+      const res = await cancelBooking(booking.id)
+      if (res.error) {
+        setError(res.error)
+      } else {
+        onClose()
+      }
+    } catch (err) {
+      setError('Error al cancelar la cita.')
+    } finally {
+      setIsCancelling(false)
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -109,10 +137,29 @@ export function BookingDetailsModal({
              <span>ID de Reserva:</span>
              <code className="bg-slate-50 px-2 py-0.5 rounded">{booking.id}</code>
           </div>
+
+          {error && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs font-medium flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              {error}
+            </div>
+          )}
         </div>
 
         {/* Footer Actions */}
-        <div className="p-6 bg-slate-50 flex justify-end gap-3">
+        <div className="p-6 bg-slate-50 flex justify-between gap-3">
+          {booking.status !== 'cancelled' ? (
+            <button
+              onClick={handleCancel}
+              disabled={isCancelling}
+              className="px-4 py-2.5 text-red-600 font-bold text-sm hover:bg-red-50 rounded-xl transition-all flex items-center gap-2 disabled:opacity-50"
+            >
+              {isCancelling ? <Spinner size="sm" /> : null}
+              Cancelar y Reembolsar
+            </button>
+          ) : (
+            <div></div>
+          )}
           <button 
             onClick={onClose}
             className="px-6 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm active:scale-[0.98]"
