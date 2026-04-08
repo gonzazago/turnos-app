@@ -137,11 +137,14 @@ export class BookingService {
     return data;
   }
 
-  static async updateStatus(bookingId: string, status: string, paymentStatus: string) {
+  static async updateStatus(bookingId: string, status: string, paymentStatus: string, paymentId?: string) {
     const supabaseAdmin = getSupabaseAdmin();
+    const updateData: any = { status, payment_status: paymentStatus };
+    if (paymentId) updateData.payment_id = paymentId;
+    
     return supabaseAdmin
       .from('bookings')
-      .update({ status, payment_status: paymentStatus })
+      .update(updateData)
       .eq('id', bookingId);
   }
 

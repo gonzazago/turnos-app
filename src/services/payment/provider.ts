@@ -57,4 +57,6 @@ export interface PaymentProvider {
   exchangeAuthorizationCode(code: string, redirectUri: string): Promise<OAuthExchangeResult>;
 
   refreshToken(refreshToken: string): Promise<OAuthExchangeResult>;
+
+  refundPayment(accessToken: string, paymentId: string, amount?: number): Promise<any>;
 }

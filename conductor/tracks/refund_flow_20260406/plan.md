@@ -20,7 +20,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Cancellation Infrastructure' (Protocol in workflow.md) (82a446c)
 
 ### Phase 3: Public Cancellation Experience
-- [ ] Task: Create Public Cancellation Page
+- [~] Task: Create Public Cancellation Page
     - [ ] Build the `/cancel/[bookingId]` page (Client Component).
     - [ ] Implement data fetching to show booking summary and calculated refund.
 - [ ] Task: Implement Cancellation Server Action

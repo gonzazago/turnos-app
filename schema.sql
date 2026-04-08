@@ -82,6 +82,7 @@ create table public.bookings (
   status text default 'confirmed' not null,
   payment_status text default 'pending' not null,
   mercado_pago_preference_id text,
+  payment_id text,
   google_event_id text,
   google_meet_link text,
   cancel_token text,

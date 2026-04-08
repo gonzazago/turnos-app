@@ -38,4 +38,11 @@ export class WhatsAppService {
       `¡Hola! Te recordamos que mañana (${date}) tienes un turno con ${profesional}. ¡No faltes!`
     );
   }
+
+  public static async sendBookingCancellation(toPhone: string, cliente: string, date: string) {
+    return this.provider.sendMessage(
+      toPhone,
+      `Aviso: El cliente ${cliente} ha cancelado su turno del día ${date}. El horario ya está disponible nuevamente.`
+    );
+  }
 }

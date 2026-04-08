@@ -183,4 +183,26 @@ export class MercadoPagoProvider implements PaymentProvider {
       provider_user_id: String(data.user_id),
     };
   }
+
+  async refundPayment(accessToken: string, paymentId: string, amount?: number): Promise<any> {
+    const payload = amount ? { amount } : {};
+
+    const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}/refunds`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Mercado Pago Refund Error:', data);
+      throw new Error(data.message || 'Failed to process refund with Mercado Pago');
+    }
+
+    return data;
+  }
 }

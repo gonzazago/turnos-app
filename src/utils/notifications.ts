@@ -27,3 +27,24 @@ export async function sendBookingConfirmation(data: BookingConfirmationData) {
   
   return { success: true }
 }
+
+export interface BookingCancellationData {
+  booker_name: string
+  booker_email: string
+  provider_name: string
+  event_title: string
+  start_time: string
+  refund_amount: number
+  initiated_by: 'provider' | 'client'
+}
+
+export async function sendBookingCancellationEmail(data: BookingCancellationData) {
+  console.log('--- SENDING BOOKING CANCELLATION EMAIL ---')
+  console.log(`To Booker: ${data.booker_email} (Hi ${data.booker_name}, your meeting '${data.event_title}' with ${data.provider_name} has been cancelled.)`)
+  if (data.refund_amount > 0) {
+    console.log(`Refund Processed: $${data.refund_amount.toFixed(2)}`)
+  }
+  console.log('-------------------------------------------')
+  
+  return { success: true }
+}

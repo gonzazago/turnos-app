@@ -149,7 +149,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ received: true });
       }
 
-      const { error: updateError } = await BookingService.updateStatus(bookingId, 'confirmed', 'paid');
+      const { error: updateError } = await BookingService.updateStatus(bookingId, 'confirmed', 'paid', String(id));
       if (updateError) {
         console.error('Error updating booking status:', updateError);
         return NextResponse.json({ error: 'DB Update Error' }, { status: 500 });
