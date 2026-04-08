@@ -15,6 +15,11 @@
     - **Row Level Security (RLS):** For secure data access at the database level.
     - **Storage:** For handling user-uploaded assets like logos.
 
+## External Integrations
+- **Mercado Pago:** For secure payment processing and automated refunds.
+- **Google Calendar API:** For bidirectional synchronization of events.
+- **Twilio:** For automated WhatsApp notifications (Plan Ultra).
+
 ## Core Libraries
 - **date-fns:** For powerful and consistent date manipulation and formatting.
 - **clsx & tailwind-merge:** For managing conditional class names and preventing Tailwind class conflicts.
