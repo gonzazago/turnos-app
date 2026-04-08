@@ -1,13 +1,13 @@
 # Implementation Plan: Refund and Cancellation Flow
 
-### Phase 1: Data Modeling and Calculation Logic
+### Phase 1: Data Modeling and Calculation Logic [checkpoint: 710410b]
 - [x] Task: Update Database Schema (72fdc24)
     - [x] Add `refund_rules` (JSONB) to `profiles` table.
     - [x] Add `cancel_token` (text) and `refund_data` (JSONB) to `bookings` table.
 - [x] Task: Implement Refund Calculation Utility (6919a70)
     - [x] Write unit tests for `calculateRefund(rules, appointmentTime, cancelTime)`.
     - [x] Implement logic to return percentage and amount based on dynamic rules.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Data Modeling and Calculation Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Data Modeling and Calculation Logic' (Protocol in workflow.md) (710410b)
 
 ### Phase 2: Cancellation Infrastructure
 - [ ] Task: Secure Cancellation Tokens
