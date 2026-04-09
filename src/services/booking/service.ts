@@ -15,6 +15,23 @@ export interface CreateBookingParams {
 }
 
 export class BookingService {
+  static async getProviderDashboardBookings(userId: string) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('bookings')
+      .select(`
+        id, start_time, end_time, booker_name, booker_email, status, payment_status,
+        event_types (title, duration_mins, requires_deposit, total_price, deposit_percentage)
+      `)
+      .eq('user_id', userId)
+      .gte('start_time', subMonths(new Date(), 3).toISOString())
+      .lte('start_time', addMonths(new Date(), 6).toISOString())
+      .order('start_time', { ascending: true });
+
+    if (error) throw error;
+    return data;
+  }
+
   static async getBookingsForDateRange(userId: string, email: string, startDate: string, endDate: string) {
     const supabaseAdmin = getSupabaseAdmin();
     const { data, error } = await supabaseAdmin
