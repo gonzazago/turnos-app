@@ -8,11 +8,11 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Audit and Target Identification' (Protocol in workflow.md) (6adf1f2)
 
 ### Phase 2: Refactoring Booking Logic
-- [~] Task: Refactor Cron Reminders
-    - [ ] Move the `bookings` query with `profiles!inner` join from `src/app/api/cron/reminders/route.ts` to a new method in `BookingService` (e.g., `getUpcomingBookingsForReminders()`).
-- [ ] Task: Refactor Cross-Service Booking Queries
-    - [ ] Move `bookings` queries from `CalendarService` (and others if applicable) to dedicated methods in `BookingService` (e.g., `getConfirmedBookingsWithGoogleId(userId)`).
-- [ ] Task: Refactor Internal Booking Service Methods
+- [x] Task: Refactor Cron Reminders (4854839)
+    - [x] Move the `bookings` query with `profiles!inner` join from `src/app/api/cron/reminders/route.ts` to a new method in `BookingService` (e.g., `getUpcomingBookingsForReminders()`).
+- [x] Task: Refactor Cross-Service Booking Queries (83f251c)
+    - [x] Move `bookings` queries from `CalendarService` (and others if applicable) to dedicated methods in `BookingService` (e.g., `getConfirmedBookingsWithGoogleId(userId)`).
+- [~] Task: Refactor Internal Booking Service Methods
     - [ ] Extract inline database queries within `BookingService` (and `CancellationService`) into dedicated, reusable repository-style methods to centralize Supabase client interactions.
 - [ ] Task: Refactor other Booking queries
     - [ ] Update any identified `bookings` queries in route handlers, server actions, and server components to use `BookingService` repository-style methods.
