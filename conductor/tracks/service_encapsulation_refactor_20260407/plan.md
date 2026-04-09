@@ -1,17 +1,21 @@
 # Implementation Plan: Service Encapsulation Refactor
 
 ### Phase 1: Audit and Target Identification
-- [ ] Task: Review Codebase for Direct Queries
-    - [ ] Identify all direct Supabase queries in `src/app/api/...` route handlers.
-    - [ ] Identify all direct Supabase queries in `src/app/.../actions.ts` server actions.
-    - [ ] Identify all direct Supabase queries in `src/app/.../page.tsx` server components.
+- [x] Task: Review Codebase for Direct Queries
+    - [x] Identify all direct Supabase queries in `src/app/api/...` route handlers.
+    - [x] Identify all direct Supabase queries in `src/app/.../actions.ts` server actions.
+    - [x] Identify all direct Supabase queries in `src/app/.../page.tsx` server components.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Audit and Target Identification' (Protocol in workflow.md)
 
 ### Phase 2: Refactoring Booking Logic
 - [ ] Task: Refactor Cron Reminders
     - [ ] Move the `bookings` query with `profiles!inner` join from `src/app/api/cron/reminders/route.ts` to a new method in `BookingService` (e.g., `getUpcomingBookingsForReminders()`).
+- [ ] Task: Refactor Cross-Service Booking Queries
+    - [ ] Move `bookings` queries from `CalendarService` (and others if applicable) to dedicated methods in `BookingService` (e.g., `getConfirmedBookingsWithGoogleId(userId)`).
+- [ ] Task: Refactor Internal Booking Service Methods
+    - [ ] Extract inline database queries within `BookingService` (and `CancellationService`) into dedicated, reusable repository-style methods to centralize Supabase client interactions.
 - [ ] Task: Refactor other Booking queries
-    - [ ] Update any identified `bookings` queries in route handlers, server actions, and server components to use `BookingService`.
+    - [ ] Update any identified `bookings` queries in route handlers, server actions, and server components to use `BookingService` repository-style methods.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Refactoring Booking Logic' (Protocol in workflow.md)
 
 ### Phase 3: Refactoring Calendar Logic
