@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server';
 import {WhatsAppService} from '@/services/notifications/WhatsAppService';
-import {createClient} from '@/utils/supabase/server';
+import {BookingService} from '@/services/booking/service';
 import {addDays, endOfDay, startOfDay} from 'date-fns';
 
 export async function GET(request: Request) {
@@ -13,23 +13,12 @@ export async function GET(request: Request) {
   }
 
   try {
-    const supabase = await createClient();
-    
     // Buscar turnos que ocurren mañana
     const tomorrowStart = startOfDay(addDays(new Date(), 1)).toISOString();
     const tomorrowEnd = endOfDay(addDays(new Date(), 1)).toISOString();
 
     // Esta query debería ser optimizada para ignorar turnos ya recordados si en el db hubiera un flag 'reminder_sent'
-    const { data: bookings, error } = await supabase
-      .from('bookings')
-      .select('id, start_time, booker_name, user_id, profiles!inner(phone, plan_type, full_name)')
-      .eq('status', 'confirmed')
-      .gte('start_time', tomorrowStart)
-      .lte('start_time', tomorrowEnd);
-
-    if (error) {
-      throw error;
-    }
+    const bookings = await BookingService.getUpcomingBookingsForReminders(tomorrowStart, tomorrowEnd);
 
     let sentCount = 0;
 

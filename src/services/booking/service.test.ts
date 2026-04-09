@@ -69,4 +69,35 @@ describe('BookingService Synchronization', () => {
 
     expect(CalendarService.deleteBookingEvent).toHaveBeenCalledWith(userId, 'google_event_123');
   });
+
+  describe('getUpcomingBookingsForReminders', () => {
+    it('should fetch upcoming confirmed bookings with their related profile data', async () => {
+      const mockFrom = {
+        select: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        gte: vi.fn().mockReturnThis(),
+        lte: vi.fn().mockReturnThis(),
+        then: (resolve: any) => resolve({
+          data: [
+            { id: '1', start_time: '2026-04-10T10:00:00Z', profiles: { phone: '123', plan_type: 'ultra', full_name: 'Dr. House' } }
+          ],
+          error: null
+        }),
+      };
+      vi.mocked(getSupabaseAdmin).mockReturnValue({ from: vi.fn(() => mockFrom) } as any);
+
+      const startDate = '2026-04-10T00:00:00Z';
+      const endDate = '2026-04-10T23:59:59Z';
+
+      const result = await BookingService.getUpcomingBookingsForReminders(startDate, endDate);
+
+      expect(getSupabaseAdmin().from).toHaveBeenCalledWith('bookings');
+      expect(mockFrom.select).toHaveBeenCalledWith('id, start_time, booker_name, user_id, profiles!inner(phone, plan_type, full_name)');
+      expect(mockFrom.eq).toHaveBeenCalledWith('status', 'confirmed');
+      expect(mockFrom.gte).toHaveBeenCalledWith('start_time', startDate);
+      expect(mockFrom.lte).toHaveBeenCalledWith('start_time', endDate);
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('1');
+    });
+  });
 });

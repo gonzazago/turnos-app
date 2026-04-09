@@ -132,13 +132,25 @@ export class BookingService {
       .select('*, event_types(*), profiles(*)')
       .eq('id', bookingId)
       .single();
-    
+
     if (error) throw error;
     return data;
   }
 
-  static async updateStatus(bookingId: string, status: string, paymentStatus: string, paymentId?: string) {
+  static async getUpcomingBookingsForReminders(startDate: string, endDate: string) {
     const supabaseAdmin = getSupabaseAdmin();
+    const { data, error } = await supabaseAdmin
+      .from('bookings')
+      .select('id, start_time, booker_name, user_id, profiles!inner(phone, plan_type, full_name)')
+      .eq('status', 'confirmed')
+      .gte('start_time', startDate)
+      .lte('start_time', endDate);
+
+    if (error) throw error;
+    return data;
+  }
+
+  static async updateStatus(bookingId: string, status: string, paymentStatus: string, paymentId?: string) {    const supabaseAdmin = getSupabaseAdmin();
     const updateData: any = { status, payment_status: paymentStatus };
     if (paymentId) updateData.payment_id = paymentId;
     
