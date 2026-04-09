@@ -14,7 +14,7 @@ export async function handleCancelBooking(bookingId: string, token: string) {
     revalidatePath('/dashboard');
     revalidatePath('/'); // To update availability on home/slug pages if needed
     
-    return { success: true, ...result };
+    return result;
   } catch (error: any) {
     console.error('Cancellation error:', error);
     return { error: error.message || 'Error al procesar la cancelación.' };

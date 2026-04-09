@@ -117,7 +117,8 @@ export async function POST(request: Request) {
                 end_time: endTime.toISOString(),
                 status: 'confirmed',
                 payment_status: 'paid',
-                payment_preference_id: `PKG_PREF_${id}_${i}` // fake preference to mark it
+                payment_id: String(id),
+                mercado_pago_preference_id: `PKG_PREF_${id}_${i}` // fake preference to mark it
              });
 
              // Add 7 days for next session
@@ -133,6 +134,7 @@ export async function POST(request: Request) {
              client_email: clientEmail,
              provider_id: providerId,
              package_id: packageId,
+             payment_id: String(id),
              remaining_credits: pkgData.session_count
            });
            console.log(`Granted ${pkgData.session_count} credits to ${clientEmail}`);

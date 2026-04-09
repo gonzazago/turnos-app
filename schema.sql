@@ -381,6 +381,7 @@ create table public.user_credits (
   client_email text not null,
   provider_id uuid references public.profiles(id) on delete cascade not null,
   package_id uuid references public.session_packages(id) on delete set null,
+  payment_id text,
   remaining_credits integer not null check (remaining_credits >= 0),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null

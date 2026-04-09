@@ -32,8 +32,8 @@ export function BookingDetailsModal({
 
     try {
       const res = await cancelBooking(booking.id)
-      if (res.error) {
-        setError(res.error)
+      if ('error' in res && res.error) {
+        setError(res.error as string)
       } else {
         onClose()
       }

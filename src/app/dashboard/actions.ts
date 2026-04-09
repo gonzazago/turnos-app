@@ -17,7 +17,7 @@ export async function cancelBooking(bookingId: string) {
     const result = await CancellationService.processCancellation(bookingId, 'provider');
     
     revalidatePath('/dashboard')
-    return { success: true, ...result }
+    return result
   } catch (error) {
     console.error('Error canceling booking:', error)
     return { error: 'No se pudo cancelar la cita.' }

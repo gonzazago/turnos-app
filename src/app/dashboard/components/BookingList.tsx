@@ -26,7 +26,7 @@ export function BookingList({ bookings }: { bookings: any[] }) {
     const id = bookingToCancel.id
     setLoadingId(id)
     const res = await cancelBooking(id)
-    if (res?.error) alert(res.error)
+    if (res && 'error' in res && res.error) alert(res.error as string)
     setLoadingId(null)
     setBookingToCancel(null)
   }
