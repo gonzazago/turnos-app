@@ -14,33 +14,68 @@ export interface CreateBookingParams {
 }
 
 export class BookingService {
-  static async create(params: CreateBookingParams) {
+  static async getBookingsForDateRange(userId: string, email: string, startDate: string, endDate: string) {
     const supabaseAdmin = getSupabaseAdmin();
+    const { data, error } = await supabaseAdmin
+      .from('bookings')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('booker_email', email)
+      .gte('start_time', startDate)
+      .lt('start_time', endDate);
+    if (error) throw error;
+    return data;
+  }
 
+  static async getOverlappingBookings(userId: string, startTime: string, endTime: string) {
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data, error } = await supabaseAdmin
+      .from('bookings')
+      .select('start_time, end_time')
+      .eq('user_id', userId)
+      .gte('end_time', startTime)
+      .lte('start_time', endTime);
+    if (error) throw error;
+    return data;
+  }
+
+  static async insertBooking(bookingData: any) {
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data, error } = await supabaseAdmin
+      .from('bookings')
+      .insert(bookingData)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  static async update(bookingId: string, updateData: any) {
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data, error } = await supabaseAdmin
+      .from('bookings')
+      .update(updateData)
+      .eq('id', bookingId)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  static async create(params: CreateBookingParams) {
     // 1. Rate limit check: one booking per day per email
     const startTimeDate = new Date(params.startTime);
     const bookingDate = startOfDay(startTimeDate).toISOString();
     const nextDay = addDays(startOfDay(startTimeDate), 1).toISOString();
 
-    const { data: dailyBookings } = await supabaseAdmin
-      .from('bookings')
-      .select('id')
-      .eq('user_id', params.profileId)
-      .eq('booker_email', params.bookerEmail)
-      .gte('start_time', bookingDate)
-      .lt('start_time', nextDay);
+    const dailyBookings = await this.getBookingsForDateRange(params.profileId, params.bookerEmail, bookingDate, nextDay);
 
     if (dailyBookings && dailyBookings.length > 0) {
       throw new Error('Ya tienes una reserva para este día. Solo se permite una reserva por día.');
     }
 
     // 2. Availability check: verify no overlapping bookings
-    const { data: existingBookings } = await supabaseAdmin
-      .from('bookings')
-      .select('start_time, end_time')
-      .eq('user_id', params.profileId)
-      .gte('end_time', params.startTime)
-      .lte('start_time', params.endTime);
+    const existingBookings = await this.getOverlappingBookings(params.profileId, params.startTime, params.endTime);
 
     if (existingBookings && existingBookings.length > 0) {
       const isOverlapping = existingBookings.some((booking) => 
@@ -56,9 +91,9 @@ export class BookingService {
     }
 
     // 3. Create the booking
-    const { data: newBooking, error } = await supabaseAdmin
-      .from('bookings')
-      .insert({
+    let newBooking;
+    try {
+      newBooking = await this.insertBooking({
         user_id: params.profileId,
         event_type_id: params.eventTypeId,
         booker_name: params.bookerName,
@@ -67,11 +102,8 @@ export class BookingService {
         end_time: params.endTime,
         status: params.requiresDeposit ? 'pending_payment' : 'confirmed',
         payment_status: params.requiresDeposit ? 'pending' : 'paid'
-      })
-      .select()
-      .single();
-
-    if (error) {
+      });
+    } catch (error: any) {
       if (error.code === '23P01') {
         throw new Error('Lo sentimos, este horario ya ha sido reservado. Por favor, selecciona otro.');
       }
@@ -80,17 +112,11 @@ export class BookingService {
 
     // 3.5 Generate and store cancellation token
     const cancelToken = generateCancelToken(newBooking.id);
-    const { data: updatedBooking } = await supabaseAdmin
-      .from('bookings')
-      .update({ cancel_token: cancelToken })
-      .eq('id', newBooking.id)
-      .select()
-      .single();
-
-    const finalBooking = updatedBooking || newBooking;
+    const finalBooking = await this.update(newBooking.id, { cancel_token: cancelToken });
 
     // 4. Google Calendar Sync
     try {
+      const supabaseAdmin = getSupabaseAdmin();
       // Get event type details to check if it's virtual
       const { data: eventType } = await supabaseAdmin
         .from('event_types')
@@ -110,13 +136,10 @@ export class BookingService {
       });
 
       if (googleEvent) {
-        await supabaseAdmin
-          .from('bookings')
-          .update({
-            google_event_id: googleEvent.id,
-            google_meet_link: googleEvent.hangoutLink
-          })
-          .eq('id', finalBooking.id);
+        await this.update(finalBooking.id, {
+          google_event_id: googleEvent.id,
+          google_meet_link: googleEvent.hangoutLink
+        });
       }
     } catch (err) {
       console.error('Error in Google Calendar sync during booking creation:', err);

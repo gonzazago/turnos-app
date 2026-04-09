@@ -15,32 +15,15 @@ export class CancellationService {
     initiatedBy: 'provider' | 'client',
     cancelToken?: string
   ) {
-    const supabaseAdmin = getSupabaseAdmin();
-
     // 1. Fetch booking with related data
-    const { data: booking, error: bookingError } = await supabaseAdmin
-      .from('bookings')
-      .select(`
-        *,
-        event_types (
-          title,
-          total_price,
-          deposit_percentage,
-          requires_deposit
-        ),
-        profiles (
-          id,
-          full_name,
-          contact_email,
-          phone,
-          plan_type,
-          refund_rules
-        )
-      `)
-      .eq('id', bookingId)
-      .single();
+    let booking;
+    try {
+      booking = await BookingService.getById(bookingId);
+    } catch (err) {
+      throw new Error('Booking not found');
+    }
 
-    if (bookingError || !booking) {
+    if (!booking) {
       throw new Error('Booking not found');
     }
 
@@ -81,9 +64,8 @@ export class CancellationService {
     }
 
     // 5. Update Booking Status
-    const { error: updateError } = await supabaseAdmin
-      .from('bookings')
-      .update({ 
+    try {
+      await BookingService.update(bookingId, { 
         status: 'cancelled', 
         payment_status: refundAmount > 0 ? 'refunded' : booking.payment_status,
         refund_data: {
@@ -93,10 +75,10 @@ export class CancellationService {
           refund_id: refundResult?.id || null,
           processed_at: new Date().toISOString()
         }
-      })
-      .eq('id', bookingId);
-
-    if (updateError) throw updateError;
+      });
+    } catch (updateError) {
+      throw updateError;
+    }
 
     // 6. Delete Google Calendar Event
     if (booking.google_event_id) {
