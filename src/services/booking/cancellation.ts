@@ -1,6 +1,5 @@
 import { getSupabaseAdmin } from '@/utils/supabase/admin';
 import { BookingService } from './service';
-import { CalendarService } from '../calendar/service';
 import { PaymentService } from '../payment/service';
 import { calculateRefund } from '@/utils/refunds';
 import { sendBookingCancellationEmail } from '@/utils/notifications';
@@ -82,6 +81,7 @@ export class CancellationService {
 
     // 6. Delete Google Calendar Event
     if (booking.google_event_id) {
+      const { CalendarService } = await import('../calendar/service');
       await CalendarService.deleteBookingEvent(booking.user_id, booking.google_event_id);
     }
 
