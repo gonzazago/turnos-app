@@ -1,7 +1,6 @@
 import { getSupabaseAdmin } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
 import { areIntervalsOverlapping, startOfDay, addDays, subMonths, addMonths } from 'date-fns';
-import { CalendarService } from '../calendar/service';
 import { generateCancelToken } from '@/utils/tokens';
 
 export interface CreateBookingParams {
@@ -155,6 +154,7 @@ export class BookingService {
         .eq('id', params.eventTypeId)
         .single();
 
+      const { CalendarService } = await import('../calendar/service');
       const googleEvent = await CalendarService.createBookingEvent(params.profileId, {
         summary: `${eventType?.title || 'Reserva'} - ${params.bookerName}`,
         description: `Reserva realizada a través de Turnos App.\n\nCliente: ${params.bookerName}\nEmail: ${params.bookerEmail}`,
@@ -247,6 +247,7 @@ export class BookingService {
       .single();
 
     if (booking?.google_event_id) {
+      const { CalendarService } = await import('../calendar/service');
       await CalendarService.deleteBookingEvent(userId, booking.google_event_id);
     }
 
