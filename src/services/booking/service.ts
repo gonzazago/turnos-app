@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from '@/utils/supabase/admin';
-import { areIntervalsOverlapping, startOfDay, addDays } from 'date-fns';
+import { createClient } from '@/utils/supabase/server';
+import { areIntervalsOverlapping, startOfDay, addDays, subMonths, addMonths } from 'date-fns';
 import { CalendarService } from '../calendar/service';
 import { generateCancelToken } from '@/utils/tokens';
 
@@ -25,6 +26,19 @@ export class BookingService {
       .lt('start_time', endDate);
     if (error) throw error;
     return data;
+  }
+
+  static async checkExactBookingExists(userId: string, email: string, startTime: string) {
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data, error } = await supabaseAdmin
+      .from('bookings')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('booker_email', email)
+      .eq('start_time', startTime)
+      .limit(1);
+    if (error) throw error;
+    return data && data.length > 0;
   }
 
   static async getOverlappingBookings(userId: string, startTime: string, endTime: string) {
@@ -235,3 +249,4 @@ export class BookingService {
       .eq('user_id', userId);
   }
 }
+

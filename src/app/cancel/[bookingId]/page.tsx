@@ -1,8 +1,8 @@
-import { createClient } from '@/utils/supabase/server';
 import { notFound, redirect } from 'next/navigation';
 import { verifyCancelToken } from '@/utils/tokens';
 import { calculateRefund } from '@/utils/refunds';
 import { CancellationClient } from './CancellationClient';
+import { BookingService } from '@/services/booking/service';
 
 interface Props {
   params: Promise<{ bookingId: string }>;
@@ -43,29 +43,16 @@ export default async function CancelPage({ params, searchParams }: Props) {
     );
   }
 
-  const supabase = await createClient();
-
   // Fetch booking with event and profile info
-  const { data: booking, error: bookingError } = await supabase
-    .from('bookings')
-    .select(`
-      *,
-      event_types (
-        title,
-        total_price,
-        deposit_percentage,
-        requires_deposit
-      ),
-      profiles (
-        full_name,
-        refund_rules
-      )
-    `)
-    .eq('id', bookingId)
-    .single();
-
-  if (bookingError || !booking) {
+  let booking;
+  try {
+    booking = await BookingService.getById(bookingId);
+  } catch (bookingError) {
     console.error('Error fetching booking for cancellation:', bookingError);
+    notFound();
+  }
+
+  if (!booking) {
     notFound();
   }
 

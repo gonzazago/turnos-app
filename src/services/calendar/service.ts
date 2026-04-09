@@ -16,6 +16,18 @@ export const CalendarService = {
     return data;
   },
 
+  async hasGoogleCalendarConnection(userId: string) {
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data } = await supabaseAdmin
+      .from('google_calendar_tokens')
+      .select('id')
+      .eq('user_id', userId)
+      .limit(1)
+      .maybeSingle();
+      
+    return !!data;
+  },
+
   async getAccessToken(userId: string) {
     const tokens = await this.getGoogleTokens(userId);
     if (!tokens) throw new Error('Google Calendar not connected');

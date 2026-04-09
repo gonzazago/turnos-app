@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { BookingClient } from './BookingClient'
 import { startOfDay, addDays } from 'date-fns'
 import { getARHolidays } from '@/utils/holidays'
+import { BookingService } from '@/services/booking/service'
+import { CalendarService } from '@/services/calendar/service'
 
 type Params = { slug: string; eventId: string }
 
@@ -37,13 +39,8 @@ export default async function BookingPage({ params }: { params: Promise<Params> 
     .eq('slug', slug)
     .single()
 
-  // Chequeo manual de integración de Google Calendar para evitar fallo de Foreign Key si la DB no está al día
-  const { data: googleTokens } = await supabase
-    .from('google_calendar_tokens')
-    .select('id')
-    .eq('user_id', profile?.id)
-    .limit(1)
-    .maybeSingle()
+  // Chequeo de integración de Google Calendar
+  const hasGoogleCalendar = profile ? await CalendarService.hasGoogleCalendarConnection(profile.id) : false;
 
   if (profileError) {
     console.error("Error fetching profile in eventId page:", profileError);
@@ -76,12 +73,16 @@ export default async function BookingPage({ params }: { params: Promise<Params> 
     .eq('event_type_id', eventId)
 
   // Fetch upcoming booked slots for the next 14 days
-  const { data: bookedData } = await supabase
-    .from('bookings')
-    .select('start_time, end_time')
-    .eq('user_id', profile.id)
-    .gte('end_time', startOfDay(new Date()).toISOString())
-    .lt('start_time', addDays(new Date(), 15).toISOString())
+  let bookedData: any[] = [];
+  try {
+    bookedData = await BookingService.getOverlappingBookings(
+      profile.id,
+      startOfDay(new Date()).toISOString(),
+      addDays(new Date(), 15).toISOString()
+    );
+  } catch (err) {
+    console.error('Error fetching bookings', err);
+  }
 
   // Fetch Google busy slots
   const { data: googleBusyData } = await supabase
@@ -94,7 +95,6 @@ export default async function BookingPage({ params }: { params: Promise<Params> 
   let allBusySlots = googleBusyData || [];
   
   // Nager.Date Holidays for Pro/Ultra if no Google Calendar connected
-  const hasGoogleCalendar = !!googleTokens;
   if (!hasGoogleCalendar && profile && (profile.plan_type === 'pro' || profile.plan_type === 'ultra')) {
     const currentYear = new Date().getFullYear();
     const holidays = await getARHolidays(currentYear);

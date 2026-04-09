@@ -90,15 +90,9 @@ export async function POST(request: Request) {
            
            // Generate N bookings 1 week apart!
            // But how do we ensure idempotency? Check first if a booking with same email, provider and event type at that exact start time exists.
-           const { data: existingBookings } = await supabase
-             .from('bookings')
-             .select('id')
-             .eq('user_id', providerId)
-             .eq('booker_email', clientEmail)
-             .eq('start_time', startTimeStr)
-             .limit(1);
+           const exists = await BookingService.checkExactBookingExists(providerId, clientEmail, startTimeStr);
 
-           if (existingBookings && existingBookings.length > 0) {
+           if (exists) {
              console.log('Package payments bookings already generated. Idempotency triggered.');
              return NextResponse.json({ received: true });
            }
@@ -108,7 +102,7 @@ export async function POST(request: Request) {
            for (let i = 0; i < pkgData.session_count; i++) {
              const endTime = new Date(currentDate.getTime() + parseInt(durationMinsStr) * 60000);
              
-             await supabase.from('bookings').insert({
+             await BookingService.insertBooking({
                 user_id: providerId,
                 event_type_id: pkgData.event_type_id,
                 booker_name: 'Cliente (Bono Recurrente)', // Hardcoded due to MP not passing full name easily or we could pass via externalRef

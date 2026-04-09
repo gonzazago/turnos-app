@@ -5,7 +5,7 @@ import { es } from 'date-fns/locale'
 import { CheckCircle, XCircle, Calendar, Clock, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
-import { getSupabaseAdmin } from '@/utils/supabase/admin'
+import { BookingService } from '@/services/booking/service'
 
 export default async function BookingStatusPage({
   params,
@@ -19,17 +19,15 @@ export default async function BookingStatusPage({
 
   if (!bookingId) notFound()
 
-  // Use Admin client to fetch booking details because public RLS might block SELECT
-  const supabaseAdmin = getSupabaseAdmin()
-
   // Fetch booking details
-  const { data: booking, error } = await supabaseAdmin
-    .from('bookings')
-    .select('*, event_types(*), profiles(*)')
-    .eq('id', bookingId)
-    .single()
+  let booking;
+  try {
+    booking = await BookingService.getById(bookingId as string);
+  } catch (error) {
+    notFound();
+  }
 
-  if (error || !booking) notFound()
+  if (!booking) notFound()
 
   const isSuccess = status === 'approved' || status === 'success' || booking.payment_status === 'paid'
   const startTime = parseISO(booking.start_time)

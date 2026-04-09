@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { subMonths, addMonths } from 'date-fns'
 import { ClientDashboard } from './components/ClientDashboard'
+import { BookingService } from '@/services/booking/service'
 
 export const metadata = { title: 'Dashboard - Turnos' }
 
@@ -14,16 +14,7 @@ export default async function DashboardPage() {
   }
 
   // Fetch recent history and future appointments efficiently (from -3M to +6M)
-  const { data: bookings } = await supabase
-    .from('bookings')
-    .select(`
-      id, start_time, end_time, booker_name, booker_email, status, payment_status,
-      event_types (title, duration_mins, requires_deposit, total_price, deposit_percentage)
-    `)
-    .eq('user_id', user.id)
-    .gte('start_time', subMonths(new Date(), 3).toISOString())
-    .lte('start_time', addMonths(new Date(), 6).toISOString())
-    .order('start_time', { ascending: true })
+  const bookings = await BookingService.getProviderDashboardBookings(user.id)
 
   return (
     <div className="max-w-6xl mx-auto">

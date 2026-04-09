@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { PackageClient } from './PackageClient'
 import { startOfDay, addDays } from 'date-fns'
 import { getARHolidays } from '@/utils/holidays'
+import { BookingService } from '@/services/booking/service'
+import { CalendarService } from '@/services/calendar/service'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string, packageId: string }> }) {
     console.log(params)
@@ -69,14 +71,16 @@ export default async function PackagePublicPage({ params }: { params: Promise<{ 
     availability = availabilityData || []
 
     // Fetch upcoming booked slots for the next 14 days
-    const { data: bookedData } = await supabase
-      .from('bookings')
-      .select('start_time, end_time')
-      .eq('user_id', profile.id)
-      .gte('end_time', startOfDay(new Date()).toISOString())
-      .lt('start_time', addDays(new Date(), 15).toISOString())
-    
-    bookedSlots = bookedData || []
+    try {
+      const bookedData = await BookingService.getOverlappingBookings(
+        profile.id,
+        startOfDay(new Date()).toISOString(),
+        addDays(new Date(), 15).toISOString()
+      );
+      bookedSlots = bookedData || [];
+    } catch (err) {
+      console.error('Error fetching bookings for package', err);
+    }
 
     // Fetch Google busy slots
     const { data: googleBusyData } = await supabase
@@ -89,14 +93,8 @@ export default async function PackagePublicPage({ params }: { params: Promise<{ 
     googleBusySlots = googleBusyData || []
     
     // Nager.Date Holidays for Pro/Ultra
-    const { data: googleTokens } = await supabase
-      .from('google_calendar_tokens')
-      .select('id')
-      .eq('user_id', profile.id)
-      .limit(1)
-      .maybeSingle()
+    const hasGoogleCalendar = await CalendarService.hasGoogleCalendarConnection(profile.id);
 
-    const hasGoogleCalendar = !!googleTokens
     if (!hasGoogleCalendar && profile && (profile.plan_type === 'pro' || profile.plan_type === 'ultra')) {
       const currentYear = new Date().getFullYear();
       const holidays = await getARHolidays(currentYear);
