@@ -27,10 +27,12 @@ export function CancellationClient({ booking, refundPercentage, refundAmount, to
     
     try {
       const result = await handleCancelBooking(booking.id, token);
-      if (result.success) {
+      if ('success' in result && result.success) {
         setIsSuccess(true);
-      } else {
+      } else if ('error' in result) {
         setError(result.error || 'Ocurrió un error al procesar la cancelación.');
+      } else {
+        setError('Ocurrió un error al procesar la cancelación.');
       }
     } catch (err) {
       setError('Error inesperado. Intenta nuevamente.');

@@ -1,8 +1,7 @@
-import { NextResponse } from 'next/server';
-import { BookingService } from '@/services/booking/service';
-import { WhatsAppService } from '@/services/notifications/WhatsAppService';
-import { createClient } from '@/utils/supabase/server';
-import { addDays, startOfDay, endOfDay } from 'date-fns';
+import {NextResponse} from 'next/server';
+import {WhatsAppService} from '@/services/notifications/WhatsAppService';
+import {createClient} from '@/utils/supabase/server';
+import {addDays, endOfDay, startOfDay} from 'date-fns';
 
 export async function GET(request: Request) {
   // En producción, aquí se valida un token secreto provisto por el servicio de cron (ej. Vercel Cron, Google Cloud Scheduler)

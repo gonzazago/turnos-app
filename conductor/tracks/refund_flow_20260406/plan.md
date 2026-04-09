@@ -41,9 +41,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Provider Tools and Sync' (Protocol in workflow.md) (85df9e6)
 
 ### Phase 5: Settings and Notifications
-- [~] Task: Refund Rules UI
-    - [ ] Implement the "Refund Rules" section in Dashboard Settings (Dynamic input pairs).
-- [ ] Task: WhatsApp and Email Notifications
-    - [ ] Implement `TwilioService` for WhatsApp messaging.
-    - [ ] Trigger Email to client and WhatsApp to provider upon successful cancellation.
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Settings and Notifications' (Protocol in workflow.md)
+- [x] Task: Refund Rules UI (27d432c)
+    - [x] Implement the "Refund Rules" section in Dashboard Settings (Dynamic input pairs).
+- [x] Task: WhatsApp and Email Notifications (27d432c)
+    - [x] Implement `TwilioService` for WhatsApp messaging (Implemented as `TwilioWhatsAppProvider`).
+    - [x] Trigger Email to client and WhatsApp to provider upon successful cancellation.
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Settings and Notifications' (Protocol in workflow.md) (27d432c)

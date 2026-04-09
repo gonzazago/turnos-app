@@ -51,7 +51,7 @@ export async function createBooking(formData: FormData) {
     // 2.5: Check for User Package Credits
     const { data: userCredit } = await supabase
       .from('user_credits')
-      .select('id, remaining_credits')
+      .select('id, remaining_credits, payment_id')
       .eq('client_email', email)
       .eq('provider_id', profileId)
       .gt('remaining_credits', 0)
@@ -107,8 +107,8 @@ export async function createBooking(formData: FormData) {
         .update({ remaining_credits: userCredit.remaining_credits - 1 })
         .eq('id', userCredit.id);
         
-      // Autofinalizar pago como pagado/aprobado ya que usó crédito
-      await BookingService.updateStatus(newBooking.id, 'confirmed', 'paid');
+      // Autofinalizar pago como pagado/aprobado ya que usó crédito, vinculando el payment_id original si existe
+      await BookingService.updateStatus(newBooking.id, 'confirmed', 'paid', userCredit.payment_id || undefined);
     }
 
     // 4. Send confirmation emails (only if not pending payment - which includes used credit)
