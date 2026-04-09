@@ -100,4 +100,29 @@ describe('BookingService Synchronization', () => {
       expect(result[0].id).toBe('1');
     });
   });
+
+  describe('getConfirmedBookingsWithGoogleId', () => {
+    it('should fetch confirmed bookings that have a google_event_id for a user', async () => {
+      const mockFrom = {
+        select: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        not: vi.fn().mockReturnThis(),
+        then: (resolve: any) => resolve({
+          data: [{ id: '1', google_event_id: 'google-1' }],
+          error: null
+        }),
+      };
+      vi.mocked(getSupabaseAdmin).mockReturnValue({ from: vi.fn(() => mockFrom) } as any);
+
+      const result = await BookingService.getConfirmedBookingsWithGoogleId('user_123');
+
+      expect(getSupabaseAdmin().from).toHaveBeenCalledWith('bookings');
+      expect(mockFrom.select).toHaveBeenCalledWith('id, google_event_id');
+      expect(mockFrom.eq).toHaveBeenCalledWith('user_id', 'user_123');
+      expect(mockFrom.not).toHaveBeenCalledWith('google_event_id', 'is', null);
+      expect(mockFrom.eq).toHaveBeenCalledWith('status', 'confirmed');
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('1');
+    });
+  });
 });

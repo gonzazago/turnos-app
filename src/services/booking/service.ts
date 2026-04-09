@@ -150,6 +150,19 @@ export class BookingService {
     return data;
   }
 
+  static async getConfirmedBookingsWithGoogleId(userId: string) {
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data, error } = await supabaseAdmin
+      .from('bookings')
+      .select('id, google_event_id')
+      .eq('user_id', userId)
+      .not('google_event_id', 'is', null)
+      .eq('status', 'confirmed');
+
+    if (error) throw error;
+    return data;
+  }
+
   static async updateStatus(bookingId: string, status: string, paymentStatus: string, paymentId?: string) {    const supabaseAdmin = getSupabaseAdmin();
     const updateData: any = { status, payment_status: paymentStatus };
     if (paymentId) updateData.payment_id = paymentId;

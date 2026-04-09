@@ -195,12 +195,7 @@ export const CalendarService = {
       }
 
       // 3. Handle cancelled synchronized events (Turnos -> Google)
-      const { data: syncedBookings } = await supabaseAdmin
-        .from('bookings')
-        .select('id, google_event_id')
-        .eq('user_id', userId)
-        .not('google_event_id', 'is', null)
-        .eq('status', 'confirmed');
+      const syncedBookings = await BookingService.getConfirmedBookingsWithGoogleId(userId);
 
       const confirmedGoogleIds = new Set(events.filter((e: any) => e.status === 'confirmed').map((e: any) => e.id));
 
