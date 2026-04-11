@@ -216,9 +216,15 @@ function BookingCard({
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <h4 className="font-bold text-slate-900 text-lg">{booking.booker_name}</h4>
-            <StatusBadge type={booking.status === 'confirmed' ? 'success' : 'warning'}>
-              {booking.status === 'confirmed' ? 'Confirmado' : 'Pendiente Pago'}
-            </StatusBadge>
+            {booking.status === 'cancelled' ? (
+              <StatusBadge type="error">Cancelado</StatusBadge>
+            ) : booking.status === 'confirmed' ? (
+              <StatusBadge type="success">Confirmado</StatusBadge>
+            ) : (booking.status === 'pending' || booking.status === 'pending_payment') ? (
+              <StatusBadge type="warning">Pendiente Pago</StatusBadge>
+            ) : (
+              <StatusBadge type="info">Pendiente</StatusBadge>
+            )}
           </div>
           <div className="flex items-center gap-2 text-slate-500 text-sm">
             <Mail className="w-4 h-4" />

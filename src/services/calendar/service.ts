@@ -103,7 +103,7 @@ export const CalendarService = {
       await googleService.deleteEvent(accessToken, googleEventId);
       return true;
     } catch (error) {
-      console.error('Error deleting Google Calendar event:', error);
+      console.error(`Error deleting Google Calendar event for user ${userId}, event ${googleEventId}:`, error);
       return false;
     }
   },
@@ -156,18 +156,12 @@ export const CalendarService = {
     }
   },
 
-  async syncCalendarEvents(userId: string) {
+  async getGoogleEvents(userId: string, timeMin: string, timeMax: string) {
     try {
       const accessToken = await this.getAccessToken(userId);
-      const googleService = new GoogleCalendarService();
-
-      // Fetch events from now to 30 days in the future
-      const timeMin = new Date().toISOString();
-      const timeMax = new Date();
-      timeMax.setDate(timeMax.getDate() + 30);
 
       const response = await fetch(
-        `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax.toISOString()}&singleEvents=true`,
+        `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`,
         {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -178,7 +172,15 @@ export const CalendarService = {
       const data = await response.json();
       if (!response.ok) throw new Error('Failed to fetch Google events');
 
-      const events = data.items || [];
+      return data.items || [];
+    } catch (error) {
+      console.error('Error fetching Google Calendar events:', error);
+      throw error;
+    }
+  },
+
+  async syncBusySlots(userId: string, events: any[]) {
+    try {
       const supabaseAdmin = getSupabaseAdmin();
 
       // 1. Delete old busy slots for this user
@@ -204,31 +206,9 @@ export const CalendarService = {
           .insert(busySlots);
       }
 
-      // 3. Handle cancelled synchronized events (Turnos -> Google)
-      const { BookingService } = await import('../booking/service');
-      const syncedBookings = await BookingService.getConfirmedBookingsWithGoogleId(userId);
-
-      const confirmedGoogleIds = new Set(events.filter((e: any) => e.status === 'confirmed').map((e: any) => e.id));
-
-      if (syncedBookings) {
-        for (const booking of syncedBookings) {
-          if (!confirmedGoogleIds.has(booking.google_event_id)) {
-            // Check if it's really cancelled in Google
-            const cancelledEvent = events.find((e: any) => e.id === booking.google_event_id && e.status === 'cancelled');
-            
-            if (cancelledEvent) {
-              console.log('Synchronized event cancelled in Google, cancelling Turnos booking:', booking.id);
-              // Use CancellationService to handle refund and notifications
-              const { CancellationService } = await import('../booking/cancellation');
-              await CancellationService.processCancellation(booking.id, 'provider');
-            }
-          }
-        }
-      }
-
       return true;
     } catch (error) {
-      console.error('Error syncing Google Calendar events:', error);
+      console.error('Error syncing busy slots:', error);
       return false;
     }
   }

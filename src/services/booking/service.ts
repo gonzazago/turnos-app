@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from '@/utils/supabase/admin';
-import { createClient } from '@/utils/supabase/server';
+
 import { areIntervalsOverlapping, startOfDay, addDays, subMonths, addMonths } from 'date-fns';
 import { generateCancelToken } from '@/utils/tokens';
 
@@ -15,7 +15,7 @@ export interface CreateBookingParams {
 
 export class BookingService {
   static async getProviderDashboardBookings(userId: string) {
-    const supabase = await createClient();
+    const supabase = await getSupabaseAdmin();
     const { data, error } = await supabase
       .from('bookings')
       .select(`
@@ -265,6 +265,39 @@ export class BookingService {
       .update({ start_time: startTime, end_time: endTime })
       .eq('id', bookingId)
       .eq('user_id', userId);
+  }
+
+  static async syncWithGoogleCalendar(userId: string) {
+    try {
+      const { CalendarService } = await import('../calendar/service');
+      const timeMin = new Date().toISOString();
+      const timeMax = new Date();
+      timeMax.setDate(timeMax.getDate() + 30);
+      
+      const events = await CalendarService.getGoogleEvents(userId, timeMin, timeMax.toISOString());
+      await CalendarService.syncBusySlots(userId, events);
+
+      // Handle cancelled synchronized events (Turnos -> Google)
+      const syncedBookings = await this.getConfirmedBookingsWithGoogleId(userId);
+      const confirmedGoogleIds = new Set(events.filter((e: any) => e.status === 'confirmed').map((e: any) => e.id));
+
+      if (syncedBookings) {
+        for (const booking of syncedBookings) {
+          if (!confirmedGoogleIds.has(booking.google_event_id)) {
+            const cancelledEvent = events.find((e: any) => e.id === booking.google_event_id && e.status === 'cancelled');
+            if (cancelledEvent) {
+              console.log('Synchronized event cancelled in Google, cancelling Turnos booking:', booking.id);
+              const { CancellationService } = await import('./cancellation');
+              await CancellationService.processCancellation(booking.id, 'provider');
+            }
+          }
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error('Error syncing with Google Calendar:', error);
+      return false;
+    }
   }
 }
 

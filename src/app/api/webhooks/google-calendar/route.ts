@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/utils/supabase/admin';
-import { CalendarService } from '@/services/calendar/service';
+import { BookingService } from '@/services/booking/service';
 
 export async function POST(request: Request) {
   const resourceId = request.headers.get('x-goog-resource-id');
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
   // 3. Trigger background sync for this user
   console.log('Syncing calendar for user:', tokenData.user_id);
-  await CalendarService.syncCalendarEvents(tokenData.user_id);
+  await BookingService.syncWithGoogleCalendar(tokenData.user_id);
 
   return new Response('OK', { status: 200 });
 }

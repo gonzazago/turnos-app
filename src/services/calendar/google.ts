@@ -107,7 +107,7 @@ export class GoogleCalendarService {
   }
 
   async deleteEvent(accessToken: string, eventId: string) {
-    const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
+    const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}?sendUpdates=all`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
