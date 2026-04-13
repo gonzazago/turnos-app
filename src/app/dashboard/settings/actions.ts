@@ -21,6 +21,8 @@ export async function updateProfile(formData: FormData) {
   const customSuccessMsg = formData.get('customSuccessMsg') as string
   const customEmailBody = formData.get('customEmailBody') as string
   const refundRules = formData.get('refundRules') as string
+  const rescheduleLimitHours = parseInt(formData.get('rescheduleLimitHours') as string) || 24
+  console.log(rescheduleLimitHours)
 
   const logoFile = formData.get('logo') as File | null
   const bannerFile = formData.get('banner') as File | null
@@ -56,6 +58,7 @@ export async function updateProfile(formData: FormData) {
     font_family: fontFamily || 'Inter',
     custom_success_msg: customSuccessMsg || null,
     custom_email_body: customEmailBody || null,
+    reschedule_limit_hours: rescheduleLimitHours,
   }
 
   if (brandPalette) {

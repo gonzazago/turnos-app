@@ -1,6 +1,6 @@
 import { getSupabaseAdmin } from '@/utils/supabase/admin';
 
-import { areIntervalsOverlapping, startOfDay, addDays, subMonths, addMonths } from 'date-fns';
+import { areIntervalsOverlapping, startOfDay, addDays, subMonths, addMonths, differenceInHours } from 'date-fns';
 import { generateCancelToken } from '@/utils/tokens';
 
 export interface CreateBookingParams {
@@ -61,7 +61,7 @@ export class BookingService {
     const supabaseAdmin = getSupabaseAdmin();
     const { data, error } = await supabaseAdmin
       .from('bookings')
-      .select('start_time, end_time')
+      .select('id, start_time, end_time')
       .eq('user_id', userId)
       .gte('end_time', startTime)
       .lte('start_time', endTime);
@@ -191,6 +191,23 @@ export class BookingService {
     return data;
   }
 
+  static async getActiveBookingByEmail(profileId: string, email: string) {
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data, error } = await supabaseAdmin
+      .from('bookings')
+      .select('*, event_types(*)')
+      .eq('user_id', profileId)
+      .eq('booker_email', email)
+      .in('status', ['confirmed', 'pending_payment'])
+      .gte('start_time', new Date().toISOString())
+      .order('start_time', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data;
+  }
+
   static async getUpcomingBookingsForReminders(startDate: string, endDate: string) {
     const supabaseAdmin = getSupabaseAdmin();
     const { data, error } = await supabaseAdmin
@@ -258,13 +275,63 @@ export class BookingService {
       .eq('user_id', userId);
   }
 
-  static async reschedule(bookingId: string, userId: string, startTime: string, endTime: string) {
+  static async reschedule(bookingId: string, userId: string, startTime: string, endTime: string, initiatedBy: 'provider' | 'client' = 'provider') {
     const supabaseAdmin = getSupabaseAdmin();
-    return supabaseAdmin
+    
+    // 1. Fetch booking with profile policy
+    const { data: booking, error: fetchError } = await supabaseAdmin
       .from('bookings')
-      .update({ start_time: startTime, end_time: endTime })
+      .select('*, profiles(reschedule_limit_hours)')
       .eq('id', bookingId)
-      .eq('user_id', userId);
+      .single();
+
+    if (fetchError || !booking) throw new Error('Booking not found');
+
+    // 2. Validate policy if initiated by client
+    if (initiatedBy === 'client') {
+      const limitHours = booking.profiles?.reschedule_limit_hours ?? 24;
+      const hoursToEvent = differenceInHours(new Date(booking.start_time), new Date());
+      
+      if (hoursToEvent < limitHours) {
+        throw new Error(`Las reprogramaciones solo están permitidas hasta ${limitHours} horas antes del turno.`);
+      }
+    }
+
+    // 3. Check for overlaps in new time (excluding current booking)
+    const overlaps = await this.getOverlappingBookings(booking.user_id, startTime, endTime);
+    const hasOverlap = overlaps.some(o => o.id !== bookingId);
+    if (hasOverlap) {
+      throw new Error('El nuevo horario seleccionado ya está ocupado.');
+    }
+
+    // 4. Update Database
+    const { data: updatedBooking, error: updateError } = await supabaseAdmin
+      .from('bookings')
+      .update({ 
+        start_time: startTime, 
+        end_time: endTime 
+      })
+      .eq('id', bookingId)
+      .select()
+      .single();
+
+    if (updateError) throw updateError;
+
+    // 5. Update Google Calendar
+    if (booking.google_event_id) {
+      console.log(`Reschedule: found google_event_id ${booking.google_event_id}, triggering sync...`);
+      try {
+        const { CalendarService } = await import('../calendar/service');
+        await CalendarService.updateBookingEvent(booking.user_id, booking.google_event_id, {
+          start_time: startTime,
+          end_time: endTime
+        });
+      } catch (calError) {
+        console.error('Error updating Google Calendar during reschedule:', calError);
+      }
+    }
+
+    return updatedBooking;
   }
 
   static async syncWithGoogleCalendar(userId: string) {

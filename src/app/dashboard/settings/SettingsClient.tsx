@@ -359,6 +359,33 @@ export function SettingsForm({ profile }: { profile: any }) {
         </div>
 
         <div className="pt-6 mt-6 border-t border-slate-100">
+          <div className="flex flex-col gap-4">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                Políticas de Reprogramación
+              </h3>
+              <p className="text-slate-500 text-sm mt-1">Define hasta cuántas horas antes el cliente puede cambiar su turno.</p>
+            </div>
+            
+            <div className="flex flex-col gap-2 max-w-xs">
+              <label htmlFor="rescheduleLimitHours" className="text-sm font-semibold text-slate-700">Límite de tiempo (horas)</label>
+              <div className="flex items-center gap-3">
+                <input 
+                  type="number" 
+                  id="rescheduleLimitHours" 
+                  name="rescheduleLimitHours" 
+                  defaultValue={profile.reschedule_limit_hours ?? 24} 
+                  required 
+                  min="0"
+                  className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none w-24"
+                />
+                <span className="text-slate-500 text-sm">horas antes del turno.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-6 mt-6 border-t border-slate-100">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div>
               <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">

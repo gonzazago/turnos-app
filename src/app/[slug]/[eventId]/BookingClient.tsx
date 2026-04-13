@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { format, addDays, isSameDay, addMinutes, getDay, startOfDay } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Clock, Calendar as CalendarIcon, ArrowLeft, Mail, User, CheckCircle, CreditCard } from 'lucide-react'
+import { Clock, Calendar as CalendarIcon, ArrowLeft, Mail, User, CheckCircle, CreditCard, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
-import { createBooking } from './actions'
+import { useSearchParams } from 'next/navigation'
+import { createBooking, rescheduleClientBooking } from './actions'
 import { getAvailableSlots, Availability, Booking } from '@/utils/availability'
 import { Spinner } from '@/components/Spinner'
 
@@ -44,6 +45,13 @@ export function BookingClient({
   const [isRedirecting, setIsRedirecting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // Reschedule state
+  const searchParams = useSearchParams()
+  const rescheduleId = searchParams.get('rescheduleId')
+  const rescheduleToken = searchParams.get('t')
+  const [isEditMode, setIsEditMode] = useState(!!(rescheduleId && rescheduleToken))
+  const [collisionData, setCollisionData] = useState<any>(null)
 
   const depositAmount = eventType.requires_deposit 
     ? ((eventType.total_price * eventType.deposit_percentage) / 100).toFixed(2)
@@ -62,24 +70,44 @@ export function BookingClient({
     googleBusySlots
   )
 
-  const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleBooking = async (e: React.FormEvent<HTMLFormElement>, forceCreate = false) => {
+    if (e) e.preventDefault()
     if (!selectedTime) return
 
     setIsSubmitting(true)
     setError(null)
-    const formData = new FormData(e.currentTarget)
+    
+    const startTimeStr = selectedTime.toISOString()
+    const endTimeStr = addMinutes(selectedTime, eventType.duration_mins).toISOString()
+
+    if (isEditMode && rescheduleId && rescheduleToken) {
+      const res = await rescheduleClientBooking(rescheduleId, rescheduleToken, startTimeStr, endTimeStr)
+      if (res?.error) {
+        setIsSubmitting(false)
+        setError(res.error)
+      } else {
+        setIsSubmitting(false)
+        setIsSuccess(true)
+      }
+      return
+    }
+
+    const formData = new FormData(e?.currentTarget || undefined)
     
     // add hidden fields
     formData.append('profileId', profile.id)
     formData.append('slug', profile.slug)
     formData.append('eventId', eventType.id)
-    formData.append('startTime', selectedTime.toISOString())
-    formData.append('endTime', addMinutes(selectedTime, eventType.duration_mins).toISOString())
+    formData.append('startTime', startTimeStr)
+    formData.append('endTime', endTimeStr)
+    if (forceCreate) formData.append('forceCreate', 'true')
 
     const res = await createBooking(formData)
     
-    if (res?.error) {
+    if (res?.requiresRescheduleConsent) {
+      setIsSubmitting(false)
+      setCollisionData(res)
+    } else if (res?.error) {
        setIsSubmitting(false)
        setError(res.error)
     } else if (res?.checkoutUrl) {
@@ -95,15 +123,35 @@ export function BookingClient({
     }
   }
 
+  const handleRescheduleExisting = async () => {
+    if (!collisionData || !selectedTime) return
+    setIsSubmitting(true)
+    
+    // We need the token for the existing booking to reschedule it
+    // But we don't have it here. The plan was to redirect to edit mode or call a specific action.
+    // Let's use the rescheduleClientBookingByEmail approach if we had the token, 
+    // or better, since this is the same user, we can trust the flow if we verify it.
+    // For now, let's redirect to edit mode which is safer as it uses the token.
+    
+    // Actually, I'll update the action to return the token too if it's the same email.
+    // (I'll do that in a separate step to keep it clean)
+    // For now, let's show the warning and allow them to "force" or "cancel".
+  }
+
   if (isSuccess) {
     return (
       <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-12 text-center max-w-xl mx-auto flex flex-col items-center">
         <div className="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mb-6">
           <CheckCircle className="w-10 h-10" />
         </div>
-        <h2 className="text-3xl font-bold text-slate-900 mb-2">¡Reserva confirmada!</h2>
+        <h2 className="text-3xl font-bold text-slate-900 mb-2">
+          {isEditMode ? '¡Reserva reprogramada!' : '¡Reserva confirmada!'}
+        </h2>
         <p className="text-slate-600 mb-8">
-          Has agendado exitosamente una reunión de {eventType.duration_mins} minutos con {profile.full_name} para el {selectedTime && format(selectedTime, "d 'de' MMMM 'a las' HH:mm", { locale: es })}.
+          {isEditMode 
+            ? `Tu reserva con ${profile.full_name} ha sido reprogramada para el ${selectedTime && format(selectedTime, "d 'de' MMMM 'a las' HH:mm", { locale: es })}.`
+            : `Has agendado exitosamente una reunión de ${eventType.duration_mins} minutos con ${profile.full_name} para el ${selectedTime && format(selectedTime, "d 'de' MMMM 'a las' HH:mm", { locale: es })}.`
+          }
         </p>
         <Link href={`/${profile.slug}`} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-6 py-3 rounded-full transition-colors inline-block">
           Volver al inicio
@@ -115,6 +163,58 @@ export function BookingClient({
   return (
     <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden max-w-5xl mx-auto flex flex-col md:flex-row">
       
+      {/* Collision / Reschedule Modal */}
+      {collisionData && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full animate-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mb-6 mx-auto">
+              <AlertTriangle className="w-8 h-8" />
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2 text-center">Ya tienes una reserva</h3>
+            <p className="text-slate-600 mb-6 text-center">
+              Hemos detectado que ya tienes un turno agendado (<strong>{collisionData.existingBookingTitle}</strong>) para el <strong>{format(new Date(collisionData.existingBookingDate), "d 'de' MMMM 'a las' HH:mm", { locale: es })}</strong>.
+              <br /><br />
+              ¿Qué deseas hacer?
+            </p>
+            
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={async () => {
+                  const id = collisionData.existingBookingId;
+                  const token = collisionData.existingBookingToken;
+                  const startTimeStr = selectedTime?.toISOString();
+                  const endTimeStr = addMinutes(selectedTime!, eventType.duration_mins).toISOString();
+                  
+                  setIsSubmitting(true);
+                  setCollisionData(null);
+                  setIsEditMode(true); // Mark as edit mode for the success message
+                  
+                  const res = await rescheduleClientBooking(id, token, startTimeStr!, endTimeStr);
+                  if (res?.error) {
+                    setIsSubmitting(false);
+                    setError(res.error);
+                  } else {
+                    setIsSubmitting(false);
+                    setIsSuccess(true);
+                  }
+                }}
+                disabled={isSubmitting}
+                className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition-colors disabled:opacity-50"
+              >
+                Cambiar por este nuevo horario
+              </button>
+              
+              <button
+                onClick={() => setCollisionData(null)}
+                className="w-full bg-white border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                Mantener mi turno actual
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Redirection Modal */}
       {isRedirecting && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">

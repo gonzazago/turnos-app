@@ -61,7 +61,9 @@ export class GoogleCalendarService {
 
     if (!response.ok) {
       console.error('Failed to refresh Google token:', data);
-      throw new Error('Failed to refresh Google token');
+      const error = new Error('Failed to refresh Google token');
+      (error as any).data = data;
+      throw error;
     }
 
     return {
@@ -103,6 +105,38 @@ export class GoogleCalendarService {
       throw new Error('Failed to create Google Calendar event');
     }
 
+    return data;
+  }
+
+  async updateEvent(accessToken: string, eventId: string, event: {
+    summary?: string;
+    description?: string;
+    start?: { dateTime: string; timeZone: string };
+    end?: { dateTime: string; timeZone: string };
+  }) {
+    const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events/${encodeURIComponent(eventId)}?sendUpdates=all`;
+    const body = JSON.stringify(event);
+    
+    console.log(`Google Calendar PATCH: ${url}`);
+    console.log('Body:', body);
+
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Failed to update Google event:', data);
+      throw new Error(`Failed to update Google Calendar event: ${response.status} ${response.statusText}`);
+    }
+
+    console.log('Google Calendar update success');
     return data;
   }
 

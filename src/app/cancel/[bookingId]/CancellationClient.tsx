@@ -1,25 +1,28 @@
 'use client';
 
 import { useState } from 'react';
-import { format } from 'date-fns';
+import { format, differenceInHours } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Calendar, Clock, User, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Calendar, Clock, User, AlertCircle, CheckCircle2, RefreshCcw } from 'lucide-react';
 import { Spinner } from '@/components/Spinner';
 import { handleCancelBooking } from './actions';
+import Link from 'next/link';
 
 interface Props {
   booking: any;
   refundPercentage: number;
   refundAmount: number;
   token: string;
+  rescheduleLimitHours: number;
 }
 
-export function CancellationClient({ booking, refundPercentage, refundAmount, token }: Props) {
+export function CancellationClient({ booking, refundPercentage, refundAmount, token, rescheduleLimitHours }: Props) {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const startTime = new Date(booking.start_time);
+  const canReschedule = differenceInHours(startTime, new Date()) >= rescheduleLimitHours;
   
   const onCancel = async () => {
     setIsConfirming(true);
@@ -142,7 +145,7 @@ export function CancellationClient({ booking, refundPercentage, refundAmount, to
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col gap-4">
           <button
             onClick={onCancel}
             disabled={isConfirming}
@@ -151,6 +154,17 @@ export function CancellationClient({ booking, refundPercentage, refundAmount, to
             {isConfirming ? <Spinner size="sm" color="white" /> : null}
             {isConfirming ? 'Procesando...' : 'Confirmar Cancelación'}
           </button>
+          
+          {canReschedule && (
+            <Link
+              href={`/${booking.profiles.slug}/${booking.event_type_id}?rescheduleId=${booking.id}&t=${token}`}
+              className="flex-1 py-4 px-6 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all text-center flex items-center justify-center gap-2"
+            >
+              <RefreshCcw className="w-5 h-5" />
+              Cambiar Fecha/Hora
+            </Link>
+          )}
+
           <a
             href="/"
             className="flex-1 py-4 px-6 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all text-center"

@@ -40,26 +40,48 @@ export const CalendarService = {
 
     // Refresh token
     const googleService = new GoogleCalendarService();
-    const result = await googleService.refreshToken(tokens.refresh_token);
+    try {
+      const result = await googleService.refreshToken(tokens.refresh_token);
 
-    const newExpiresAt = new Date();
-    newExpiresAt.setSeconds(newExpiresAt.getSeconds() + result.expires_in);
+      const newExpiresAt = new Date();
+      newExpiresAt.setSeconds(newExpiresAt.getSeconds() + result.expires_in);
 
-    const supabaseAdmin = getSupabaseAdmin();
-    const { data: updatedTokens, error: updateError } = await supabaseAdmin
-      .from('google_calendar_tokens')
-      .update({
-        access_token: result.access_token,
-        refresh_token: result.refresh_token,
-        expires_at: newExpiresAt.toISOString(),
-      })
-      .eq('user_id', userId)
-      .select()
-      .single();
+      const supabaseAdmin = getSupabaseAdmin();
+      const { data: updatedTokens, error: updateError } = await supabaseAdmin
+        .from('google_calendar_tokens')
+        .update({
+          access_token: result.access_token,
+          refresh_token: result.refresh_token,
+          expires_at: newExpiresAt.toISOString(),
+        })
+        .eq('user_id', userId)
+        .select()
+        .single();
 
-    if (updateError) throw updateError;
+      if (updateError) throw updateError;
 
-    return updatedTokens.access_token;
+      return updatedTokens.access_token;
+    } catch (error: any) {
+      if (error.data?.error === 'invalid_grant') {
+        console.warn(`Google Calendar refresh token revoked for user ${userId}. Disconnecting.`);
+        const supabaseAdmin = getSupabaseAdmin();
+        
+        // 1. Mark as disconnected in profile
+        await supabaseAdmin
+          .from('profiles')
+          .update({ google_calendar_connected: false })
+          .eq('id', userId);
+          
+        // 2. Delete tokens
+        await supabaseAdmin
+          .from('google_calendar_tokens')
+          .delete()
+          .eq('user_id', userId);
+          
+        throw new Error('Tu conexión con Google Calendar ha expirado. Por favor, vuelve a conectarla desde Configuración.');
+      }
+      throw error;
+    }
   },
 
   async createBookingEvent(userId: string, booking: {
@@ -104,6 +126,34 @@ export const CalendarService = {
       return true;
     } catch (error) {
       console.error(`Error deleting Google Calendar event for user ${userId}, event ${googleEventId}:`, error);
+      return false;
+    }
+  },
+
+  async updateBookingEvent(userId: string, googleEventId: string, event: {
+    start_time: string;
+    end_time: string;
+    summary?: string;
+  }) {
+    console.log(`Attempting to update Google event ${googleEventId} for user ${userId}`);
+    try {
+      const accessToken = await this.getAccessToken(userId);
+      const googleService = new GoogleCalendarService();
+      
+      await googleService.updateEvent(accessToken, googleEventId, {
+        summary: event.summary,
+        start: {
+          dateTime: event.start_time,
+          timeZone: 'UTC',
+        },
+        end: {
+          dateTime: event.end_time,
+          timeZone: 'UTC',
+        },
+      });
+      return true;
+    } catch (error: any) {
+      console.error(`Error updating Google Calendar event for user ${userId}, event ${googleEventId}:`, error?.message || error);
       return false;
     }
   },

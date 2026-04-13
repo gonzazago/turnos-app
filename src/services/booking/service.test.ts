@@ -11,6 +11,7 @@ vi.mock('../calendar/service', () => ({
   CalendarService: {
     createBookingEvent: vi.fn(),
     deleteBookingEvent: vi.fn(),
+    updateBookingEvent: vi.fn(),
   },
 }));
 
@@ -123,6 +124,45 @@ describe('BookingService Synchronization', () => {
       expect(mockFrom.eq).toHaveBeenCalledWith('status', 'confirmed');
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe('1');
+    });
+  });
+
+  describe('reschedule', () => {
+    it('should update booking and call CalendarService.updateBookingEvent', async () => {
+      const bookingId = 'booking_123';
+      const userId = 'user_123';
+      const startTime = '2026-04-10T14:00:00Z';
+      const endTime = '2026-04-10T15:00:00Z';
+
+      const mockFrom: any = {
+        select: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        single: vi.fn()
+          .mockResolvedValueOnce({ 
+            data: { id: bookingId, user_id: userId, start_time: '2026-04-10T10:00:00Z', google_event_id: 'google_123', profiles: { reschedule_limit_hours: 24 } }, 
+            error: null 
+          })
+          .mockResolvedValueOnce({
+            data: { id: bookingId, start_time: startTime },
+            error: null
+          }),
+        update: vi.fn().mockReturnThis(),
+        gte: vi.fn().mockReturnThis(),
+        lte: vi.fn().mockReturnThis(),
+        then: (resolve: any) => resolve({ data: [], error: null }),
+      };
+
+      vi.mocked(getSupabaseAdmin).mockReturnValue({ from: vi.fn(() => mockFrom) } as any);
+      vi.mocked(CalendarService.updateBookingEvent).mockResolvedValue(true);
+
+      const result = await BookingService.reschedule(bookingId, userId, startTime, endTime);
+
+      expect(mockFrom.update).toHaveBeenCalledWith({ start_time: startTime, end_time: endTime });
+      expect(CalendarService.updateBookingEvent).toHaveBeenCalledWith(userId, 'google_123', {
+        start_time: startTime,
+        end_time: endTime
+      });
+      expect(result.id).toBe(bookingId);
     });
   });
 });

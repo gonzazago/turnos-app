@@ -2,9 +2,10 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { sendBookingConfirmation } from '@/utils/notifications'
+import { sendBookingConfirmation, sendBookingRescheduledEmail } from '@/utils/notifications'
 import { BookingService } from '@/services/booking/service'
 import { PaymentService } from '@/services/payment/service'
+import { verifyCancelToken } from '@/utils/tokens'
 
 export async function createBooking(formData: FormData) {
   const supabase = await createClient()
@@ -16,6 +17,7 @@ export async function createBooking(formData: FormData) {
   const email = formData.get('email') as string
   const startTime = formData.get('startTime') as string
   const endTime = formData.get('endTime') as string
+  const forceCreate = formData.get('forceCreate') === 'true'
 
   try {
     // 1. Fetch profile and event type info
@@ -33,6 +35,20 @@ export async function createBooking(formData: FormData) {
 
     if (!profile || !eventType) {
       return { error: 'No se encontró la información necesaria para crear la reserva.' }
+    }
+
+    // 1.5: Check for Collision (Active bookings for same email)
+    if (!forceCreate) {
+      const existingBooking = await BookingService.getActiveBookingByEmail(profileId, email);
+      if (existingBooking) {
+        return { 
+          requiresRescheduleConsent: true, 
+          existingBookingId: existingBooking.id, 
+          existingBookingDate: existingBooking.start_time,
+          existingBookingTitle: existingBooking.event_types?.title,
+          existingBookingToken: existingBooking.cancel_token
+        };
+      }
     }
 
     // 2. Delegate booking creation to the Service
@@ -136,5 +152,38 @@ export async function createBooking(formData: FormData) {
   } catch (error: any) {
     console.error('Booking error:', error);
     return { error: error.message || 'Ocurrió un error inesperado al procesar tu reserva.' };
+  }
+}
+
+export async function rescheduleClientBooking(bookingId: string, token: string, startTime: string, endTime: string) {
+  // 1. Verify token
+  if (!verifyCancelToken(token, bookingId)) {
+    return { error: 'Token de seguridad inválido o expirado.' }
+  }
+
+  try {
+    // 2. Fetch booking BEFORE update to get old time
+    const bookingWithData = await BookingService.getById(bookingId);
+    if (!bookingWithData) throw new Error('Reserva no encontrada.');
+
+    // 3. Perform reschedule using the service (policy check is inside)
+    await BookingService.reschedule(bookingId, '', startTime, endTime, 'client');
+    
+    // 4. Send notification
+    sendBookingRescheduledEmail({
+      booker_name: bookingWithData.booker_name,
+      booker_email: bookingWithData.booker_email,
+      provider_name: bookingWithData.profiles.full_name,
+      provider_email: bookingWithData.profiles.contact_email,
+      event_title: bookingWithData.event_types.title,
+      new_time: startTime,
+      old_time: bookingWithData.start_time
+    }).catch(err => console.error('Error sending reschedule email:', err));
+
+    revalidatePath('/dashboard')
+    return { success: true, bookingId }
+  } catch (error: any) {
+    console.error('Reschedule error:', error);
+    return { error: error.message || 'No se pudo reprogramar la cita.' }
   }
 }

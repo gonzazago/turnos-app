@@ -95,6 +95,7 @@ export default async function CancelPage({ params, searchParams }: Props) {
         refundPercentage={refundInfo.percentage}
         refundAmount={refundAmount}
         token={token}
+        rescheduleLimitHours={booking.profiles?.reschedule_limit_hours ?? 24}
       />
     </div>
   );

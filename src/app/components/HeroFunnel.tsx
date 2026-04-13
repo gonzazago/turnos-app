@@ -40,7 +40,7 @@ export function HeroFunnel({ variant = 'light' }: { variant?: 'light' | 'dark' }
             type="submit"
             className={`flex items-center justify-center gap-2 ${variant === 'light' ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-white hover:bg-slate-100 text-blue-600'} font-bold px-8 py-4 sm:py-3 rounded-xl transition-all active:scale-[0.98] shadow-lg ${variant === 'light' ? 'shadow-blue-600/20' : 'shadow-black/20'}`}
           >
-            Reclamar mi enlace
+            Genera tu Agenda
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>

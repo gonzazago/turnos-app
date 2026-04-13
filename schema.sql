@@ -19,6 +19,7 @@ create table public.profiles (
   custom_email_body text,
   mp_access_token text,
   refund_rules jsonb default '[]'::jsonb not null,
+  reschedule_limit_hours int default 24 not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
 
   primary key (id)

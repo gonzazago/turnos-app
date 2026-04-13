@@ -48,3 +48,22 @@ export async function sendBookingCancellationEmail(data: BookingCancellationData
   
   return { success: true }
 }
+
+export interface BookingRescheduledData {
+  booker_name: string
+  booker_email: string
+  provider_name: string
+  provider_email: string
+  event_title: string
+  new_time: string
+  old_time: string
+}
+
+export async function sendBookingRescheduledEmail(data: BookingRescheduledData) {
+  console.log('--- SENDING BOOKING RESCHEDULED EMAILS ---')
+  console.log(`To Booker: ${data.booker_email} (Hi ${data.booker_name}, your meeting '${data.event_title}' with ${data.provider_name} has been rescheduled to ${data.new_time}!)`)
+  console.log(`To Provider: ${data.provider_email} (Hi ${data.provider_name}, ${data.booker_name} rescheduled their meeting '${data.event_title}' from ${data.old_time} to ${data.new_time}!)`)
+  console.log('-------------------------------------------')
+
+  return { success: true }
+}
