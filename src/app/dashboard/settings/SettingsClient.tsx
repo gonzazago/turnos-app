@@ -1,12 +1,56 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { updateProfile, disconnectPaymentAccount } from './actions'
-import { UploadCloud, CheckCircle, AlertCircle, Link2Off, Calendar, Lock, Trash2, Plus } from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
-import { Spinner } from '@/components/Spinner'
-import { resizeImageFile } from '@/utils/imageResize'
-import { hasProAccess, hasUltraAccess, PlanType } from '@/utils/planGuard'
+import {useEffect, useRef, useState} from 'react'
+import {disconnectPaymentAccount, updateProfile} from './actions'
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Copy,
+  Link2Off,
+  Plus,
+  Trash2
+} from 'lucide-react'
+
+function Twitter({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
+    </svg>
+  );
+}
+
+function Facebook({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+    </svg>
+  );
+}
+
+function Linkedin({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+      <rect x="2" y="9" width="4" height="12"></rect>
+      <circle cx="4" cy="4" r="2"></circle>
+    </svg>
+  );
+}
+
+function Instagram({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+    </svg>
+  );
+}
+import {useSearchParams} from 'next/navigation'
+import {Spinner} from '@/components/Spinner'
+import {resizeImageFile} from '@/utils/imageResize'
+import {hasProAccess, hasUltraAccess, PlanType} from '@/utils/planGuard'
 
 export function SettingsForm({ profile }: { profile: any }) {
   const searchParams = useSearchParams()
@@ -14,10 +58,26 @@ export function SettingsForm({ profile }: { profile: any }) {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [successMessage, setSuccessMessage] = useState('Perfil actualizado correctamente.')
+  const [copied, setCopied] = useState(false)
   
   const plan: PlanType = profile.plan_type || 'free';
   const canPro = hasProAccess(plan);
   const canUltra = hasUltraAccess(plan);
+
+  const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://turnos.app'}/${profile.slug}`
+
+  const copyToClipboard = async (url: string, isInstagram = false) => {
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+      if (isInstagram) {
+        alert('Enlace copiado. Pégalo en tu historia o bio de Instagram.')
+      }
+    } catch (err) {
+      console.error('Failed to copy: ', err)
+    }
+  }
   
   const [logoPreview, setLogoPreview] = useState(profile.logo_url)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -192,6 +252,67 @@ export function SettingsForm({ profile }: { profile: any }) {
               required 
               className="border border-slate-300 rounded-r-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all w-full flex-1"
             />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Compartir Enlace</span>
+            <button
+              type="button"
+              onClick={() => copyToClipboard(shareUrl)}
+              className="flex items-center gap-2 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              {copied ? (
+                <>
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  <span>Copiado!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copiar enlace</span>
+                </>
+              )}
+            </button>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <a 
+              href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:text-blue-400 hover:border-blue-100 transition-all shadow-sm"
+              title="Compartir en X"
+            >
+              <Twitter className="w-5 h-5" />
+            </a>
+            <a 
+              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:text-blue-600 hover:border-blue-100 transition-all shadow-sm"
+              title="Compartir en Facebook"
+            >
+              <Facebook className="w-5 h-5" />
+            </a>
+            <a 
+              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:text-blue-700 hover:border-blue-100 transition-all shadow-sm"
+              title="Compartir en LinkedIn"
+            >
+              <Linkedin className="w-5 h-5" />
+            </a>
+            <button 
+              type="button"
+              onClick={() => copyToClipboard(shareUrl, true)}
+              className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:text-pink-600 hover:border-pink-100 transition-all shadow-sm"
+              title="Copiar para Instagram"
+            >
+              <Instagram className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
