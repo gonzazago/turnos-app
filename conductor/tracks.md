@@ -31,3 +31,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [~] **Track: Refactor database queries into domain services (e.g., BookingService, CalendarService)**
 *Link: [./tracks/service_encapsulation_refactor_20260407/](./tracks/service_encapsulation_refactor_20260407/)*
+
+---
+
+- [ ] **Track: User Onboarding Process**
+*Link: [./tracks/user_onboarding_20260418/](./tracks/user_onboarding_20260418/)*
