@@ -4,15 +4,15 @@
 - [x] Task: Write Tests for Onboarding State Management (46176a7)
     - [ ] Write tests to verify the onboarding state (e.g., `hasCompletedOnboarding` flag) is correctly retrieved for a user.
     - [ ] Write tests to ensure the onboarding state can be updated (skipped or completed).
-- [ ] Task: Implement Onboarding State Logic
+- [x] Task: Implement Onboarding State Logic (46176a7)
     - [ ] Add `hasCompletedOnboarding` (boolean) to the user profile schema/database.
     - [ ] Create API route or Server Action to fetch the onboarding state.
     - [ ] Create API route or Server Action to update the onboarding state.
-- [ ] Task: Write Tests for Onboarding Modal Overlay
+- [x] Task: Write Tests for Onboarding Modal Overlay (7aa0156)
     - [ ] Write component tests for `OnboardingModal` to render correctly over the dashboard.
     - [ ] Write tests to ensure it only renders if `hasCompletedOnboarding` is false.
     - [ ] Write tests for the "Skip Guide" button functionality, triggering state update and redirection.
-- [ ] Task: Implement Onboarding Modal Overlay
+- [x] Task: Implement Onboarding Modal Overlay (7aa0156)
     - [ ] Build the `OnboardingModal` component.
     - [ ] Integrate the state check to conditionally render the modal on the main dashboard.
     - [ ] Implement the "Skip Guide" button to update state and redirect to `/dashboard/settings`.
