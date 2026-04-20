@@ -34,5 +34,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: User Onboarding Process**
+- [~] **Track: User Onboarding Process**
 *Link: [./tracks/user_onboarding_20260418/](./tracks/user_onboarding_20260418/)*

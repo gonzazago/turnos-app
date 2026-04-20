@@ -1,7 +1,7 @@
 # Implementation Plan: New User Onboarding Process
 
 ## Phase 1: Onboarding State Management and UI Shell
-- [ ] Task: Write Tests for Onboarding State Management
+- [x] Task: Write Tests for Onboarding State Management (46176a7)
     - [ ] Write tests to verify the onboarding state (e.g., `hasCompletedOnboarding` flag) is correctly retrieved for a user.
     - [ ] Write tests to ensure the onboarding state can be updated (skipped or completed).
 - [ ] Task: Implement Onboarding State Logic
