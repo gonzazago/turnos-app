@@ -1,6 +1,6 @@
 # Implementation Plan: New User Onboarding Process
 
-## Phase 1: Onboarding State Management and UI Shell
+## Phase 1: Onboarding State Management and UI Shell [checkpoint: e94f639]
 - [x] Task: Write Tests for Onboarding State Management (46176a7)
     - [ ] Write tests to verify the onboarding state (e.g., `hasCompletedOnboarding` flag) is correctly retrieved for a user.
     - [ ] Write tests to ensure the onboarding state can be updated (skipped or completed).
@@ -16,7 +16,7 @@
     - [ ] Build the `OnboardingModal` component.
     - [ ] Integrate the state check to conditionally render the modal on the main dashboard.
     - [ ] Implement the "Skip Guide" button to update state and redirect to `/dashboard/settings`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Onboarding State Management and UI Shell' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Onboarding State Management and UI Shell' (Protocol in workflow.md) (e94f639)
 
 ## Phase 2: Step 2 - App Description, Profile Customization & Live Card
 - [ ] Task: Write Tests for Step 2 UI and Live Card
