@@ -33,16 +33,16 @@
     - [ ] Implement the confirmation/agreement button to proceed to Step 3.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Step 2 - App Description, Profile Customization & Live Card' (Protocol in workflow.md) (9d919fa)
 
-## Phase 3: Step 3 - First Event Type Creation & Completion
-- [ ] Task: Write Tests for Step 3 Event Creation
+## Phase 3: Step 3 - First Event Type Creation & Completion [checkpoint: b415426]
+- [x] Task: Write Tests for Step 3 Event Creation (b415426)
     - [ ] Write tests to ensure the Step 3 UI renders the event creation inputs (name, duration).
     - [ ] Write tests to verify the form submission successfully creates an event type.
     - [ ] Write tests to ensure the onboarding state is marked as complete upon success.
-- [ ] Task: Implement Step 3 UI and Event Creation
+- [x] Task: Implement Step 3 UI and Event Creation (b415426)
     - [ ] Build the Step 3 UI within the `OnboardingModal`.
     - [ ] Implement the form state and validation for the new event type.
     - [ ] Integrate with the existing event creation API/Action.
-- [ ] Task: Implement Onboarding Completion Logic
+- [x] Task: Implement Onboarding Completion Logic (b415426)
     - [ ] Upon successful event creation, trigger the update to set `hasCompletedOnboarding` to true.
     - [ ] Close the modal and redirect the user to their newly created event type or the main dashboard.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Step 3 - First Event Type Creation & Completion' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Step 3 - First Event Type Creation & Completion' (Protocol in workflow.md) (b415426)
