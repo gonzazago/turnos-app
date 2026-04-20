@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/ui/Button'
 import { getOnboardingStatus, completeOnboarding } from '../onboarding/actions'
-import { Rocket, Palette, Calendar, Info, CheckCircle2 } from 'lucide-react'
+import { updateProfile } from '../settings/actions'
+import { createEventType } from '../event-types/actions'
+import { Rocket, Palette, Calendar, Info, CheckCircle2, Clock } from 'lucide-react'
 import { LiveCard } from './LiveCard'
 import { Input } from '@/components/ui/Input'
 
@@ -13,6 +15,7 @@ export function OnboardingModal() {
   const [isOpen, setIsOpen] = useState(false)
   const [step, setStep] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
 
   // Step 2 Profile State
@@ -21,6 +24,12 @@ export function OnboardingModal() {
     brandColor: '#3b82f6',
     logoUrl: '',
     fontFamily: 'Inter'
+  })
+
+  // Step 3 Event State
+  const [event, setEvent] = useState({
+    title: '',
+    duration: '30',
   })
 
   useEffect(() => {
@@ -44,6 +53,47 @@ export function OnboardingModal() {
 
   const nextStep = () => {
     setStep(s => s + 1)
+  }
+
+  const handleFinish = async () => {
+    setIsSubmitting(true)
+    try {
+      // 1. Update Profile (Name and Color)
+      const profileFormData = new FormData()
+      profileFormData.append('fullName', profile.fullName || 'Tu Nombre')
+      profileFormData.append('brandColor', profile.brandColor)
+      profileFormData.append('slug', '') // actions.ts handles slug generation or keeping existing
+      
+      const profileResult = await updateProfile(profileFormData)
+      if ('error' in profileResult) throw new Error(profileResult.error)
+
+      // 2. Create First Event Type
+      const eventFormData = new FormData()
+      eventFormData.append('title', event.title || 'Consulta Inicial')
+      eventFormData.append('duration_mins', event.duration)
+      
+      // Default availability for the first event (Mon-Fri 9-17)
+      const defaultAvailability = [1, 2, 3, 4, 5].map(day => ({
+        day_of_week: day,
+        start_time: '09:00',
+        end_time: '17:00'
+      }))
+
+      const eventResult = await createEventType(eventFormData, defaultAvailability)
+      if ('error' in eventResult) throw new Error(eventResult.error)
+
+      // 3. Mark Onboarding as Complete
+      const onboardingResult = await completeOnboarding()
+      if ('error' in onboardingResult) throw new Error(onboardingResult.error)
+
+      setIsOpen(false)
+      router.push('/dashboard')
+      router.refresh()
+    } catch (error: any) {
+      alert(error.message || 'Ocurrió un error al guardar tu configuración.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (isLoading || !isOpen) return null
@@ -182,12 +232,48 @@ export function OnboardingModal() {
               </p>
             </div>
 
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-8 text-center text-slate-600 italic text-base font-medium">
-              [Formulario de servicio - Próximamente]
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="eventTitle" className="text-sm font-bold text-slate-700">Nombre del servicio</label>
+                <Input 
+                  id="eventTitle"
+                  value={event.title}
+                  onChange={(e) => setEvent(ev => ({ ...ev, title: e.target.value }))}
+                  placeholder="Ej. Consulta Inicial, Clase de Yoga, etc."
+                  className="rounded-2xl border-slate-300 py-3.5 text-base"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="duration" className="text-sm font-bold text-slate-700">Duración</label>
+                <div className="relative">
+                  <select 
+                    id="duration"
+                    value={event.duration}
+                    onChange={(e) => setEvent(ev => ({ ...ev, duration: e.target.value }))}
+                    className="w-full border border-slate-300 rounded-2xl py-3.5 px-4 text-slate-900 appearance-none focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  >
+                    <option value="15">15 minutos</option>
+                    <option value="30">30 minutos</option>
+                    <option value="45">45 minutos</option>
+                    <option value="60">1 hora</option>
+                    <option value="90">1.5 horas</option>
+                    <option value="120">2 horas</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="pt-4 flex flex-col gap-3">
-              <Button onClick={handleSkip} size="lg" className="w-full text-base py-4 rounded-2xl">
+              <Button 
+                onClick={handleFinish} 
+                size="lg" 
+                className="w-full text-base py-4 rounded-2xl"
+                isLoading={isSubmitting}
+              >
                 Finalizar configuración
               </Button>
             </div>

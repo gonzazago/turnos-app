@@ -3,6 +3,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { OnboardingModal } from './OnboardingModal'
 import { useRouter } from 'next/navigation'
 import { getOnboardingStatus, completeOnboarding } from '../onboarding/actions'
+import { updateProfile } from '../settings/actions'
+import { createEventType } from '../event-types/actions'
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
@@ -13,6 +15,14 @@ vi.mock('next/navigation', () => ({
 vi.mock('../onboarding/actions', () => ({
   getOnboardingStatus: vi.fn(),
   completeOnboarding: vi.fn(),
+}))
+
+vi.mock('../settings/actions', () => ({
+  updateProfile: vi.fn(),
+}))
+
+vi.mock('../event-types/actions', () => ({
+  createEventType: vi.fn(),
 }))
 
 describe('OnboardingModal', () => {
@@ -99,5 +109,43 @@ describe('OnboardingModal', () => {
     // Live card should reflect changes
     expect(screen.getByTestId('live-card')).toBeDefined()
     expect(screen.getByText('Nuevo Nombre')).toBeDefined()
+  })
+
+  it('should complete onboarding after creating first event in Step 3', async () => {
+    vi.mocked(getOnboardingStatus).mockResolvedValue({ hasCompletedOnboarding: false })
+    vi.mocked(updateProfile).mockResolvedValue({ success: true })
+    vi.mocked(createEventType).mockResolvedValue({ success: true })
+    vi.mocked(completeOnboarding).mockResolvedValue({ success: true })
+    
+    render(<OnboardingModal />)
+    
+    await waitFor(() => {
+      expect(screen.getByText(/Bienvenido a turnos.app/i)).toBeDefined()
+    })
+    
+    // Step 1 -> 2
+    fireEvent.click(screen.getByText(/Continuar/i))
+    
+    // Step 2 -> 3
+    fireEvent.click(screen.getByText(/Siguiente: Mi primer servicio/i))
+    
+    // Step 3
+    expect(screen.getByText(/Tu primer servicio/i)).toBeDefined()
+    
+    const eventNameInput = screen.getByLabelText(/Nombre del servicio/i)
+    fireEvent.change(eventNameInput, { target: { value: 'Mi Servicio' } })
+    
+    const durationInput = screen.getByLabelText(/Duración/i)
+    fireEvent.change(durationInput, { target: { value: '60' } })
+    
+    const finishButton = screen.getByText(/Finalizar configuración/i)
+    fireEvent.click(finishButton)
+    
+    await waitFor(() => {
+      expect(updateProfile).toHaveBeenCalled()
+      expect(createEventType).toHaveBeenCalled()
+      expect(completeOnboarding).toHaveBeenCalled()
+      expect(mockRouter.push).toHaveBeenCalledWith('/dashboard')
+    })
   })
 })
