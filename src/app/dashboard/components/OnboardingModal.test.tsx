@@ -77,4 +77,27 @@ describe('OnboardingModal', () => {
     // Step 2 should be visible
     expect(screen.getByText(/Personaliza tu perfil/i)).toBeDefined()
   })
+
+  it('should allow updating profile settings in Step 2', async () => {
+    vi.mocked(getOnboardingStatus).mockResolvedValue({ hasCompletedOnboarding: false })
+    
+    render(<OnboardingModal />)
+    
+    await waitFor(() => {
+      expect(screen.getByText(/Bienvenido a turnos.app/i)).toBeDefined()
+    })
+    
+    fireEvent.click(screen.getByText(/Continuar/i))
+    
+    // Check for Step 2 elements
+    expect(screen.getByText(/Personaliza tu perfil/i)).toBeDefined()
+    
+    // Check for name input (it should be pre-filled or available)
+    const nameInput = screen.getByLabelText(/Nombre público/i)
+    fireEvent.change(nameInput, { target: { value: 'Nuevo Nombre' } })
+    
+    // Live card should reflect changes
+    expect(screen.getByTestId('live-card')).toBeDefined()
+    expect(screen.getByText('Nuevo Nombre')).toBeDefined()
+  })
 })
