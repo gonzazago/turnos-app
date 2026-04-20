@@ -43,34 +43,34 @@ export function Modal({
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div 
-        className={`bg-white rounded-3xl shadow-2xl w-full ${sizeClasses[size]} overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]`}
+        className={`bg-white rounded-3xl shadow-2xl w-[92vw] md:w-full ${sizeClasses[size]} overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="relative p-6 border-b border-slate-100 bg-slate-50/50 flex-shrink-0">
-          <h3 className="text-xl font-bold text-slate-900 pr-8">
+        <div className="relative p-6 md:p-8 border-b border-slate-100 bg-slate-50/50 flex-shrink-0">
+          <h3 className="text-xl md:text-2xl font-bold text-slate-900 pr-10">
             {title}
           </h3>
           <button 
             onClick={onClose}
-            className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-600 hover:bg-white rounded-full transition-all shadow-sm"
+            className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 rounded-full transition-all"
           >
-            <X className="w-5 h-5" />
+            <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-8 overflow-y-auto">
+        <div className="p-5 md:p-8 overflow-y-auto overflow-x-hidden">
           {children}
         </div>
 
         {/* Footer */}
         {footer && (
-          <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3 flex-shrink-0">
+          <div className="p-4 md:p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3 flex-shrink-0">
             {footer}
           </div>
         )}
