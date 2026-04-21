@@ -12,7 +12,7 @@ export function LiveCard({
   fullName,
   brandColor,
   logoUrl,
-  fontFamily = 'Inter'
+  fontFamily = 'var(--font-geist-sans)'
 }: LiveCardProps) {
   return (
     <div 

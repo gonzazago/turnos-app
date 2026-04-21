@@ -51,6 +51,7 @@ import {useSearchParams} from 'next/navigation'
 import {Spinner} from '@/components/Spinner'
 import {resizeImageFile} from '@/utils/imageResize'
 import {hasProAccess, hasUltraAccess, PlanType} from '@/utils/planGuard'
+import {Dropdown} from '@/components/ui/Dropdown'
 
 export function SettingsForm({ profile }: { profile: any }) {
   const searchParams = useSearchParams()
@@ -83,6 +84,14 @@ export function SettingsForm({ profile }: { profile: any }) {
   const fileRef = useRef<HTMLInputElement>(null)
 
   const [refundRules, setRefundRules] = useState<any[]>(profile.refund_rules || [])
+  const [fontFamily, setFontFamily] = useState(profile.font_family || 'Inter')
+
+  const fontOptions = [
+    { label: 'Inter (Elegante y moderna)', value: 'Inter' },
+    { label: 'Roboto (Clásica y legible)', value: 'Roboto' },
+    { label: 'Outfit (Geométrica y llamativa)', value: 'Outfit' },
+    { label: 'Playfair Display (Sobria y editorial)', value: 'Playfair Display' },
+  ]
 
   const addRefundRule = () => {
     setRefundRules([...refundRules, { hoursBefore: 24, percentage: 50 }])
@@ -351,21 +360,16 @@ export function SettingsForm({ profile }: { profile: any }) {
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-             <label htmlFor="fontFamily" className="text-sm font-semibold text-slate-700">Tipografía de la Página</label>
+             <label className="text-sm font-semibold text-slate-700">Tipografía de la Página</label>
              {!canPro && <span className="bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">Pro</span>}
           </div>
-          <select 
-            id="fontFamily" 
-            name="fontFamily" 
+          <Dropdown
+            name="fontFamily"
             disabled={!canPro}
-            defaultValue={profile.font_family || 'Inter'}
-            className="border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-slate-50 disabled:text-slate-400"
-          >
-            <option value="Inter">Inter (Elegante y moderna)</option>
-            <option value="Roboto">Roboto (Clásica y legible)</option>
-            <option value="Outfit">Outfit (Geométrica y llamativa)</option>
-            <option value="Playfair Display">Playfair Display (Sobria y editorial)</option>
-          </select>
+            value={fontFamily}
+            onChange={setFontFamily}
+            options={fontOptions}
+          />
         </div>
 
         <div className="flex flex-col gap-2 pt-4 border-t border-slate-100">

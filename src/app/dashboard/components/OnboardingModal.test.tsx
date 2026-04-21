@@ -145,7 +145,12 @@ describe('OnboardingModal', () => {
       expect(updateProfile).toHaveBeenCalled()
       expect(createEventType).toHaveBeenCalled()
       expect(completeOnboarding).toHaveBeenCalled()
-      expect(mockRouter.push).toHaveBeenCalledWith('/dashboard')
+      // Step 4 should be visible
+      expect(screen.getByText(/¡Todo listo!/i)).toBeDefined()
     })
+
+    // Click "Ir al Panel"
+    fireEvent.click(screen.getByText(/Ir al Panel/i))
+    expect(mockRouter.push).toHaveBeenCalledWith('/dashboard')
   })
 })

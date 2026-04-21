@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
-import { createPackage, deletePackage } from './actions'
+import { deletePackage } from './actions'
 import { Package, Trash2, CalendarDays, RefreshCw, Info } from 'lucide-react'
+import { PackageForm } from './PackageForm'
 
 export default async function PackagesPage() {
   const supabase = await createClient()
@@ -43,7 +44,7 @@ export default async function PackagesPage() {
   const { data: eventTypes } = await supabase
     .from('event_types')
     .select('id, title')
-    .eq('profile_id', user.id)
+    .eq('user_id', user.id)
 
   const { data: packages } = await supabase
     .from('session_packages')
@@ -63,78 +64,7 @@ export default async function PackagesPage() {
           <p className="text-slate-500">Crea promociones para que tus clientes aseguren su continuidad pagando Múltiples Sesiones por adelantado.</p>
         </div>
 
-        <form action={createPackage as any} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col">
-          <h2 className="text-lg font-bold text-slate-900 mb-4">Nuevo Paquete</h2>
-          
-          <label className="text-sm font-bold text-slate-700 mb-2">Nombre Comercial</label>
-          <input 
-            type="text" 
-            name="name" 
-            required 
-            placeholder="Ej: Promo 4 Sesiones Terapia"
-            className="w-full border border-slate-300 rounded-xl px-4 py-3 mb-4 focus:ring-2 focus:ring-blue-600 outline-none text-slate-900 placeholder:text-slate-400" 
-          />
-
-          <label className="text-sm font-bold text-slate-700 mb-2">Tipo de Evento Asociado</label>
-          <select 
-            name="eventTypeId" 
-            className="w-full border border-slate-300 rounded-xl px-4 py-3 mb-4 focus:ring-2 focus:ring-blue-600 outline-none text-slate-900"
-          >
-            <option value="none">Cualquier evento (Global)</option>
-            {eventTypes?.map(ev => (
-              <option key={ev.id} value={ev.id}>{ev.title}</option>
-            ))}
-          </select>
-
-          <label className="text-sm font-bold text-slate-700 mb-2">Modalidad de Uso</label>
-          <div className="flex flex-col gap-3 mb-4">
-            <label className="flex items-start gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
-              <input type="radio" name="schedulingType" value="libre" defaultChecked className="mt-1" />
-              <div>
-                <p className="font-bold text-slate-900 text-sm">Créditos Libres</p>
-                <p className="text-xs text-slate-500">Paga y usa sus N sesiones libremente a lo largo del tiempo ingresando al calendario.</p>
-              </div>
-            </label>
-            <label className="flex items-start gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
-              <input type="radio" name="schedulingType" value="fijo" className="mt-1" />
-              <div>
-                <p className="font-bold text-slate-900 text-sm">Agendamiento Recurrente (Fijo)</p>
-                <p className="text-xs text-slate-500">El cliente elige un primer día/hora, y el sistema agendará automáticamente {`N`} semanas seguidas en ese slot.</p>
-              </div>
-            </label>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="text-sm font-bold text-slate-700 mb-2 block">Total Sesiones</label>
-              <input 
-                type="number" 
-                name="sessionCount" 
-                min="2"
-                max="50"
-                required 
-                defaultValue="4"
-                className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-600 outline-none text-slate-900" 
-              />
-            </div>
-            <div>
-              <label className="text-sm font-bold text-slate-700 mb-2 block">Precio Total ($)</label>
-              <input 
-                type="number" 
-                name="totalPrice" 
-                min="1"
-                step="0.01"
-                required 
-                placeholder="0.00"
-                className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-600 outline-none text-slate-900" 
-              />
-            </div>
-          </div>
-
-          <button type="submit" className="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl transition-colors">
-            Crear Promoción
-          </button>
-        </form>
+        <PackageForm eventTypes={eventTypes as any} />
       </div>
 
       {/* Columna Derecha: Listado de Paquetes */}

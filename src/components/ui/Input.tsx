@@ -12,7 +12,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={`flex flex-col gap-2 ${containerClassName}`}>
         {label && (
-          <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+          <label 
+            htmlFor={props.id}
+            className="text-sm font-bold text-slate-700 uppercase tracking-wider"
+          >
             {label}
           </label>
         )}
