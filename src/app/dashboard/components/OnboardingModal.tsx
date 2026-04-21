@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useId } from 'react'
 import { useRouter } from 'next/navigation'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/ui/Button'
@@ -33,9 +33,11 @@ export function OnboardingModal() {
   const [event, setEvent] = useState({
     title: '',
     duration: '30',
+    startTime: '09:00',
+    endTime: '17:00'
   })
 
-  // Step 3 Availability State (Default Mon-Fri 9-17)
+  // Step 3 Availability State (Default Mon-Fri)
   const [selectedDays, setSelectedDays] = useState<number[]>([1, 2, 3, 4, 5])
 
   const days = [
@@ -62,6 +64,7 @@ export function OnboardingModal() {
       const result = await getOnboardingStatus()
       if (result && 'hasCompletedOnboarding' in result && !result.hasCompletedOnboarding) {
         setIsOpen(true)
+        if (result.slug) setUserSlug(result.slug)
       }
       setIsLoading(false)
     }
@@ -93,7 +96,7 @@ export function OnboardingModal() {
       const profileFormData = new FormData()
       profileFormData.append('fullName', profile.fullName || 'Tu Nombre')
       profileFormData.append('brandColor', profile.brandColor)
-      profileFormData.append('slug', '')
+      profileFormData.append('slug', userSlug) // Keep existing slug
       
       const profileResult = await updateProfile(profileFormData)
       if ('error' in profileResult) throw new Error(profileResult.error)
@@ -105,21 +108,16 @@ export function OnboardingModal() {
       
       const availability = selectedDays.map(day => ({
         day_of_week: day,
-        start_time: '09:00',
-        end_time: '17:00'
+        start_time: event.startTime,
+        end_time: event.endTime
       }))
 
       const eventResult = await createEventType(eventFormData, availability)
       if ('error' in eventResult) throw new Error(eventResult.error)
 
-      // 3. Mark Onboarding as Complete (logic-wise, but we show Step 4)
+      // 3. Mark Onboarding as Complete
       const onboardingResult = await completeOnboarding()
       if ('error' in onboardingResult) throw new Error(onboardingResult.error)
-
-      // Get user slug for Step 4
-      if (profileResult.profile?.slug) {
-        setUserSlug(profileResult.profile.slug)
-      }
 
       setStep(4)
       router.refresh()
@@ -303,8 +301,25 @@ export function OnboardingModal() {
                     onChange={(val) => setEvent(ev => ({ ...ev, duration: val }))}
                   />
 
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input 
+                      label="Desde"
+                      type="time"
+                      value={event.startTime}
+                      onChange={(e) => setEvent(ev => ({ ...ev, startTime: e.target.value }))}
+                      className="rounded-2xl border-slate-300 py-3.5 text-base"
+                    />
+                    <Input 
+                      label="Hasta"
+                      type="time"
+                      value={event.endTime}
+                      onChange={(e) => setEvent(ev => ({ ...ev, endTime: e.target.value }))}
+                      className="rounded-2xl border-slate-300 py-3.5 text-base"
+                    />
+                  </div>
+
                   <div className="space-y-3">
-                    <label className="text-sm font-bold text-slate-700">Tus días de atención (9:00 a 17:00)</label>
+                    <label className="text-sm font-bold text-slate-700">Tus días de atención</label>
                     <div className="flex flex-wrap gap-2">
                       {days.map((day) => (
                         <button
@@ -362,7 +377,7 @@ export function OnboardingModal() {
                          </div>
                          <div className="space-y-1">
                             <div className="text-[10px] text-slate-400 font-bold uppercase">Horario</div>
-                            <div className="text-slate-700 font-bold">09:00 - 17:00</div>
+                            <div className="text-slate-700 font-bold">{event.startTime} - {event.endTime}</div>
                          </div>
                       </div>
 

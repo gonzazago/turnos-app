@@ -13,7 +13,7 @@ export async function getOnboardingStatus() {
 
   const { data, error } = await supabase
     .from('profiles')
-    .select('has_completed_onboarding')
+    .select('has_completed_onboarding, slug')
     .eq('id', user.id)
     .single()
 
@@ -22,7 +22,10 @@ export async function getOnboardingStatus() {
     return { error: 'No se pudo obtener el estado de onboarding.' }
   }
 
-  return { hasCompletedOnboarding: !!data?.has_completed_onboarding }
+  return { 
+    hasCompletedOnboarding: !!data?.has_completed_onboarding,
+    slug: data?.slug
+  }
 }
 
 export async function completeOnboarding() {
