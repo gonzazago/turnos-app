@@ -98,7 +98,7 @@ export async function updateProfile(formData: FormData) {
   revalidatePath('/dashboard', 'layout')
   revalidatePath(`/${safeSlug}`)
   
-  return { success: true }
+  return { success: true, slug: safeSlug }
 }
 
 export async function updateAvailability(
