@@ -31,7 +31,10 @@ describe('createEventType action', () => {
       from: vi.fn().mockReturnThis(),
       insert: vi.fn().mockReturnThis(),
       select: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({ data: { id: 'event-123' }, error: null }),
+      eq: vi.fn().mockReturnThis(),
+      single: vi.fn()
+        .mockResolvedValueOnce({ data: { plan_type: 'pro' }, error: null })
+        .mockResolvedValueOnce({ data: { id: 'event-123' }, error: null }),
     };
 
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any);

@@ -33,7 +33,7 @@ describe('Onboarding Actions', () => {
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
         single: vi.fn().mockResolvedValue({
-          data: { has_completed_onboarding: true },
+          data: { has_completed_onboarding: true, slug: 'test-slug' },
           error: null
         }),
       };
@@ -42,9 +42,9 @@ describe('Onboarding Actions', () => {
 
       const result = await getOnboardingStatus();
 
-      expect(result).toEqual({ hasCompletedOnboarding: true });
+      expect(result).toEqual({ hasCompletedOnboarding: true, slug: 'test-slug' });
       expect(mockSupabase.from).toHaveBeenCalledWith('profiles');
-      expect(mockSupabase.select).toHaveBeenCalledWith('has_completed_onboarding');
+      expect(mockSupabase.select).toHaveBeenCalledWith('has_completed_onboarding, slug');
       expect(mockSupabase.eq).toHaveBeenCalledWith('id', mockUser.id);
     });
 

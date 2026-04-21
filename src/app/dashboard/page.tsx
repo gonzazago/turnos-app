@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { ClientDashboard } from './components/ClientDashboard'
 import { BookingService } from '@/services/booking/service'
-import { OnboardingModal } from './components/OnboardingModal'
+import { OnboardingModal } from './OnboardingModal'
 
 export const metadata = { title: 'Dashboard - Turnos' }
 

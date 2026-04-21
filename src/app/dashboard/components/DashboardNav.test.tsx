@@ -29,9 +29,14 @@ describe('DashboardNav', () => {
     logo_url: null,
   }
   const mockEmail = 'john@example.com'
+  const mockNavLinks = [
+    { href: '/dashboard', label: 'Citas', iconName: 'Calendar' },
+    { href: '/dashboard/event-types', label: 'Eventos', iconName: 'Clock' },
+    { href: '/dashboard/settings', label: 'Configuración', iconName: 'Settings' }
+  ]
 
   it('renders profile name and email', () => {
-    render(<DashboardNav profile={mockProfile} userEmail={mockEmail} />)
+    render(<DashboardNav profile={mockProfile} userEmail={mockEmail} navLinks={mockNavLinks} />)
     
     // Check if it renders in desktop sidebar (NavContent is used twice)
     const names = screen.getAllByText('John Doe')
@@ -42,7 +47,7 @@ describe('DashboardNav', () => {
   })
 
   it('renders navigation links', () => {
-    render(<DashboardNav profile={mockProfile} userEmail={mockEmail} />)
+    render(<DashboardNav profile={mockProfile} userEmail={mockEmail} navLinks={mockNavLinks} />)
     
     const links = screen.getAllByRole('link')
     expect(links.some(link => link.getAttribute('href') === '/dashboard')).toBe(true)

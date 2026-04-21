@@ -13,7 +13,7 @@ describe('HeroFunnel', () => {
   it('should render the slug input and button', () => {
     render(<HeroFunnel />)
     expect(screen.getByPlaceholderText(/tu-nombre/i)).toBeDefined()
-    expect(screen.getByText(/Reclamar mi enlace/i)).toBeDefined()
+    expect(screen.getByText(/Genera tu Agenda/i)).toBeDefined()
   })
 
   it('should render the dark variant', () => {
@@ -31,7 +31,7 @@ describe('HeroFunnel', () => {
     const input = screen.getByPlaceholderText(/tu-nombre/i)
     fireEvent.change(input, { target: { value: 'JuanPerez' } })
     
-    const button = screen.getByText(/Reclamar mi enlace/i)
+    const button = screen.getByText(/Genera tu Agenda/i)
     fireEvent.click(button)
     
     expect(mockPush).toHaveBeenCalledWith('/register?slug=juanperez')

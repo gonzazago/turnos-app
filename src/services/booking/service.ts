@@ -69,7 +69,7 @@ export class BookingService {
     return data;
   }
 
-  static async insertBooking(bookingData: any) {
+  static async insertBooking(bookingData: Record<string, unknown>) {
     const supabaseAdmin = getSupabaseAdmin();
     const { data, error } = await supabaseAdmin
       .from('bookings')
@@ -80,7 +80,7 @@ export class BookingService {
     return data;
   }
 
-  static async update(bookingId: string, updateData: any) {
+  static async update(bookingId: string, updateData: Record<string, unknown>) {
     const supabaseAdmin = getSupabaseAdmin();
     const { data, error } = await supabaseAdmin
       .from('bookings')
@@ -133,8 +133,8 @@ export class BookingService {
         status: params.requiresDeposit ? 'pending_payment' : 'confirmed',
         payment_status: params.requiresDeposit ? 'pending' : 'paid'
       });
-    } catch (error: any) {
-      if (error.code === '23P01') {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === '23P01') {
         throw new Error('Lo sentimos, este horario ya ha sido reservado. Por favor, selecciona otro.');
       }
       throw new Error('Ocurrió un error al procesar tu reserva.');
@@ -234,8 +234,9 @@ export class BookingService {
     return data;
   }
 
-  static async updateStatus(bookingId: string, status: string, paymentStatus: string, paymentId?: string) {    const supabaseAdmin = getSupabaseAdmin();
-    const updateData: any = { status, payment_status: paymentStatus };
+  static async updateStatus(bookingId: string, status: string, paymentStatus: string, paymentId?: string) {
+    const supabaseAdmin = getSupabaseAdmin();
+    const updateData: Record<string, unknown> = { status, payment_status: paymentStatus };
     if (paymentId) updateData.payment_id = paymentId;
     
     return supabaseAdmin
@@ -346,12 +347,13 @@ export class BookingService {
 
       // Handle cancelled synchronized events (Turnos -> Google)
       const syncedBookings = await this.getConfirmedBookingsWithGoogleId(userId);
-      const confirmedGoogleIds = new Set(events.filter((e: any) => e.status === 'confirmed').map((e: any) => e.id));
+      const confirmedGoogleIds = new Set(events.filter((e: { status: string; id: string }) => e.status === 'confirmed').map((e: { id: string }) => e.id));
 
       if (syncedBookings) {
         for (const booking of syncedBookings) {
           if (!confirmedGoogleIds.has(booking.google_event_id)) {
-            const cancelledEvent = events.find((e: any) => e.id === booking.google_event_id && e.status === 'cancelled');
+            const cancelledEvent = events.find((e: { status: string; id: string }) => e.id === booking.google_event_id && e.status === 'cancelled');
+
             if (cancelledEvent) {
               console.log('Synchronized event cancelled in Google, cancelling Turnos booking:', booking.id);
               const { CancellationService } = await import('./cancellation');

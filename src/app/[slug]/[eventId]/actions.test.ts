@@ -27,6 +27,10 @@ vi.mock('@/services/booking/service', () => ({
   BookingService: {
     create: vi.fn(),
     updatePreferenceId: vi.fn(),
+    getActiveBookingByEmail: vi.fn(),
+    getById: vi.fn(),
+    reschedule: vi.fn(),
+    updateStatus: vi.fn(),
   }
 }))
 

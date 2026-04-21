@@ -42,7 +42,7 @@ describe('updateProfile action', () => {
 
     const result = await updateProfile(formData);
 
-    expect(result).toEqual({ success: true });
+    expect(result).toEqual({ success: true, slug: 'johndoe' });
     expect(mockSupabase.update).toHaveBeenCalledWith(expect.objectContaining({
       full_name: 'John Doe',
       slug: 'johndoe',

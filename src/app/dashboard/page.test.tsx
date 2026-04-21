@@ -21,7 +21,7 @@ vi.mock('./components/ClientDashboard', () => ({
   ClientDashboard: () => <div data-testid="client-dashboard" />
 }))
 
-vi.mock('./components/OnboardingModal', () => ({
+vi.mock('./OnboardingModal', () => ({
   OnboardingModal: () => <div data-testid="onboarding-modal" />
 }))
 
@@ -44,6 +44,10 @@ describe('Dashboard Page', () => {
       auth: {
         getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null }),
       },
+      from: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({ data: { has_completed_onboarding: true }, error: null }),
     }
     vi.mocked(createClient).mockResolvedValue(mockSupabase as any)
     vi.mocked(BookingService.getProviderDashboardBookings).mockResolvedValue([])
@@ -53,7 +57,7 @@ describe('Dashboard Page', () => {
     const Result = await DashboardPage()
     render(Result)
     
-    expect(screen.getByText(/Tu Panel/i)).toBeDefined()
+    expect(screen.getByText(/Panel/i)).toBeDefined()
     expect(screen.getByTestId('client-dashboard')).toBeDefined()
     expect(screen.getByTestId('onboarding-modal')).toBeDefined()
   })

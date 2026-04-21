@@ -73,13 +73,14 @@ export default async function BookingPage({ params }: { params: Promise<Params> 
     .eq('event_type_id', eventId)
 
   // Fetch upcoming booked slots for the next 14 days
-  let bookedData: any[] = [];
+  let bookedData: { start_time: string; end_time: string }[] = [];
   try {
-    bookedData = await BookingService.getOverlappingBookings(
+    const fetchedBookings = await BookingService.getOverlappingBookings(
       profile.id,
       startOfDay(new Date()).toISOString(),
       addDays(new Date(), 15).toISOString()
     );
+    bookedData = fetchedBookings.map(b => ({ start_time: b.start_time, end_time: b.end_time }));
   } catch (err) {
     console.error('Error fetching bookings', err);
   }
