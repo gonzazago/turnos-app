@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { login } from './actions'
+import { SubmitButton } from '@/components/ui/SubmitButton'
 
 export default async function LoginPage(props: { searchParams: Promise<{ error?: string }> }) {
   const searchParams = await props.searchParams;
@@ -37,10 +38,15 @@ export default async function LoginPage(props: { searchParams: Promise<{ error?:
                </div>
                <input id="password" name="password" type="password" required className="bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-slate-600" placeholder="••••••••" />
              </div>
+
+             <div className="flex items-center gap-2 mt-1">
+               <input type="checkbox" id="rememberMe" name="rememberMe" className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-600 focus:ring-offset-slate-900 cursor-pointer" />
+               <label htmlFor="rememberMe" className="text-sm text-slate-400 select-none cursor-pointer">Recordarme en este dispositivo</label>
+             </div>
              
-             <button formAction={login} className="mt-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl px-4 py-3 transition-all hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] active:scale-[0.98]">
+             <SubmitButton formAction={login}>
                Entrar al Panel
-             </button>
+             </SubmitButton>
            </form>
            
            <p className="mt-8 text-center text-sm text-slate-400">

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 
 export async function login(formData: FormData) {
@@ -9,6 +10,7 @@ export async function login(formData: FormData) {
 
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const rememberMe = formData.get('rememberMe') === 'on'
 
   const { error } = await supabase.auth.signInWithPassword({ email, password })
 
@@ -16,6 +18,17 @@ export async function login(formData: FormData) {
     console.error('Login error:', error)
     redirect(`/login?error=${encodeURIComponent(error.message)}`)
   }
+
+  // Store remember me preference in a cookie
+  const cookieStore = await cookies()
+  const prefValue = rememberMe ? 'true' : 'false'
+  
+  cookieStore.set('turnos_remember_me', prefValue, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30 // 30 days
+  })
 
   revalidatePath('/', 'layout')
   redirect('/dashboard')
@@ -28,6 +41,7 @@ export async function signup(formData: FormData) {
   const password = formData.get('password') as string
   const fullName = formData.get('fullName') as string
   const requestedSlug = formData.get('requestedSlug') as string | null
+  const rememberMe = formData.get('rememberMe') === 'on'
 
   const { error, data } = await supabase.auth.signUp({
     email,
@@ -38,6 +52,17 @@ export async function signup(formData: FormData) {
     console.error('Signup error:', error)
     redirect(`/register?error=${encodeURIComponent(error.message)}`)
   }
+
+  // Store remember me preference in a cookie
+  const cookieStore = await cookies()
+  const prefValue = rememberMe ? 'true' : 'false'
+  
+  cookieStore.set('turnos_remember_me', prefValue, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30 // 30 days
+  })
 
   // Create public profile
   if (data.user) {

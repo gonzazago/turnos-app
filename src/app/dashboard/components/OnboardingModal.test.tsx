@@ -150,6 +150,6 @@ describe('OnboardingModal', () => {
     await act(async () => {
       fireEvent.click(screen.getByText(/Ir al Panel/i))
     })
-    expect(mockRouter.push).toHaveBeenCalledWith('/dashboard')
+    expect(mockRouter.push).toHaveBeenCalledWith('/dashboard?tour=true')
   })
 })
