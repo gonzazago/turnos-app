@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { NewEventForm } from './NewEventForm'
+import { EventFormModal } from './EventFormModal'
 import { Clock, Trash2 } from 'lucide-react'
 import { deleteEventType } from './actions'
 
@@ -47,7 +47,7 @@ export default async function EventTypesPage() {
         </div>
       </div>
 
-      <NewEventForm />
+      <EventFormModal />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {eventTypes?.length === 0 ? (
@@ -57,20 +57,24 @@ export default async function EventTypesPage() {
           </div>
         ) : (
           eventTypes?.map((event) => (
-            <div key={event.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
+            <div key={event.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden flex flex-col">
               <div className="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
               
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-xl font-bold text-slate-900">{event.title}</h3>
                 
-                <form action={async () => {
-                  "use server"
-                  await deleteEventType(event.id)
-                }}>
-                  <button className="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-slate-100 opacity-0 group-hover:opacity-100 focus:opacity-100">
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </form>
+                <div className="flex items-center gap-1">
+                  <EventFormModal eventToEdit={event} />
+
+                  <form action={async () => {
+                    "use server"
+                    await deleteEventType(event.id)
+                  }}>
+                    <button className="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-slate-100 opacity-0 group-hover:opacity-100 focus:opacity-100" title="Eliminar evento">
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </form>
+                </div>
               </div>
               
               <div className="flex flex-col gap-2 mb-6">

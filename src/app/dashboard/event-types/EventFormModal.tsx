@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useActionState } from 'react'
-import { createEventType } from './actions'
+import { useState, useActionState, useEffect } from 'react'
+import { createEventType, updateEventType } from './actions'
 import { AvailabilitySettings, AvailabilityDay } from '../components/AvailabilitySettings'
-import { CreditCard, Percent, DollarSign, Plus } from 'lucide-react'
+import { CreditCard, Percent, DollarSign, Plus, Pencil } from 'lucide-react'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -19,13 +19,50 @@ const DEFAULT_SCHEDULE: AvailabilityDay[] = [
   { day_of_week: 0, enabled: false, start_time: '09:00', end_time: '17:00' },
 ]
 
-export function NewEventForm() {
+interface EventFormModalProps {
+  eventToEdit?: any
+}
+
+export function EventFormModal({ eventToEdit }: EventFormModalProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [schedule, setSchedule] = useState<AvailabilityDay[]>(DEFAULT_SCHEDULE)
   
   const [requiresDeposit, setRequiresDeposit] = useState(false)
   const [totalPrice, setTotalPrice] = useState('0')
   const [depositPercentage, setDepositPercentage] = useState('20')
+
+  const isEditMode = !!eventToEdit
+
+  // Initialize form with event data if editing
+  useEffect(() => {
+    if (eventToEdit && isOpen) {
+      setRequiresDeposit(eventToEdit.requires_deposit)
+      setTotalPrice(eventToEdit.total_price?.toString() || '0')
+      setDepositPercentage(eventToEdit.deposit_percentage?.toString() || '20')
+      
+      if (eventToEdit.availability) {
+        const newSchedule = DEFAULT_SCHEDULE.map(day => {
+          const found = eventToEdit.availability.find((a: any) => a.day_of_week === day.day_of_week)
+          if (found) {
+            return {
+              ...day,
+              enabled: true,
+              start_time: found.start_time.substring(0, 5),
+              end_time: found.end_time.substring(0, 5)
+            }
+          }
+          return { ...day, enabled: false }
+        })
+        setSchedule(newSchedule)
+      }
+    } else if (!isOpen && !isEditMode) {
+      // Reset when closing creation modal
+      setSchedule(DEFAULT_SCHEDULE)
+      setRequiresDeposit(false)
+      setTotalPrice('0')
+      setDepositPercentage('20')
+    }
+  }, [eventToEdit, isOpen, isEditMode])
 
   // Example of using useActionState (React 19) for form handling
   const [state, formAction, isPending] = useActionState(
@@ -39,10 +76,12 @@ export function NewEventForm() {
         }))
       
       try {
-        const res = await createEventType(formData, availability)
+        const res = isEditMode 
+          ? await updateEventType(eventToEdit.id, formData, availability)
+          : await createEventType(formData, availability)
+          
         if (res?.error) return { error: res.error, success: false }
         
-        // Success: signal success to the component
         return { success: true, error: null }
       } catch (err) {
         return { error: 'Ocurrió un error inesperado.', success: false }
@@ -51,33 +90,41 @@ export function NewEventForm() {
     { error: null, success: false }
   )
 
-  // Handle success side effects (closing modal and resetting)
-  if (state.success && isOpen) {
-    setIsOpen(false)
-    setSchedule(DEFAULT_SCHEDULE)
-    setRequiresDeposit(false)
-    setTotalPrice('0')
-    setDepositPercentage('20')
-    // Note: In a real app we might need to reset the action state 
-    // or handle this via useEffect to avoid state updates during render
-  }
+  // Handle success side effects (closing modal)
+  useEffect(() => {
+    if (state.success && isOpen) {
+      setIsOpen(false)
+    }
+  }, [state.success, isOpen])
 
   const depositAmount = (parseFloat(totalPrice || '0') * parseFloat(depositPercentage || '0') / 100).toFixed(2)
 
   return (
-    <div className="flex justify-end mb-6">
-      <Button 
-        onClick={() => setIsOpen(true)}
-        leftIcon={<Plus className="w-5 h-5" />}
-        size="lg"
-      >
-        Nuevo Tipo de Evento
-      </Button>
+    <>
+      {isEditMode ? (
+        <button 
+          onClick={() => setIsOpen(true)}
+          className="text-slate-400 hover:text-blue-500 transition-colors p-2 rounded-lg hover:bg-slate-100 opacity-0 group-hover:opacity-100 focus:opacity-100"
+          title="Editar evento"
+        >
+          <Pencil className="w-5 h-5" />
+        </button>
+      ) : (
+        <div className="flex justify-end mb-6">
+          <Button 
+            onClick={() => setIsOpen(true)}
+            leftIcon={<Plus className="w-5 h-5" />}
+            size="lg"
+          >
+            Nuevo Tipo de Evento
+          </Button>
+        </div>
+      )}
 
       <Modal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        title="Nuevo Tipo de Evento"
+        title={isEditMode ? "Editar Tipo de Evento" : "Nuevo Tipo de Evento"}
         size="lg"
       >
         <form action={formAction} className="flex flex-col gap-6">
@@ -89,6 +136,7 @@ export function NewEventForm() {
             name="title" 
             required 
             placeholder="Ej. Consultoría 30 min"
+            defaultValue={eventToEdit?.title}
           />
 
           <Input 
@@ -97,7 +145,7 @@ export function NewEventForm() {
             id="duration_mins" 
             name="duration_mins" 
             required 
-            defaultValue={30}
+            defaultValue={eventToEdit?.duration_mins || 30}
             min="1"
           />
 
@@ -108,6 +156,7 @@ export function NewEventForm() {
               name="description" 
               rows={3}
               placeholder="Detalles sobre qué se hablará en esta reunión."
+              defaultValue={eventToEdit?.description}
               className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
             ></textarea>
           </div>
@@ -169,12 +218,12 @@ export function NewEventForm() {
               Cancelar
             </Button>
             <Button type="submit" isLoading={isPending}>
-              Guardar Evento
+              {isEditMode ? "Guardar Cambios" : "Guardar Evento"}
             </Button>
           </div>
         </form>
       </Modal>
-    </div>
+    </>
   )
 }
 

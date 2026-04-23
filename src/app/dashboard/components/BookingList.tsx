@@ -2,7 +2,7 @@
 
 import { format, parseISO, isAfter, addMinutes } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Mail, Calendar, Clock, Trash2, Edit, AlertTriangle } from 'lucide-react'
+import { Mail, Calendar, Clock, Trash2, Edit, AlertTriangle, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { cancelBooking, rescheduleBooking } from '../actions'
 import { Modal } from '@/components/Modal'
@@ -10,6 +10,7 @@ import { Spinner } from '@/components/Spinner'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Dropdown } from '@/components/ui/Dropdown'
 
 export function BookingList({ bookings }: { bookings: any[] }) {
   const [filter, setFilter] = useState<'all' | 'confirmed' | 'pending' | 'completed'>('all')
@@ -86,20 +87,38 @@ export function BookingList({ bookings }: { bookings: any[] }) {
   return (
     <div className="flex flex-col gap-6">
       {/* Tabs / Filters */}
-      <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-fit">
-        {(['all', 'confirmed', 'pending', 'completed'] as const).map((tab) => (
-          <button 
-            key={tab}
-            onClick={() => setFilter(tab as any)}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
-              filter === tab 
-                ? 'bg-white text-slate-900 shadow-sm' 
-                : 'text-slate-500 hover:text-slate-700'
-            }`}
-          >
-            {tab === 'all' ? 'Todos' : tab === 'confirmed' ? 'Confirmados' : tab === 'pending' ? 'Pendientes' : 'Completados'}
-          </button>
-        ))}
+      <div className="relative">
+        {/* Mobile Filter (Dropdown) */}
+        <div className="sm:hidden">
+          <Dropdown
+            value={filter}
+            onChange={(val) => setFilter(val)}
+            options={[
+              { label: 'Todos los turnos', value: 'all' },
+              { label: 'Confirmados', value: 'confirmed' },
+              { label: 'Pendientes de Pago', value: 'pending' },
+              { label: 'Historial / Pasados', value: 'completed' },
+            ]}
+            className="bg-slate-100 border-transparent font-bold"
+          />
+        </div>
+
+        {/* Desktop Filter (Tabs) */}
+        <div className="hidden sm:flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-fit">
+          {(['all', 'confirmed', 'pending', 'completed'] as const).map((tab) => (
+            <button 
+              key={tab}
+              onClick={() => setFilter(tab as any)}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                filter === tab 
+                  ? 'bg-white text-slate-900 shadow-sm' 
+                  : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              {tab === 'all' ? 'Todos' : tab === 'confirmed' ? 'Confirmados' : tab === 'pending' ? 'Pendientes' : 'Completados'}
+            </button>
+          ))}
+        </div>
       </div>
 
       {sorted.length === 0 ? (

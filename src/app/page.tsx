@@ -40,21 +40,21 @@ export default function Home() {
 
       <main>
         {/* 1. Hero Section */}
-        <section className="relative isolate pt-24 pb-32 sm:pt-32 sm:pb-48 bg-slate-50 overflow-hidden">
+        <section className="relative isolate pt-20 pb-24 sm:pt-32 sm:pb-48 bg-slate-50 overflow-hidden">
           <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
             <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style={{ clipPath: "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" }}></div>
           </div>
 
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-3xl text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold mb-8 ring-1 ring-blue-700/10">
+          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8 text-center">
+            <div className="mx-auto max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[10px] sm:text-xs font-bold mb-6 sm:mb-8 ring-1 ring-blue-700/10">
                 <Sparkles className="w-3 h-3" />
                 <span>NUEVO: Integración con Google Meet</span>
               </div>
-              <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-7xl leading-tight">
+              <h1 className="text-4xl xs:text-5xl font-extrabold tracking-tight text-slate-900 sm:text-7xl leading-tight">
                 Tu agenda, <span className="text-blue-600 block sm:inline">en piloto automático.</span>
               </h1>
-              <p className="mt-8 text-xl leading-relaxed text-slate-600 max-w-2xl mx-auto">
+              <p className="mt-6 sm:mt-8 text-lg sm:text-xl leading-relaxed text-slate-600 max-w-2xl mx-auto">
                 La forma más simple de recibir reservas. Crea tu página en segundos, comparte tu enlace y deja que tus clientes agenden sin idas y vueltas.
               </p>
 
@@ -79,9 +79,9 @@ export default function Home() {
         </section>
 
         {/* 2. Social Proof Section */}
-        <section className="py-20 bg-white border-y border-slate-100">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
-            <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mb-12">
+        <section className="py-16 sm:py-20 bg-white border-y border-slate-100">
+          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8 text-center">
+            <p className="text-[10px] sm:text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mb-10 sm:mb-12">
               Con la confianza de +2,000 profesionales
             </p>
             <div className="flex flex-wrap justify-center items-center gap-x-16 gap-y-10 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
@@ -105,11 +105,11 @@ export default function Home() {
         </section>
 
         {/* 3. How It Works Section */}
-        <section className="py-24 sm:py-32 bg-slate-50">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center mb-20">
-              <h2 className="text-base font-semibold leading-7 text-blue-600 uppercase tracking-widest">Puesta en marcha</h2>
-              <p className="mt-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+        <section className="py-20 sm:py-32 bg-slate-50">
+          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center mb-16 sm:mb-20">
+              <h2 className="text-sm sm:text-base font-semibold leading-7 text-blue-600 uppercase tracking-widest">Puesta en marcha</h2>
+              <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
                 Lista en 3 simples pasos
               </p>
             </div>
@@ -151,12 +151,12 @@ export default function Home() {
         </section>
 
         {/* 4. Strengths Section */}
-        <section className="py-24 sm:py-32 bg-white overflow-hidden">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <section className="py-20 sm:py-32 bg-white overflow-hidden">
+          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row items-center gap-16">
               <div className="flex-1">
-                <h2 className="text-base font-semibold leading-7 text-blue-600 uppercase tracking-widest">Beneficios clave</h2>
-                <p className="mt-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-8">
+                <h2 className="text-sm sm:text-base font-semibold leading-7 text-blue-600 uppercase tracking-widest">Beneficios clave</h2>
+                <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-8">
                   Diseñado para tu comodidad
                 </p>
                 <div className="space-y-6">
@@ -269,11 +269,11 @@ export default function Home() {
         </section>
 
         {/* 6. Pricing Table Section */}
-        <section className="py-24 sm:py-32 bg-white">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center mb-16">
+        <section className="py-20 sm:py-32 bg-white">
+          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center mb-12 sm:mb-16">
               <h2 className="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4">Precios</h2>
-              <p className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Elige el plan para tu éxito</p>
+              <p className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Elige el plan para tu éxito</p>
             </div>
 
             <div className="mx-auto grid max-w-lg grid-cols-1 items-stretch gap-y-8 lg:max-w-none lg:grid-cols-3 gap-8">
@@ -354,11 +354,11 @@ export default function Home() {
         </section>
 
         {/* Final CTA */}
-        <section className="py-24 bg-blue-600 relative overflow-hidden text-center text-white">
+        <section className="py-20 bg-blue-600 relative overflow-hidden text-center text-white">
           <div className="absolute inset-0 bg-gradient-to-tr from-blue-700 to-indigo-700"></div>
-          <div className="relative z-10 max-w-4xl mx-auto px-6 flex flex-col items-center">
-            <h2 className="text-4xl font-black mb-8 leading-tight">¿Listo para retomar el control de tu tiempo?</h2>
-            <p className="text-xl text-blue-100 mb-4 max-w-2xl mx-auto text-center">Únete a los profesionales que ya automatizaron su agenda con Turnos App.</p>
+          <div className="relative z-10 max-w-4xl mx-auto px-5 sm:px-6 flex flex-col items-center">
+            <h2 className="text-3xl sm:text-4xl font-black mb-6 sm:mb-8 leading-tight">¿Listo para retomar el control de tu tiempo?</h2>
+            <p className="text-lg sm:text-xl text-blue-100 mb-8 sm:mb-4 max-w-2xl mx-auto text-center">Únete a los profesionales que ya automatizaron su agenda con Turnos App.</p>
 
             <HeroFunnel variant="dark" />
 

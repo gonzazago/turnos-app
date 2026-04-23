@@ -70,12 +70,12 @@ export default async function PackagePublicPage({ params }: { params: Promise<{ 
     const { data: availabilityData } = await availabilityQuery
     availability = availabilityData || []
 
-    // Fetch upcoming booked slots for the next 14 days
+    // Fetch upcoming booked slots for the next 60 days
     try {
       const bookedData = await BookingService.getOverlappingBookings(
         profile.id,
         startOfDay(new Date()).toISOString(),
-        addDays(new Date(), 15).toISOString()
+        addDays(new Date(), 60).toISOString()
       );
       bookedSlots = bookedData || [];
     } catch (err) {
@@ -88,7 +88,7 @@ export default async function PackagePublicPage({ params }: { params: Promise<{ 
       .select('start_time, end_time')
       .eq('user_id', profile.id)
       .gte('end_time', startOfDay(new Date()).toISOString())
-      .lt('start_time', addDays(new Date(), 15).toISOString())
+      .lt('start_time', addDays(new Date(), 60).toISOString())
       
     googleBusySlots = googleBusyData || []
     

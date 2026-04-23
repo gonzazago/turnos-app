@@ -85,53 +85,37 @@ export async function POST(request: Request) {
          if (!pkgData) return NextResponse.json({ error: 'Package not found' }, { status: 404 });
 
          if (isFijo) {
-           const startTimeStr = parts[4];
-           const durationMinsStr = parts[5];
+           const packageGroupId = parts[4];
            
-           // Generate N bookings 1 week apart!
-           // But how do we ensure idempotency? Check first if a booking with same email, provider and event type at that exact start time exists.
-           const exists = await BookingService.checkExactBookingExists(providerId, clientEmail, startTimeStr);
+           // Confirm all pre-inserted bookings for this group
+           const { error: confirmError } = await supabase
+             .from('bookings')
+             .update({ 
+               status: 'confirmed', 
+               payment_status: 'paid',
+               payment_id: String(id) 
+             })
+             .eq('package_group_id', packageGroupId)
+             .eq('user_id', providerId);
 
-           if (exists) {
-             console.log('Package payments bookings already generated. Idempotency triggered.');
-             return NextResponse.json({ received: true });
+           if (confirmError) {
+             console.error('Error confirming group bookings:', confirmError);
+             return NextResponse.json({ error: 'DB Update Error' }, { status: 500 });
            }
-
-           // Generate N dates
-           let currentDate = new Date(startTimeStr);
-           for (let i = 0; i < pkgData.session_count; i++) {
-             const endTime = new Date(currentDate.getTime() + parseInt(durationMinsStr) * 60000);
-             
-             await BookingService.insertBooking({
-                user_id: providerId,
-                event_type_id: pkgData.event_type_id,
-                booker_name: 'Cliente (Bono Recurrente)', // Hardcoded due to MP not passing full name easily or we could pass via externalRef
-                booker_email: clientEmail,
-                start_time: currentDate.toISOString(),
-                end_time: endTime.toISOString(),
-                status: 'confirmed',
-                payment_status: 'paid',
-                payment_id: String(id),
-                mercado_pago_preference_id: `PKG_PREF_${id}_${i}` // fake preference to mark it
-             });
-
-             // Add 7 days for next session
-             currentDate.setDate(currentDate.getDate() + 7);
-           }
-           console.log(`Created ${pkgData.session_count} recurrent bookings for packet ${packageId}`);
+           
+           console.log(`Confirmed group bookings for package group ${packageGroupId}`);
          } else {
            // Flow Libre (Créditos)
-           // To be idempotent: check if a user_credit exists created by this payment_id? 
-           // We don't have payment_id column. We'll just grant the credits blind for the MVP.
+           const sessionCount = parseInt(parts[4]);
            
            await supabase.from('user_credits').insert({
              client_email: clientEmail,
              provider_id: providerId,
              package_id: packageId,
              payment_id: String(id),
-             remaining_credits: pkgData.session_count
+             remaining_credits: sessionCount
            });
-           console.log(`Granted ${pkgData.session_count} credits to ${clientEmail}`);
+           console.log(`Granted ${sessionCount} credits to ${clientEmail}`);
          }
          return NextResponse.json({ received: true });
       }

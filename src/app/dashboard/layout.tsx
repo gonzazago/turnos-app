@@ -2,6 +2,8 @@ import { ReactNode } from 'react'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { DashboardNav } from './components/DashboardNav'
+import { GuidedTour } from './components/GuidedTour'
+import { Suspense } from 'react'
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient()
@@ -39,9 +41,13 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
       <DashboardNav profile={profile} userEmail={user.email} navLinks={navLinks} />
 
+      <Suspense fallback={null}>
+        <GuidedTour />
+      </Suspense>
+
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-h-screen">
-        <div className="flex-1 p-4 md:p-8 mt-16 md:mt-0">
+        <div className="flex-1 p-4 md:p-8 mt-14 md:mt-0">
           {children}
         </div>
       </main>

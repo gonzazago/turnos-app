@@ -49,6 +49,7 @@ export function DashboardNav({ profile, userEmail, navLinks }: DashboardNavProps
             <Link
               key={link.href}
               href={link.href}
+              data-tour={`nav-${link.href.split('/').pop() || 'dashboard'}`}
               onClick={() => setIsOpen(false)}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors font-medium ${
                 isActive 
@@ -63,7 +64,7 @@ export function DashboardNav({ profile, userEmail, navLinks }: DashboardNavProps
         })}
       </nav>
       
-      <div className="p-4 border-t border-slate-200">
+      <div className="p-4 border-t border-slate-200" data-tour="nav-profile">
         <div className="flex items-center gap-3 px-3 mb-4">
           <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
              {profile?.logo_url ? (
@@ -104,29 +105,29 @@ export function DashboardNav({ profile, userEmail, navLinks }: DashboardNavProps
       </aside>
 
       {/* Mobile Header */}
-      <header className="md:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 fixed top-0 left-0 right-0 z-50">
-        <Link href="/dashboard" className="flex items-center gap-2 text-blue-600 font-bold text-xl">
-          <Calendar className="w-6 h-6" />
+      <header className="md:hidden h-14 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 fixed top-0 left-0 right-0 z-50">
+        <Link href="/dashboard" className="flex items-center gap-2 text-blue-600 font-bold text-lg">
+          <Calendar className="w-5 h-5" />
           <span>Turnos</span>
         </Link>
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+          className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors tap-target"
         >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </header>
 
       {/* Mobile Menu Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-40 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Mobile Menu Drawer */}
-      <div className={`fixed top-16 left-0 bottom-0 w-72 bg-white z-50 md:hidden transition-transform duration-300 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col border-r border-slate-200`}>
+      <div className={`fixed top-14 left-0 bottom-0 w-[280px] max-w-[85vw] bg-white z-50 md:hidden transition-transform duration-300 ease-in-out transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col border-r border-slate-200 shadow-2xl`}>
         <NavContent />
       </div>
     </>

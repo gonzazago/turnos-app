@@ -116,7 +116,7 @@ export function OnboardingModalClient({ onboardingDataPromise }: OnboardingModal
 
   const handleClose = () => {
     setIsOpen(false)
-    router.push('/dashboard')
+    router.push('/dashboard?tour=true')
   }
 
   const bookingUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/${userSlug}`

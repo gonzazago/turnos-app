@@ -87,36 +87,36 @@ export default async function PublicLayout({
        )}
        
        {profile.banner_url ? (
-         <div className="w-full h-48 md:h-64 bg-slate-200">
+         <div className="w-full h-32 xs:h-40 sm:h-48 md:h-64 bg-slate-200">
            <img src={profile.banner_url} alt="Cover Banner" className="w-full h-full object-cover" />
          </div>
        ) : (
-         <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-center shadow-sm">
-           <div className="flex items-center gap-4">
+         <header className="h-16 sm:h-20 bg-white border-b border-slate-200 flex items-center justify-center shadow-sm">
+           <div className="flex items-center gap-3 sm:gap-4 px-4">
              {profile.logo_url ? (
-               <img src={profile.logo_url} alt={`Logo de ${profile.full_name}`} className="w-12 h-12 rounded-full object-cover border border-slate-200 shadow-sm" />
+               <img src={profile.logo_url} alt={`Logo de ${profile.full_name}`} className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-slate-200 shadow-sm" />
              ) : (
-               <div className="w-12 h-12 rounded-full brand-bg text-white flex flex-col items-center justify-center font-bold text-xl shadow-sm">
+               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full brand-bg text-white flex flex-col items-center justify-center font-bold text-lg sm:text-xl shadow-sm">
                  {profile.full_name?.charAt(0)}
                </div>
              )}
-             <h1 className="text-xl font-bold text-slate-900">{profile.full_name}</h1>
+             <h1 className="text-lg sm:text-xl font-bold text-slate-900 truncate max-w-[200px] sm:max-w-none">{profile.full_name}</h1>
            </div>
          </header>
        )}
 
-       <main className={`max-w-3xl mx-auto px-4 ${profile.banner_url ? '-mt-12 relative z-10' : 'py-12'}`}>
+       <main className={`max-w-3xl mx-auto px-4 ${profile.banner_url ? '-mt-10 sm:-mt-12 relative z-10' : 'py-8 sm:py-12'}`}>
          {profile.banner_url && (
-           <div className="flex items-center gap-4 mb-8">
+           <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
              {profile.logo_url ? (
-               <img src={profile.logo_url} alt={`Logo de ${profile.full_name}`} className="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-lg bg-white" />
+               <img src={profile.logo_url} alt={`Logo de ${profile.full_name}`} className="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl object-cover border-4 border-white shadow-lg bg-white" />
              ) : (
-               <div className="w-24 h-24 rounded-2xl brand-bg text-white flex flex-col items-center justify-center font-bold text-4xl shadow-lg border-4 border-white bg-white backdrop-blur-sm">
+               <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl brand-bg text-white flex flex-col items-center justify-center font-bold text-2xl sm:text-4xl shadow-lg border-4 border-white bg-white backdrop-blur-sm">
                  {profile.full_name?.charAt(0)}
                </div>
              )}
-             <div className="pt-8">
-                <h1 className="text-2xl font-bold bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm inline-block">{profile.full_name}</h1>
+             <div className="pt-4 sm:pt-8">
+                <h1 className="text-xl sm:text-2xl font-bold bg-white/90 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-sm inline-block">{profile.full_name}</h1>
              </div>
            </div>
          )}

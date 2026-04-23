@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { format, addDays, isSameDay, addMinutes, getDay, startOfDay } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Clock, Calendar as CalendarIcon, ArrowLeft, Mail, User, CheckCircle, CreditCard, AlertTriangle } from 'lucide-react'
@@ -39,7 +39,6 @@ export function BookingClient({
   availability?: Availability[],
   googleBusySlots?: Booking[]
 }) {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [selectedTime, setSelectedTime] = useState<Date | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isRedirecting, setIsRedirecting] = useState(false)
@@ -57,9 +56,29 @@ export function BookingClient({
     ? ((eventType.total_price * eventType.deposit_percentage) / 100).toFixed(2)
     : null
 
-  // Generate 14 days for selection, starting from today
+  // Generate 14 working days for selection, starting from today
   const today = startOfDay(new Date())
-  const days = Array.from({ length: 14 }).map((_, i) => addDays(today, i))
+  
+  const workingDays = useMemo(() => {
+    if (!availability || availability.length === 0) return [0, 1, 2, 3, 4, 5, 6]
+    return Array.from(new Set(availability.map(a => a.day_of_week)))
+  }, [availability])
+
+  const days = useMemo(() => {
+    const d: Date[] = []
+    let current = today
+    let maxLoops = 100 
+    while (d.length < 14 && maxLoops > 0) {
+      if (workingDays.includes(getDay(current))) {
+        d.push(current)
+      }
+      current = addDays(current, 1)
+      maxLoops--
+    }
+    return d
+  }, [today, workingDays])
+
+  const [selectedDate, setSelectedDate] = useState<Date>(days.length > 0 ? days[0] : today)
 
   // Generate slots for selected day
   const slots = getAvailableSlots(
@@ -69,7 +88,6 @@ export function BookingClient({
     eventType.duration_mins,
     googleBusySlots
   )
-
   const handleBooking = async (e: React.FormEvent<HTMLFormElement>, forceCreate = false) => {
     if (e) e.preventDefault()
     if (!selectedTime) return
@@ -236,13 +254,13 @@ export function BookingClient({
       )}
 
       {/* Sidebar Info */}
-      <div className="bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 p-8 w-full md:w-1/3">
-        <Link href={`/${profile.slug}`} className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-white hover:shadow-sm transition-all mb-8">
+      <div className="bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 p-5 sm:p-8 w-full md:w-1/3">
+        <Link href={`/${profile.slug}`} className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-white hover:shadow-sm transition-all mb-6 md:mb-8">
           <ArrowLeft className="w-5 h-5" />
         </Link>
 
         <p className="text-slate-500 font-medium mb-1">{profile.full_name}</p>
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">{eventType.title}</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-6">{eventType.title}</h2>
         
         <div className="flex flex-col gap-4 text-slate-600 font-medium">
           <div className="flex items-center gap-3">
@@ -262,10 +280,10 @@ export function BookingClient({
       </div>
 
       {/* Booking Form Area */}
-      <div className="p-8 w-full md:w-2/3">
+      <div className="p-5 sm:p-8 w-full md:w-2/3">
          {!selectedTime ? (
            <>
-             <h3 className="text-xl font-bold text-slate-900 mb-6">Selecciona una fecha y hora</h3>
+             <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-6">Selecciona una fecha y hora</h3>
              
              {/* Date Picker (Horizontal scroll) */}
              <div className="flex overflow-x-auto pb-4 mb-6 gap-3 no-scrollbar scroll-smooth">
@@ -307,7 +325,7 @@ export function BookingClient({
                </div>
              )}
 
-             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+             <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
                {slots.length > 0 ? (
                  slots.map((slotIso) => {
                    const date = new Date(slotIso)

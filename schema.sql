@@ -90,6 +90,7 @@ create table public.bookings (
   cancel_token text,
   refund_data jsonb,
   billing_info jsonb default '{}'::jsonb not null,
+  package_group_id uuid,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -368,8 +369,11 @@ create table public.session_packages (
   event_type_id uuid references public.event_types(id) on delete set null,
   name text not null,
   scheduling_type text not null default 'libre' check (scheduling_type in ('libre', 'fijo')),
-  session_count integer not null check (session_count > 0),
-  total_price numeric(10,2) not null,
+  session_count integer check (session_count > 0),
+  total_price numeric(10,2),
+  frequency_per_week integer default 1,
+  allowed_days integer[] default '{}',
+  variants jsonb default '[]'::jsonb,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
