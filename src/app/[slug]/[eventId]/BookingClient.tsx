@@ -9,6 +9,7 @@ import { useSearchParams } from 'next/navigation'
 import { createBooking, rescheduleClientBooking } from './actions'
 import { getAvailableSlots, Availability, Booking } from '@/utils/availability'
 import { Spinner } from '@/components/Spinner'
+import { AddToCalendarButton } from '@/components/calendar/AddToCalendarButton'
 
 interface Profile {
   id: string
@@ -157,6 +158,13 @@ export function BookingClient({
   }
 
   if (isSuccess) {
+    const calendarEvent = {
+      title: eventType.title,
+      description: `Reserva con ${profile.full_name}`,
+      startTime: selectedTime!,
+      durationMins: eventType.duration_mins,
+    }
+
     return (
       <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-12 text-center max-w-xl mx-auto flex flex-col items-center">
         <div className="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mb-6">
@@ -171,9 +179,12 @@ export function BookingClient({
             : `Has agendado exitosamente una reunión de ${eventType.duration_mins} minutos con ${profile.full_name} para el ${selectedTime && format(selectedTime, "d 'de' MMMM 'a las' HH:mm", { locale: es })}.`
           }
         </p>
-        <Link href={`/${profile.slug}`} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-6 py-3 rounded-full transition-colors inline-block">
-          Volver al inicio
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center w-full">
+          <Link href={`/${profile.slug}`} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-8 py-3 rounded-xl transition-colors text-center">
+            Volver al inicio
+          </Link>
+          <AddToCalendarButton event={calendarEvent} />
+        </div>
       </div>
     )
   }

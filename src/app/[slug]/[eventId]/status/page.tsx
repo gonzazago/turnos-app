@@ -1,4 +1,3 @@
-import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import { format, parseISO } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -6,6 +5,7 @@ import { CheckCircle, XCircle, Calendar, Clock, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
 import { BookingService } from '@/services/booking/service'
+import { AddToCalendarButton } from '@/components/calendar/AddToCalendarButton'
 
 export default async function BookingStatusPage({
   params,
@@ -14,7 +14,7 @@ export default async function BookingStatusPage({
   params: Promise<{ slug: string; eventId: string }>
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const { slug, eventId } = await params
+  const { slug } = await params
   const { status, bookingId } = await searchParams
 
   if (!bookingId) notFound()
@@ -23,7 +23,7 @@ export default async function BookingStatusPage({
   let booking;
   try {
     booking = await BookingService.getById(bookingId as string);
-  } catch (error) {
+  } catch (_error) {
     notFound();
   }
 
@@ -32,12 +32,19 @@ export default async function BookingStatusPage({
   const isSuccess = status === 'approved' || status === 'success' || booking.payment_status === 'paid'
   const startTime = parseISO(booking.start_time)
 
+  const calendarEvent = {
+    title: booking.event_types?.title || 'Reserva',
+    description: `Reserva con ${booking.profiles?.full_name}`,
+    startTime: booking.start_time,
+    durationMins: booking.event_types?.duration_mins || 60,
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden max-w-2xl w-full">
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-xl max-w-2xl w-full">
         
         {/* Header Status */}
-        <div className={`p-12 text-center flex flex-col items-center ${isSuccess ? 'bg-green-50/50' : 'bg-red-50/50'}`}>
+        <div className={`p-12 text-center flex flex-col items-center rounded-t-3xl ${isSuccess ? 'bg-green-50/50' : 'bg-red-50/50'}`}>
           {isSuccess ? (
             <>
               <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
@@ -94,7 +101,7 @@ export default async function BookingStatusPage({
         </div>
 
         {/* Actions */}
-        <div className="p-8 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="p-8 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-4 justify-center rounded-b-3xl">
           <Link 
             href={`/${slug}`}
             className="bg-white border border-slate-200 text-slate-700 font-bold px-8 py-3 rounded-xl hover:bg-slate-100 transition-all text-center"
@@ -102,9 +109,7 @@ export default async function BookingStatusPage({
             Volver al inicio
           </Link>
           {isSuccess && (
-            <button className="bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-200 text-center">
-              Agendar en mi calendario
-            </button>
+            <AddToCalendarButton event={calendarEvent} />
           )}
         </div>
       </div>
